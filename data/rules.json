@@ -1,0 +1,352 @@
+{
+  "rules": [
+    {
+      "id": "migros_takeaway",
+      "name": "Migros Take-Away → Gastronomie",
+      "category": "Freizeit // Gastronomie",
+      "priority": 100,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["MIGROS"],
+        "locations": [],
+        "include_keywords": ["TAKE AWAY"],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": "coop_takeaway",
+      "name": "Coop Take-Away → Gastronomie",
+      "category": "Freizeit // Gastronomie",
+      "priority": 100,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["COOP"],
+        "locations": [],
+        "include_keywords": ["TAKE AWAY"],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": "migros_supermarket",
+      "name": "Migros Supermarkt",
+      "category": "Einkaufen // Supermärkte",
+      "priority": 50,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["MIGROS"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": ["TAKE AWAY"]
+      }
+    },
+    {
+      "id": "coop_supermarket",
+      "name": "Coop Supermarkt",
+      "category": "Einkaufen // Supermärkte",
+      "priority": 50,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["COOP"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": ["TAKE AWAY"]
+      }
+    },
+    {
+      "id": "jumbo",
+      "name": "Jumbo Supermarkt",
+      "category": "Einkaufen // Supermärkte",
+      "priority": 50,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["JUMBO"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": "baeckerei",
+      "name": "Bäckereien",
+      "category": "Einkaufen // Detail-Lebensmittel",
+      "priority": 40,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["BÄCKEREI", "BACKEREI", "BRANKOVIC"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": "confiserie",
+      "name": "Confiserie",
+      "category": "Einkaufen // Detail-Lebensmittel",
+      "priority": 40,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["CONFISERIE", "SPRÜNGLI"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": "yumihana",
+      "name": "Yumihana",
+      "category": "Einkaufen // Detail-Lebensmittel",
+      "priority": 40,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["YUMIHANA", "YUMI HANA"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": "wakara",
+      "name": "Wakara",
+      "category": "Einkaufen // Detail-Lebensmittel",
+      "priority": 40,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["WAKARA"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": "restaurant_yoojis",
+      "name": "Yooji's Restaurant",
+      "category": "Freizeit // Gastronomie",
+      "priority": 60,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["YOOJI'S"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": "restaurant_signor_rossi",
+      "name": "Signor Rossi Restaurant",
+      "category": "Freizeit // Gastronomie",
+      "priority": 60,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["SIGNOR ROSSI"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": "coffee_and_plants",
+      "name": "Coffee & Plants",
+      "category": "Freizeit // Gastronomie",
+      "priority": 60,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["COFFEE AND PLANTS"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": "pharmacy",
+      "name": "Apotheken",
+      "category": "Leben // Gesundheit",
+      "priority": 45,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["APOTHEKE"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": "body_shop",
+      "name": "The Body Shop",
+      "category": "Leben // Styling und Wellness",
+      "priority": 45,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["THE BODY SHOP"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": "haircut",
+      "name": "Friseur",
+      "category": "Leben // Styling und Wellness",
+      "priority": 45,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["SUMUP", "DELIAS HAIRSTY"],
+        "locations": [],
+        "include_keywords": ["HAIRSTY"],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": "kiosk",
+      "name": "Kiosk",
+      "category": "Einkaufen // Sonstiges Einkaufen",
+      "priority": 30,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["KKIOSK"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": "bahnhof_kiosk",
+      "name": "Bahnhof Kiosk",
+      "category": "Einkaufen // Sonstiges Einkaufen",
+      "priority": 30,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["BAHNHOF"],
+        "locations": [],
+        "include_keywords": ["BAHNHOF", "KIOSK"],
+        "exclude_keywords": ["APOTHEKE"]
+      }
+    },
+    {
+      "id": "fairtiq_public_transport",
+      "name": "Fairtiq (Öffentlicher Verkehr)",
+      "category": "Mobilität // Öffentlicher Verkehr",
+      "priority": 70,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["TRANSPORTS PUBLICS", "FAIRTIQ"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": "sunrise",
+      "name": "Sunrise (Kommunikation)",
+      "category": "Wohnen // Kommunikation",
+      "priority": 70,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["SUNRISE"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": "apple_subscription",
+      "name": "Apple (Subscription/Dienstleistung)",
+      "category": "Wohnen // Kommunikation",
+      "priority": 60,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["APPLE.COM"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": "bargeldbezug",
+      "name": "Bargeldbezug",
+      "category": "Finanzen // Bargeldbezug",
+      "priority": 80,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": [],
+        "locations": [],
+        "include_keywords": ["BARGELDBEZUG"],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": "lastschrift_electricity_water",
+      "name": "Nebenkosten (Strom/Wasser)",
+      "category": "Wohnen // Nebenkosten",
+      "priority": 60,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": [],
+        "locations": [],
+        "include_keywords": ["STADT AARAU"],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": "sympany_health",
+      "name": "Sympany (Krankenversicherung)",
+      "category": "Leben // Gesundheit",
+      "priority": 70,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["SYMPANY"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": "byro",
+      "name": "Byro (Freizeit/Hobby)",
+      "category": "Leben // Sonstiges Leben",
+      "priority": 35,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["BYRO"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": "twint_money_transfer",
+      "name": "Twint Geldtransfer",
+      "category": "Freizeit // Gastronomie",
+      "priority": 55,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["TWINT"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": "manor",
+      "name": "Manor (Kaufhaus/Transfers)",
+      "category": "Überträge",
+      "priority": 50,
+      "transaction_types": ["Buchung"],
+      "triggers": {
+        "merchants": ["MANOR"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    }
+  ],
+  "fallback_category": "Sonstiges",
+  "comments": {
+    "transaction_types": "Filter nach Bewegungstyp aus CSV. Momentan nur 'Buchung'.",
+    "merchants": "Hauptmerchant-Name (case-insensitive matching). ODER-Logik (mind. einer muss matchen).",
+    "locations": "Optional: Ort (z.B. AARAU, ZÜRICH). UND-Logik (alle müssen vorhanden sein).",
+    "include_keywords": "Zusätzliche Keywords die VORHANDEN sein müssen (z.B. TAKE AWAY). UND-Logik.",
+    "exclude_keywords": "Keywords die NICHT vorhanden sein dürfen. KEINE darf vorhanden sein.",
+    "matching": "Regel matcht, wenn ALLE conditions erfüllt sind. Regel mit höchster priority gewinnt.",
+    "fallback": "Wenn keine Regel matcht → fallback_category"
+  }
+}

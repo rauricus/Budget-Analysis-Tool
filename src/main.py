@@ -1,0 +1,71 @@
+#!/usr/bin/env python3
+"""
+Budget-Tool Pipeline
+Lädt CSV → Kategorisiert → Speichert Output
+"""
+
+import sys
+from pathlib import Path
+
+# Add src/ to path
+sys.path.insert(0, str(Path(__file__).parent / "src"))
+
+from csv_handler import CSVHandler
+from rule_engine import RuleEngine
+from export_handler import ExportHandler
+
+
+def main():
+    """Hauptpipeline"""
+    
+    # Pfade
+    # Nutze reference/ für bekannte Beispiele, input/ für neue Eingaben
+    input_csv = "data/reference/input/export.202401.csv"
+    rules_file = "data/rules.json"
+    output_csv = "data/reference/output/export.202401.categorized.csv"
+    
+    print("=" * 60)
+    print("📊 Budget-Tool - Kategorisierungs-Pipeline")
+    print("=" * 60)
+    
+    # 1. CSV laden
+    print("\n1️⃣  Loading Transactions...")
+    try:
+        transactions = CSVHandler.load_csv(input_csv)
+    except FileNotFoundError as e:
+        print(f"❌ {e}")
+        return 1
+    
+    # 2. Rules laden
+    print("\n2️⃣  Loading Rules...")
+    try:
+        engine = RuleEngine(rules_file)
+    except FileNotFoundError as e:
+        print(f"❌ {e}")
+        return 1
+    
+    # 3. Kategorisieren
+    print("\n3️⃣  Categorizing...")
+    transactions, matching_rules_map = engine.categorize_batch(transactions)
+    
+    # Statistik
+    categorized_count = sum(1 for t in transactions if t.kategorie_auto and t.kategorie_auto != "Sonstiges")
+    fallback_count = sum(1 for t in transactions if t.kategorie_auto == "Sonstiges")
+    
+    print(f"   • Kategorisiert: {categorized_count}/{len(transactions)}")
+    print(f"   • Fallback (Sonstiges): {fallback_count}/{len(transactions)}")
+    
+    # 4. Exportieren (neues strukturiertes Format)
+    print("\n4️⃣  Exporting to structured format...")
+    ExportHandler.export_csv(transactions, output_csv, matching_rules_map)
+    
+    # Zusammenfassung
+    print("\n" + "=" * 60)
+    print("✅ Pipeline erfolgreich abgeschlossen!")
+    print("=" * 60)
+    
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
