@@ -20,9 +20,9 @@ def main():
     
     # Pfade
     # Nutze reference/ für bekannte Beispiele, input/ für neue Eingaben
-    input_csv = "data/reference/input/export.202401.csv"
+    input_csv = "data/input/export.202401.csv"
     rules_file = "data/rules.json"
-    output_csv = "data/reference/output/export.202401.categorized.csv"
+    output_csv = "data/output/export.202401.categorized.csv"
     
     print("=" * 60)
     print("📊 Budget-Tool - Kategorisierungs-Pipeline")
