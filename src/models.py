@@ -34,7 +34,7 @@ class Transaction:
 @dataclass
 class Rule:
     """Kategorisierungs-Regel"""
-    id: str
+    id: int
     name: str
     category: str
     priority: int

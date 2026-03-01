@@ -1,7 +1,7 @@
 {
   "rules": [
     {
-      "id": "migros_takeaway",
+      "id": 1,
       "name": "Migros Take-Away → Gastronomie",
       "category": "Freizeit // Gastronomie",
       "priority": 100,
@@ -14,7 +14,7 @@
       }
     },
     {
-      "id": "coop_takeaway",
+      "id": 2,
       "name": "Coop Take-Away → Gastronomie",
       "category": "Freizeit // Gastronomie",
       "priority": 100,
@@ -27,7 +27,7 @@
       }
     },
     {
-      "id": "migros_supermarket",
+      "id": 3,
       "name": "Migros Supermarkt",
       "category": "Einkaufen // Supermärkte",
       "priority": 50,
@@ -40,7 +40,7 @@
       }
     },
     {
-      "id": "coop_supermarket",
+      "id": 4,
       "name": "Coop Supermarkt",
       "category": "Einkaufen // Supermärkte",
       "priority": 50,
@@ -53,7 +53,7 @@
       }
     },
     {
-      "id": "jumbo",
+      "id": 5,
       "name": "Jumbo Supermarkt",
       "category": "Einkaufen // Supermärkte",
       "priority": 50,
@@ -66,7 +66,7 @@
       }
     },
     {
-      "id": "baeckerei",
+      "id": 6,
       "name": "Bäckereien",
       "category": "Einkaufen // Detail-Lebensmittel",
       "priority": 40,
@@ -79,7 +79,7 @@
       }
     },
     {
-      "id": "confiserie",
+      "id": 7,
       "name": "Confiserie",
       "category": "Einkaufen // Detail-Lebensmittel",
       "priority": 40,
@@ -92,7 +92,7 @@
       }
     },
     {
-      "id": "yumihana",
+      "id": 8,
       "name": "Yumihana",
       "category": "Einkaufen // Detail-Lebensmittel",
       "priority": 40,
@@ -105,7 +105,7 @@
       }
     },
     {
-      "id": "wakara",
+      "id": 9,
       "name": "Wakara",
       "category": "Einkaufen // Detail-Lebensmittel",
       "priority": 40,
@@ -118,7 +118,7 @@
       }
     },
     {
-      "id": "restaurant_yoojis",
+      "id": 10,
       "name": "Yooji's Restaurant",
       "category": "Freizeit // Gastronomie",
       "priority": 60,
@@ -131,7 +131,7 @@
       }
     },
     {
-      "id": "restaurant_signor_rossi",
+      "id": 11,
       "name": "Signor Rossi Restaurant",
       "category": "Freizeit // Gastronomie",
       "priority": 60,
@@ -144,7 +144,7 @@
       }
     },
     {
-      "id": "coffee_and_plants",
+      "id": 12,
       "name": "Coffee & Plants",
       "category": "Freizeit // Gastronomie",
       "priority": 60,
@@ -157,7 +157,7 @@
       }
     },
     {
-      "id": "pharmacy",
+      "id": 13,
       "name": "Apotheken",
       "category": "Leben // Gesundheit",
       "priority": 45,
@@ -170,7 +170,7 @@
       }
     },
     {
-      "id": "body_shop",
+      "id": 14,
       "name": "The Body Shop",
       "category": "Leben // Styling und Wellness",
       "priority": 45,
@@ -183,7 +183,7 @@
       }
     },
     {
-      "id": "haircut",
+      "id": 15,
       "name": "Friseur",
       "category": "Leben // Styling und Wellness",
       "priority": 45,
@@ -196,7 +196,7 @@
       }
     },
     {
-      "id": "kiosk",
+      "id": 16,
       "name": "Kiosk",
       "category": "Einkaufen // Sonstiges Einkaufen",
       "priority": 30,
@@ -209,7 +209,7 @@
       }
     },
     {
-      "id": "bahnhof_kiosk",
+      "id": 17,
       "name": "Bahnhof Kiosk",
       "category": "Einkaufen // Sonstiges Einkaufen",
       "priority": 30,
@@ -222,7 +222,7 @@
       }
     },
     {
-      "id": "fairtiq_public_transport",
+      "id": 18,
       "name": "Fairtiq (Öffentlicher Verkehr)",
       "category": "Mobilität // Öffentlicher Verkehr",
       "priority": 70,
@@ -235,7 +235,7 @@
       }
     },
     {
-      "id": "sunrise",
+      "id": 19,
       "name": "Sunrise (Kommunikation)",
       "category": "Wohnen // Kommunikation",
       "priority": 70,
@@ -248,7 +248,7 @@
       }
     },
     {
-      "id": "apple_subscription",
+      "id": 20,
       "name": "Apple (Subscription/Dienstleistung)",
       "category": "Wohnen // Kommunikation",
       "priority": 60,
@@ -261,7 +261,7 @@
       }
     },
     {
-      "id": "bargeldbezug",
+      "id": 21,
       "name": "Bargeldbezug",
       "category": "Finanzen // Bargeldbezug",
       "priority": 80,
@@ -274,7 +274,7 @@
       }
     },
     {
-      "id": "lastschrift_electricity_water",
+      "id": 22,
       "name": "Nebenkosten (Strom/Wasser)",
       "category": "Wohnen // Nebenkosten",
       "priority": 60,
@@ -287,7 +287,7 @@
       }
     },
     {
-      "id": "sympany_health",
+      "id": 23,
       "name": "Sympany (Krankenversicherung)",
       "category": "Leben // Gesundheit",
       "priority": 70,
@@ -300,7 +300,7 @@
       }
     },
     {
-      "id": "byro",
+      "id": 24,
       "name": "Byro (Freizeit/Hobby)",
       "category": "Leben // Sonstiges Leben",
       "priority": 35,
@@ -313,7 +313,7 @@
       }
     },
     {
-      "id": "twint_money_transfer",
+      "id": 25,
       "name": "Twint Geldtransfer",
       "category": "Freizeit // Gastronomie",
       "priority": 55,
@@ -326,7 +326,7 @@
       }
     },
     {
-      "id": "manor",
+      "id": 26,
       "name": "Manor (Kaufhaus/Transfers)",
       "category": "Überträge",
       "priority": 50,
