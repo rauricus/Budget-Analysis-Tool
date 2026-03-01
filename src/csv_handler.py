@@ -1,8 +1,7 @@
 import pandas as pd
 from pathlib import Path
-from datetime import datetime
 from models import Transaction
-from notification_parser import NotificationTextParser
+from transaction_parser import TransactionParser
 
 
 class CSVHandler:
@@ -23,38 +22,9 @@ class CSVHandler:
         
         transactions = []
         for _, row in df.iterrows():
-            # Skip leere Reihen
-            if pd.isna(row.get("Datum")):
-                continue
-            
-            # Belege in Floats (NaN → 0.0)
-            gutschrift = float(row.get("Gutschrift in CHF", 0) or 0)
-            lastschrift = float(str(row.get("Lastschrift in CHF", 0) or 0).replace("-", ""))
-            
-            datum = datetime.strptime(str(row["Datum"]), "%d.%m.%Y")
-            
-            # Helper function to clean pandas NaN/nan strings (only for optional fields)
-            def clean_value(val):
-                s = str(val).strip() if val is not None else ""
-                return "" if s in ("nan", "<NA>", "") else s
-
-            avisierungstext = str(row["Avisierungstext"]).strip()
-            parsed = NotificationTextParser.parse(avisierungstext)
-            
-            txn = Transaction(
-                datum=datum,
-                bewegungstyp=str(row["Bewegungstyp"]).strip(),
-                avisierungstext=avisierungstext,
-                gutschrift=gutschrift,
-                lastschrift=-lastschrift,  # Negative speichern
-                label=clean_value(row.get("Label", "")),
-                kategorie=clean_value(row.get("Kategorie", "")),
-                service_type=parsed["service_type"],
-                card_number=parsed["card_number"],
-                parsed_merchant=parsed["merchant"],
-                parsed_location=parsed["location"],
-            )
-            transactions.append(txn)
+            txn = TransactionParser.parse_row(row)
+            if txn is not None:
+                transactions.append(txn)
         
         print(f"✅ {len(transactions)} Transaktionen geladen")
         return transactions
