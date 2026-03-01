@@ -15,6 +15,8 @@ class ExportHandler:
     EXPORT_COLUMNS = [
         "Datum",
         "Bewegungstyp",
+        "Service",
+        "Kartennummer",
         "Händler",
         "Ort",
         "Gutschrift in CHF",
@@ -40,15 +42,20 @@ class ExportHandler:
         """
         merchant = ""
         location = ""
+
+        if transaction.parsed_merchant:
+            merchant = transaction.parsed_merchant
+        if transaction.parsed_location:
+            location = transaction.parsed_location
         
         # Wenn Regeln vorhanden, extrahiere Merchant/Location
         if matching_rules:
             # Merchants aus höchster Priority Rule
-            if matching_rules[0].merchants:
+            if not merchant and matching_rules[0].merchants:
                 merchant = " / ".join(matching_rules[0].merchants)
             
             # Locations aus höchster Priority Rule
-            if matching_rules[0].locations:
+            if not location and matching_rules[0].locations:
                 location = " / ".join(matching_rules[0].locations)
         
         # Fallback: versuche aus Avisierungstext zu extrahieren
@@ -100,6 +107,8 @@ class ExportHandler:
             rows.append({
                 "Datum": txn.datum.strftime("%d.%m.%Y"),
                 "Bewegungstyp": txn.bewegungstyp,
+                "Service": txn.service_type,
+                "Kartennummer": txn.card_number,
                 "Händler": merchant,
                 "Ort": location,
                 "Gutschrift in CHF": gutschrift,

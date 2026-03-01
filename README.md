@@ -82,11 +82,12 @@ data/reference/output/export.202401.categorized.csv
 {
   "rules": [
     {
-      "id": "unique_id",
+      "id": 1,
       "name": "Beschreibung",
       "category": "Kategorie // Unterkategorie",
       "priority": 100,
       "transaction_types": ["APPLE PAY KAUF/DIENSTLEISTUNG"],
+      "services": ["APPLE PAY"],
       "triggers": {
         "merchants": ["MIGROS"],
         "locations": ["AARAU"],
@@ -124,6 +125,8 @@ Das Tool exportiert kategorisierte Transaktionen in einem strukturierten CSV mit
 |--------|-------------|
 | **Datum** | Transaktionsdatum (TT.MM.YYYY) |
 | **Bewegungstyp** | Typ der Banktransaktion (z.B. Buchung, Apple Pay) |
+| **Service** | Aus Avisierungstext geparster Service (z.B. APPLE PAY) |
+| **Kartennummer** | Aus Avisierungstext geparste Kartennummer (z.B. XXXX1384) |
 | **Händler** | Extrahierter Merchant-Name (aus Rules oder Avisierungstext) |
 | **Ort** | Transaktionsort/Stadt |
 | **Gutschrift in CHF** | Positive Beträge (Einnahmen) |

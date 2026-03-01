@@ -31,6 +31,7 @@ class RuleEngine:
                 category=rule_data["category"],
                 priority=rule_data["priority"],
                 transaction_types=rule_data.get("transaction_types", []),
+                services=rule_data.get("services", []),
                 merchants=rule_data["triggers"].get("merchants", []),
                 locations=rule_data["triggers"].get("locations", []),
                 include_keywords=rule_data["triggers"].get("include_keywords", []),

@@ -2,6 +2,7 @@ import pandas as pd
 from pathlib import Path
 from datetime import datetime
 from models import Transaction
+from notification_parser import NotificationTextParser
 
 
 class CSVHandler:
@@ -36,15 +37,22 @@ class CSVHandler:
             def clean_value(val):
                 s = str(val).strip() if val is not None else ""
                 return "" if s in ("nan", "<NA>", "") else s
+
+            avisierungstext = str(row["Avisierungstext"]).strip()
+            parsed = NotificationTextParser.parse(avisierungstext)
             
             txn = Transaction(
                 datum=datum,
                 bewegungstyp=str(row["Bewegungstyp"]).strip(),
-                avisierungstext=str(row["Avisierungstext"]).strip(),
+                avisierungstext=avisierungstext,
                 gutschrift=gutschrift,
                 lastschrift=-lastschrift,  # Negative speichern
                 label=clean_value(row.get("Label", "")),
                 kategorie=clean_value(row.get("Kategorie", "")),
+                service_type=parsed["service_type"],
+                card_number=parsed["card_number"],
+                parsed_merchant=parsed["merchant"],
+                parsed_location=parsed["location"],
             )
             transactions.append(txn)
         

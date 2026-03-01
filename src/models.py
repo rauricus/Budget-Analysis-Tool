@@ -14,6 +14,10 @@ class Transaction:
     label: str
     kategorie: str  # Original-Kategorie aus CSV
     kategorie_auto: Optional[str] = None  # Automatisch zugewiesene Kategorie
+    service_type: str = ""  # z.B. APPLE PAY
+    card_number: str = ""  # z.B. XXXX1384
+    parsed_merchant: str = ""
+    parsed_location: str = ""
     
     @property
     def betrag(self) -> float:
@@ -39,6 +43,7 @@ class Rule:
     category: str
     priority: int
     transaction_types: list[str]  # z.B. ["APPLE PAY KAUF/DIENSTLEISTUNG"]
+    services: list[str]  # z.B. ["APPLE PAY"]
     merchants: list[str]  # z.B. ["MIGROS", "COOP"]
     locations: list[str]  # z.B. ["AARAU", "ZÜRICH"]
     include_keywords: list[str]  # z.B. ["TAKE AWAY"] – muss enthalten sein
@@ -53,6 +58,10 @@ class Rule:
         
         # 1. Bewegungstyp matchen
         if transaction.bewegungstyp not in self.transaction_types:
+            return False
+
+        # 1b. Service-Typ matchen (optional)
+        if self.services and transaction.service_type.upper() not in [s.upper() for s in self.services]:
             return False
         
         # 2. Mindestens ein Merchant muss vorhanden sein

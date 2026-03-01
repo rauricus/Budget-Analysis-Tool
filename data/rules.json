@@ -342,6 +342,7 @@
   "fallback_category": "Sonstiges",
   "comments": {
     "transaction_types": "Filter nach Bewegungstyp aus CSV. Momentan nur 'Buchung'.",
+    "services": "Optionaler Filter auf geparsten Service aus Avisierungstext (z.B. APPLE PAY).",
     "merchants": "Hauptmerchant-Name (case-insensitive matching). ODER-Logik (mind. einer muss matchen).",
     "locations": "Optional: Ort (z.B. AARAU, ZÜRICH). UND-Logik (alle müssen vorhanden sein).",
     "include_keywords": "Zusätzliche Keywords die VORHANDEN sein müssen (z.B. TAKE AWAY). UND-Logik.",
