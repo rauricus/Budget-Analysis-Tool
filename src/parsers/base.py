@@ -8,6 +8,10 @@ class NotificationParseResult:
     card_number: str = ""
     merchant: str = ""
     location: str = ""
+    recipient: str = ""  # Für LASTSCHRIFT: Zahlungsempfänger
+    recipient_iban: str = ""  # Für LASTSCHRIFT: IBAN des Empfängers
+    reference: str = ""  # Für LASTSCHRIFT: Referenz-Information
+    transaction_type_detail: str = ""  # Für LASTSCHRIFT: Debit Direct / Zahlung / Dauerauftrag
 
     def to_dict(self) -> dict[str, str]:
         return {
@@ -15,6 +19,10 @@ class NotificationParseResult:
             "card_number": self.card_number,
             "merchant": self.merchant,
             "location": self.location,
+            "recipient": self.recipient,
+            "recipient_iban": self.recipient_iban,
+            "reference": self.reference,
+            "transaction_type_detail": self.transaction_type_detail,
         }
 
 

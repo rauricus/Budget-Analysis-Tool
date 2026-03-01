@@ -1,13 +1,24 @@
+from typing import Optional
+
 from parsers.apple_pay_parser import ApplePayParser
 from parsers.base import NotificationParseResult, ServiceParser
-from typing import Optional
+from parsers.dauerauftrag_parser import DauerauftragParser
+from parsers.debit_direct_parser import DebitDirectParser
+from parsers.twint_senden_parser import TwintSendenParser
+from parsers.zahlung_parser import ZahlungParser
 
 
 class NotificationParserRegistry:
     """Registry für service-spezifische Avisierungstext-Parser."""
 
     def __init__(self, parsers: Optional[list[ServiceParser]] = None):
-        self.parsers = parsers or [ApplePayParser()]
+        self.parsers = parsers or [
+            ApplePayParser(),
+            TwintSendenParser(),
+            DebitDirectParser(),
+            DauerauftragParser(),
+            ZahlungParser(),
+        ]
 
     def parse(self, avisierungstext: str) -> NotificationParseResult:
         text = (avisierungstext or "").strip()

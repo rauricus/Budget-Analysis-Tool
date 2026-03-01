@@ -1,0 +1,39 @@
+import re
+
+from parsers.base import NotificationParseResult, ServiceParser
+
+
+class ZahlungParser(ServiceParser):
+    """Parser für LASTSCHRIFT Zahlung (Lastschrift mit IBAN)."""
+
+    # LASTSCHRIFT CH<iban> <merchant> (aber nicht DAUERAUFTRAG)
+    PATTERN = re.compile(
+        r"^LASTSCHRIFT\s+(CH\S+)\s+(.+)$",
+        re.IGNORECASE,
+    )
+
+    def supports(self, text: str) -> bool:
+        text_stripped = (text or "").strip()
+        # Muss LASTSCHRIFT sein, aber NICHT DAUERAUFTRAG
+        if not self.PATTERN.match(text_stripped):
+            return False
+        return "DAUERAUFTRAG" not in text_stripped.upper()
+
+    def parse(self, text: str) -> NotificationParseResult:
+        text = (text or "").strip()
+        if not self.supports(text):
+            return NotificationParseResult()
+
+        match = self.PATTERN.match(text)
+        if not match:
+            return NotificationParseResult()
+
+        recipient_iban = match.group(1).strip()
+        recipient = match.group(2).strip()
+
+        return NotificationParseResult(
+            service_type="LASTSCHRIFT",
+            transaction_type_detail="Zahlung",
+            recipient=recipient,
+            recipient_iban=recipient_iban,
+        )

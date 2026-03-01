@@ -14,11 +14,15 @@ class ExportHandler:
     # Standard-Spalten im Export
     EXPORT_COLUMNS = [
         "Datum",
-        "Bewegungstyp",
+        "Transaktionstyp",
+        "Transaktionstyp Detail",
         "Service",
         "Kartennummer",
         "Händler",
         "Ort",
+        "Empfänger",
+        "Empfänger IBAN",
+        "Referenz",
         "Gutschrift in CHF",
         "Lastschrift in CHF",
         "Label",
@@ -106,11 +110,15 @@ class ExportHandler:
             
             rows.append({
                 "Datum": txn.datum.strftime("%d.%m.%Y"),
-                "Bewegungstyp": txn.bewegungstyp,
+                "Transaktionstyp": txn.bewegungstyp,
+                "Transaktionstyp Detail": txn.transaction_type_detail,
                 "Service": txn.service_type,
                 "Kartennummer": txn.card_number,
                 "Händler": merchant,
                 "Ort": location,
+                "Empfänger": txn.recipient,
+                "Empfänger IBAN": txn.recipient_iban,
+                "Referenz": txn.reference,
                 "Gutschrift in CHF": gutschrift,
                 "Lastschrift in CHF": lastschrift,
                 "Label": txn.label,

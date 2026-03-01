@@ -20,6 +20,7 @@ class ApplePayParser(ServiceParser):
         merchant, location = self._extract_merchant_location(match.group("rest").strip())
         return NotificationParseResult(
             service_type="APPLE PAY",
+            transaction_type_detail="Kauf/Dienstleistung",
             card_number=match.group("card").strip(),
             merchant=merchant,
             location=location,

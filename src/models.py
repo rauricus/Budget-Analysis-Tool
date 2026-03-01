@@ -14,10 +14,14 @@ class Transaction:
     label: str
     kategorie: str  # Original-Kategorie aus CSV
     kategorie_auto: Optional[str] = None  # Automatisch zugewiesene Kategorie
-    service_type: str = ""  # z.B. APPLE PAY
-    card_number: str = ""  # z.B. XXXX1384
+    service_type: str = ""  # z.B. APPLE PAY, TWINT, LASTSCHRIFT
+    card_number: str = ""  # z.B. XXXX1384 (Karte)
     parsed_merchant: str = ""
     parsed_location: str = ""
+    recipient: str = ""  # Für LASTSCHRIFT: Zahlungsempfänger
+    recipient_iban: str = ""  # Für LASTSCHRIFT: IBAN
+    reference: str = ""  # Für LASTSCHRIFT: Referenz
+    transaction_type_detail: str = ""  # Für LASTSCHRIFT: Detail-Typ
     
     @property
     def betrag(self) -> float:
