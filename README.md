@@ -1,162 +1,155 @@
-# 📊 Budget-Tool
+# 📊 Budget Tool
 
-Automatische Kategorisierung von Banktransaktionen mit konfigurierbaren Regeln.
+Automatic categorization of bank transactions using configurable JSON rules.
 
 ## 🎯 Features
 
-- ✅ CSV-Import (PostFinance Format)
-- ✅ Rule-Engine mit Prioritäten
-- ✅ Merchant + Location-basiertes Matching
-- ✅ Include/Exclude Keywords
-- ✅ CSV-Export mit Auto-Kategorien
+- ✅ CSV import (PostFinance format)
+- ✅ Service-specific parser registry (Apple Pay, TWINT, Lastschrift variants)
+- ✅ Rule engine with priority-based matching
+- ✅ Service-scoped rule selection (`services` in rules)
+- ✅ Merchant, location, include/exclude keyword matching
+- ✅ Structured CSV export with parsed service fields
 
 ## 🚀 Setup
 
 ```bash
-# Environment erstellen
+# Create environment
 micromamba env create -f environment.yml
 
-# Environment aktivieren
+# Activate environment
 micromamba activate bat
 
-# Pipeline ausführen
+# Run pipeline
 python src/main.py
 ```
 
 ## ✅ Tests
 
 ```bash
-# Alle Tests ausführen
-pytest
+# Run all tests
+micromamba run -n bat pytest -q
 
-# Mit Verbose Output
-pytest -v
+# Verbose output
+micromamba run -n bat pytest -v
 
-# Spezifischen Test ausführen
-pytest tests/test_rule_matching.py
+# Run a specific test file
+micromamba run -n bat pytest tests/test_rule_matching.py
 ```
 
-## 📂 Struktur
+## 📂 Structure
 
-```
+```text
 data/
-├── reference/                     # Referenzdaten für Rule-Entwicklung (versioniert)
-│   ├── input/                     # Input CSV (PostFinance Format)
-│   │   └── export.202401.csv     # Beispiel-Datensatz für Rules
-│   └── output/                    # Kategorisierte Outputs
-│       └── export.202401.categorized.csv
-├── input/                         # Neue Input CSVs (ignoriert, zum Testen)
-├── output/                        # Neue Output CSVs (ignoriert, generiert)
-└── rules.json                     # Kategorisierungs-Regeln
+├── rules.json                     # Rule definitions (service-scoped matching)
+├── input/                         # New raw input CSV files
+├── output/                        # Generated categorized CSV outputs
+└── reference/                     # Versioned reference datasets
+  ├── input/                     # Stable sample input CSV files
+  └── output/                    # Expected/known categorized outputs
 
 src/
-├── models.py                      # Transaction, Rule Dataclasses
-├── rule_engine.py                 # Matching-Logik
-├── csv_handler.py                 # CSV I/O (Input/PostFinance)
-├── export_handler.py              # CSV Export (strukturiertes Format)
-└── main.py                        # Pipeline
+├── csv_handler.py                 # CSV load/save utilities
+├── export_handler.py              # Structured CSV export builder
+├── models.py                      # Transaction and Rule dataclasses + matching logic
+├── notification_parser.py         # Compatibility facade to parser registry
+├── rule_engine.py                 # Rule loading + service-filtered categorization
+├── transaction_parser.py          # Row-to-Transaction conversion
+└── parsers/
+  ├── base.py                    # Parser interface + parse result model
+  ├── registry.py                # Parser dispatch (first supporting parser wins)
+  ├── apple_pay_parser.py        # APPLE PAY notification parser
+  ├── twint_senden_parser.py     # TWINT send-money parser
+  ├── debit_direct_parser.py     # CH-DD debit direct parser
+  ├── zahlung_parser.py          # LASTSCHRIFT payment parser
+  └── dauerauftrag_parser.py     # LASTSCHRIFT standing-order parser
 
-tests/
-├── test_csv_handler.py            # CSV Handling Tests
-├── test_export_handler.py         # Export Format Tests
-├── test_rule_details.py           # Rule Matching Details
-├── test_rule_matching.py          # Rule Matching Logic
-└── test_categorization.py         # Transaction Categorization
+src/main.py                        # Pipeline entry point
+tests/                             # Unit/integration-style tests for pipeline components
 ```
 
-### Datenfluss
+## 🔄 Data Flow
 
-```
-data/reference/input/export.202401.csv
-        ↓ (CSVHandler.load_csv)
-    [Transactions]
-        ↓ (RuleEngine.categorize_batch)
-    [Categorized + Matching Rules]
-        ↓ (ExportHandler.export_csv)
-data/reference/output/export.202401.categorized.csv
+```text
+data/input/*.csv
+   -> CSVHandler.load_csv
+   -> TransactionParser.parse_row
+   -> NotificationTextParser.parse (via parser registry)
+   -> RuleEngine.categorize_batch
+   -> ExportHandler.export_csv
+   -> data/output/*.categorized.csv
 ```
 
-## 🎨 Rules definieren (rules.json)
+## 🎨 Rules (`data/rules.json`)
+
+Example:
 
 ```json
 {
   "rules": [
     {
       "id": 1,
-      "name": "Beschreibung",
-      "category": "Kategorie // Unterkategorie",
+      "name": "Migros Take-Away",
+      "category": "Freizeit // Gastronomie",
       "priority": 100,
-      "transaction_types": ["APPLE PAY KAUF/DIENSTLEISTUNG"],
+      "transaction_types": ["Buchung"],
       "services": ["APPLE PAY"],
       "triggers": {
         "merchants": ["MIGROS"],
-        "locations": ["AARAU"],
+        "locations": [],
         "include_keywords": ["TAKE AWAY"],
         "exclude_keywords": []
       }
     }
-  ],
-  "fallback_category": "Sonstiges"
+  ]
 }
 ```
 
-### Matching-Logik
+### Matching behavior
 
-- **Priority**: Höchste gewinnt
-- **Merchants**: Min. einer muss vorhanden sein (ODER)
-- **Locations**: Alle müssen vorhanden sein (UND)
-- **include_keywords**: Alle müssen vorhanden sein (UND)
-- **exclude_keywords**: KEINE darf vorhanden sein
+- Rules are sorted by descending `priority`.
+- Only rules that include the transaction's parsed `service_type` in `services` are considered.
+- A rule matches only if all configured conditions match.
+- `merchants`: OR logic (at least one must match).
+- `locations`: AND logic (all must match).
+- `include_keywords`: AND logic (all must match).
+- `exclude_keywords`: none may match.
 
-Alle Bedingungen sind case-insensitive.
+### No fallback category
 
-## 📝 Example
+There is no fallback category in the engine.
+If no parser matches a service or no rule matches that service, the transaction stays uncategorized.
 
-Input: `"APPLE PAY KAUF/DIENSTLEISTUNG VOM 27.01.2024 ... MIGROS IGELWEID TAKE AWAY (5413) AARAU SCHWEIZ"`
+## 📤 Export Format
 
-→ Matche gegen `migros_takeaway` (weil Merchant=MIGROS + Keyword TAKE AWAY)
-→ `Freizeit // Gastronomie`
+The structured export currently uses these columns:
 
-## � Export Format
+- Date
+- Transaction Type
+- Transaction Type Detail
+- Service
+- Card Number
+- Merchant
+- Location
+- Recipient
+- Recipient IBAN
+- Reference
+- Credit in CHF
+- Debit in CHF
+- Label
+- Category
 
-Das Tool exportiert kategorisierte Transaktionen in einem strukturierten CSV mit folgenden Spalten:
+## 🧪 Iterative workflow
 
-| Spalte | Beschreibung |
-|--------|-------------|
-| **Datum** | Transaktionsdatum (TT.MM.YYYY) |
-| **Bewegungstyp** | Typ der Banktransaktion (z.B. Buchung, Apple Pay) |
-| **Service** | Aus Avisierungstext geparster Service (z.B. APPLE PAY) |
-| **Kartennummer** | Aus Avisierungstext geparste Kartennummer (z.B. XXXX1384) |
-| **Händler** | Extrahierter Merchant-Name (aus Rules oder Avisierungstext) |
-| **Ort** | Transaktionsort/Stadt |
-| **Gutschrift in CHF** | Positive Beträge (Einnahmen) |
-| **Lastschrift in CHF** | Negative Beträge (Ausgaben) |
-| **Label** | Original-Label der Bank |
-| **Kategorie** | Automatisch zugewiesene oder Original-Kategorie |
+1. Put a new CSV into `data/input/`.
+2. Run `python src/main.py`.
+3. Inspect `data/output/*.categorized.csv`.
+4. Add/refine parser(s) in `src/parsers/` if needed.
+5. Add/refine matching rules in `data/rules.json`.
+6. Repeat until categorization quality is acceptable.
 
-## 🔄 Workflow
+## 🎯 Next steps
 
-### Iterative Rule-Entwicklung
-
-1. **Neue Daten testen** - CSV in `data/input/` legen
-2. **Pipeline testen** - `python src/main.py` mit default Reference-Daten
-3. **Rules verfeinern** - Anpassungen in `data/rules.json`
-4. **Iterieren** - Schritte 2-3 wiederholen bis Rules zufriedenstellend
-
-### Reference-Daten aktualisieren
-
-Wenn neue Testdateien optimale Regeln erzeugen:
-
-1. CSV von `data/input/abc.csv` nach `data/reference/input/abc.csv` verschieben
-2. Output von `data/output/` nach `data/reference/output/` verschieben
-3. `src/main.py` Input-Pfade ggf. aktualisieren
-4. Commit für Versionskontrolle
-
-**Vorteil:** `data/reference/` ist versioniert → reproduzierbar, `data/input/` wird ignoriert
-
-## 🎯 Next Steps
-
-- [ ] Analyse/Reports (Summen pro Kategorie)
-- [ ] Visualisierung (Diagramme)
-- [ ] Excel-Export
-- [ ] AI-Modul (optional)
+- [ ] Add parser(s) for currently uncategorized service formats
+- [ ] Add category-level reporting summaries
+- [ ] Add optional chart/export modules
