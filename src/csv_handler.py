@@ -26,7 +26,7 @@ class CSVHandler:
             if txn is not None:
                 transactions.append(txn)
         
-        print(f"✅ Loaded {len(transactions)} transactions")
+        print(f"   Loaded {len(transactions)} transactions")
         return transactions
     
     @staticmethod
@@ -52,4 +52,4 @@ class CSVHandler:
         
         df = pd.DataFrame(rows)
         df.to_csv(output_path, sep=";", index=False, encoding="utf-8")
-        print(f"✅ Saved {len(transactions)} transactions: {output_path}")
+        print(f"   Saved {len(transactions)} transactions: {output_path}")

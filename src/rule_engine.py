@@ -42,7 +42,7 @@ class RuleEngine:
         
         # Sort by priority (descending)
         self.rules.sort(key=lambda r: r.priority, reverse=True)
-        print(f"✅ Loaded {len(self.rules)} rules (sorted by priority)")
+        print(f"   Loaded {len(self.rules)} rules (sorted by priority)")
 
     @staticmethod
     def _service_candidates(rules: list[Rule], service_type: str) -> list[Rule]:
