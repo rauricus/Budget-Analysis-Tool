@@ -6,6 +6,7 @@
       "category": "Freizeit // Gastronomie",
       "priority": 100,
       "transaction_types": ["Buchung"],
+      "services": ["APPLE PAY"],
       "triggers": {
         "merchants": ["MIGROS"],
         "locations": [],
@@ -19,6 +20,7 @@
       "category": "Freizeit // Gastronomie",
       "priority": 100,
       "transaction_types": ["Buchung"],
+      "services": ["APPLE PAY"],
       "triggers": {
         "merchants": ["COOP"],
         "locations": [],
@@ -32,6 +34,7 @@
       "category": "Einkaufen // Supermärkte",
       "priority": 50,
       "transaction_types": ["Buchung"],
+      "services": ["APPLE PAY"],
       "triggers": {
         "merchants": ["MIGROS"],
         "locations": [],
@@ -45,6 +48,7 @@
       "category": "Einkaufen // Supermärkte",
       "priority": 50,
       "transaction_types": ["Buchung"],
+      "services": ["APPLE PAY"],
       "triggers": {
         "merchants": ["COOP"],
         "locations": [],
@@ -58,6 +62,7 @@
       "category": "Einkaufen // Supermärkte",
       "priority": 50,
       "transaction_types": ["Buchung"],
+      "services": ["APPLE PAY"],
       "triggers": {
         "merchants": ["JUMBO"],
         "locations": [],
@@ -71,6 +76,7 @@
       "category": "Einkaufen // Detail-Lebensmittel",
       "priority": 40,
       "transaction_types": ["Buchung"],
+      "services": ["APPLE PAY"],
       "triggers": {
         "merchants": ["BÄCKEREI", "BACKEREI", "BRANKOVIC"],
         "locations": [],
@@ -84,6 +90,7 @@
       "category": "Einkaufen // Detail-Lebensmittel",
       "priority": 40,
       "transaction_types": ["Buchung"],
+      "services": ["APPLE PAY"],
       "triggers": {
         "merchants": ["CONFISERIE", "SPRÜNGLI"],
         "locations": [],
@@ -97,6 +104,7 @@
       "category": "Einkaufen // Detail-Lebensmittel",
       "priority": 40,
       "transaction_types": ["Buchung"],
+      "services": ["APPLE PAY"],
       "triggers": {
         "merchants": ["YUMIHANA", "YUMI HANA"],
         "locations": [],
@@ -110,6 +118,7 @@
       "category": "Einkaufen // Detail-Lebensmittel",
       "priority": 40,
       "transaction_types": ["Buchung"],
+      "services": ["APPLE PAY"],
       "triggers": {
         "merchants": ["WAKARA"],
         "locations": [],
@@ -123,6 +132,7 @@
       "category": "Freizeit // Gastronomie",
       "priority": 60,
       "transaction_types": ["Buchung"],
+      "services": ["APPLE PAY"],
       "triggers": {
         "merchants": ["YOOJI'S"],
         "locations": [],
@@ -136,6 +146,7 @@
       "category": "Freizeit // Gastronomie",
       "priority": 60,
       "transaction_types": ["Buchung"],
+      "services": ["APPLE PAY"],
       "triggers": {
         "merchants": ["SIGNOR ROSSI"],
         "locations": [],
@@ -149,6 +160,7 @@
       "category": "Freizeit // Gastronomie",
       "priority": 60,
       "transaction_types": ["Buchung"],
+      "services": ["APPLE PAY"],
       "triggers": {
         "merchants": ["COFFEE AND PLANTS"],
         "locations": [],
@@ -162,6 +174,7 @@
       "category": "Leben // Gesundheit",
       "priority": 45,
       "transaction_types": ["Buchung"],
+      "services": ["APPLE PAY"],
       "triggers": {
         "merchants": ["APOTHEKE"],
         "locations": [],
@@ -175,6 +188,7 @@
       "category": "Leben // Styling und Wellness",
       "priority": 45,
       "transaction_types": ["Buchung"],
+      "services": ["APPLE PAY"],
       "triggers": {
         "merchants": ["THE BODY SHOP"],
         "locations": [],
@@ -188,6 +202,7 @@
       "category": "Leben // Styling und Wellness",
       "priority": 45,
       "transaction_types": ["Buchung"],
+      "services": ["APPLE PAY"],
       "triggers": {
         "merchants": ["SUMUP", "DELIAS HAIRSTY"],
         "locations": [],
@@ -201,6 +216,7 @@
       "category": "Einkaufen // Sonstiges Einkaufen",
       "priority": 30,
       "transaction_types": ["Buchung"],
+      "services": ["APPLE PAY"],
       "triggers": {
         "merchants": ["KKIOSK"],
         "locations": [],
@@ -214,6 +230,7 @@
       "category": "Einkaufen // Sonstiges Einkaufen",
       "priority": 30,
       "transaction_types": ["Buchung"],
+      "services": ["APPLE PAY"],
       "triggers": {
         "merchants": ["BAHNHOF"],
         "locations": [],
@@ -227,6 +244,7 @@
       "category": "Mobilität // Öffentlicher Verkehr",
       "priority": 70,
       "transaction_types": ["Buchung"],
+      "services": ["FAIRTIQ"],
       "triggers": {
         "merchants": ["TRANSPORTS PUBLICS", "FAIRTIQ"],
         "locations": [],
@@ -240,6 +258,7 @@
       "category": "Wohnen // Kommunikation",
       "priority": 70,
       "transaction_types": ["Buchung"],
+      "services": ["LASTSCHRIFT"],
       "triggers": {
         "merchants": ["SUNRISE"],
         "locations": [],
@@ -253,6 +272,7 @@
       "category": "Wohnen // Kommunikation",
       "priority": 60,
       "transaction_types": ["Buchung"],
+      "services": ["APPLE.COM"],
       "triggers": {
         "merchants": ["APPLE.COM"],
         "locations": [],
@@ -266,6 +286,7 @@
       "category": "Finanzen // Bargeldbezug",
       "priority": 80,
       "transaction_types": ["Buchung"],
+      "services": ["BARGELDBEZUG"],
       "triggers": {
         "merchants": [],
         "locations": [],
@@ -279,6 +300,7 @@
       "category": "Wohnen // Nebenkosten",
       "priority": 60,
       "transaction_types": ["Buchung"],
+      "services": ["LASTSCHRIFT"],
       "triggers": {
         "merchants": [],
         "locations": [],
@@ -292,6 +314,7 @@
       "category": "Leben // Gesundheit",
       "priority": 70,
       "transaction_types": ["Buchung"],
+      "services": ["LASTSCHRIFT"],
       "triggers": {
         "merchants": ["SYMPANY"],
         "locations": [],
@@ -305,6 +328,7 @@
       "category": "Leben // Sonstiges Leben",
       "priority": 35,
       "transaction_types": ["Buchung"],
+      "services": ["APPLE PAY"],
       "triggers": {
         "merchants": ["BYRO"],
         "locations": [],
@@ -318,6 +342,7 @@
       "category": "Freizeit // Gastronomie",
       "priority": 55,
       "transaction_types": ["Buchung"],
+      "services": ["TWINT"],
       "triggers": {
         "merchants": ["TWINT"],
         "locations": [],
@@ -331,6 +356,7 @@
       "category": "Überträge",
       "priority": 50,
       "transaction_types": ["Buchung"],
+      "services": ["APPLE PAY"],
       "triggers": {
         "merchants": ["MANOR"],
         "locations": [],

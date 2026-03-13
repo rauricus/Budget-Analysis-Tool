@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 
 from parsers.apple_pay_parser import ApplePayParser
@@ -6,6 +7,9 @@ from parsers.dauerauftrag_parser import DauerauftragParser
 from parsers.debit_direct_parser import DebitDirectParser
 from parsers.twint_senden_parser import TwintSendenParser
 from parsers.zahlung_parser import ZahlungParser
+
+
+logger = logging.getLogger(__name__)
 
 
 class NotificationParserRegistry:
@@ -28,5 +32,7 @@ class NotificationParserRegistry:
         for parser in self.parsers:
             if parser.supports(text):
                 return parser.parse(text)
+
+        logger.warning("Kein ServiceParser-Match für Avisierungstext: %s", text)
 
         return NotificationParseResult()

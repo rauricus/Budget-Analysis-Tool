@@ -49,11 +49,11 @@ def main():
     transactions, matching_rules_map = engine.categorize_batch(transactions)
     
     # Statistik
-    categorized_count = sum(1 for t in transactions if t.kategorie_auto and t.kategorie_auto != "Sonstiges")
-    fallback_count = sum(1 for t in transactions if t.kategorie_auto == "Sonstiges")
+    categorized_count = sum(1 for t in transactions if t.kategorie_auto)
+    uncategorized_count = sum(1 for t in transactions if not t.kategorie_auto)
     
     print(f"   • Kategorisiert: {categorized_count}/{len(transactions)}")
-    print(f"   • Fallback (Sonstiges): {fallback_count}/{len(transactions)}")
+    print(f"   • Nicht kategorisiert: {uncategorized_count}/{len(transactions)}")
     
     # 4. Exportieren (neues strukturiertes Format)
     print("\n4️⃣  Exporting to structured format...")
