@@ -5,58 +5,58 @@ from typing import Optional
 
 @dataclass
 class Transaction:
-    """Einzelne Banktransaktion aus CSV"""
+    """Single bank transaction parsed from CSV."""
     datum: datetime
     bewegungstyp: str
     avisierungstext: str
     gutschrift: float
     lastschrift: float
     label: str
-    kategorie: str  # Original-Kategorie aus CSV
-    kategorie_auto: Optional[str] = None  # Automatisch zugewiesene Kategorie
-    service_type: str = ""  # z.B. APPLE PAY, TWINT, LASTSCHRIFT
-    card_number: str = ""  # z.B. XXXX1384 (Karte)
+    kategorie: str  # Original category from CSV
+    kategorie_auto: Optional[str] = None  # Automatically assigned category
+    service_type: str = ""  # e.g. APPLE PAY, TWINT, LASTSCHRIFT
+    card_number: str = ""  # e.g. XXXX1384 (card)
     parsed_merchant: str = ""
     parsed_location: str = ""
-    recipient: str = ""  # Für LASTSCHRIFT: Zahlungsempfänger
-    recipient_iban: str = ""  # Für LASTSCHRIFT: IBAN
-    reference: str = ""  # Für LASTSCHRIFT: Referenz
-    transaction_type_detail: str = ""  # Für LASTSCHRIFT: Detail-Typ
+    recipient: str = ""  # For LASTSCHRIFT: payment recipient
+    recipient_iban: str = ""  # For LASTSCHRIFT: IBAN
+    reference: str = ""  # For LASTSCHRIFT: reference
+    transaction_type_detail: str = ""  # For LASTSCHRIFT: detail type
     
     @property
     def betrag(self) -> float:
-        """Betrag (positiv für Einnahmen, negativ für Ausgaben)"""
+        """Amount (positive for income, negative for expenses)."""
         return self.gutschrift - self.lastschrift
     
     @property
     def is_income(self) -> bool:
-        """Einnahme?"""
+        """Is income?"""
         return self.betrag > 0
     
     @property
     def text_upper(self) -> str:
-        """Avisierungstext in UPPERCASE für Case-insensitive Matching"""
+        """Notification text in uppercase for case-insensitive matching."""
         return self.avisierungstext.upper()
 
 
 @dataclass
 class Rule:
-    """Kategorisierungs-Regel"""
+    """Categorization rule."""
     id: int
     name: str
     category: str
     priority: int
-    transaction_types: list[str]  # z.B. ["APPLE PAY KAUF/DIENSTLEISTUNG"]
-    services: list[str]  # z.B. ["APPLE PAY"]
-    merchants: list[str]  # z.B. ["MIGROS", "COOP"]
-    locations: list[str]  # z.B. ["AARAU", "ZÜRICH"]
-    include_keywords: list[str]  # z.B. ["TAKE AWAY"] – muss enthalten sein
-    exclude_keywords: list[str]  # z.B. ["TAKE AWAY"] – darf NICHT enthalten sein
+    transaction_types: list[str]  # e.g. ["APPLE PAY KAUF/DIENSTLEISTUNG"]
+    services: list[str]  # e.g. ["APPLE PAY"]
+    merchants: list[str]  # e.g. ["MIGROS", "COOP"]
+    locations: list[str]  # e.g. ["AARAU", "ZÜRICH"]
+    include_keywords: list[str]  # e.g. ["TAKE AWAY"] - must be present
+    exclude_keywords: list[str]  # e.g. ["TAKE AWAY"] - must NOT be present
     
     def matches(self, transaction: Transaction) -> bool:
         """
-        Prüft, ob diese Regel auf die Transaktion passt.
-        ALLE Bedingungen müssen erfüllt sein (UND-Logik).
+        Check whether this rule matches the transaction.
+        ALL conditions must be satisfied (AND logic).
         """
         service = (transaction.service_type or "").upper()
         merchant_text = (transaction.parsed_merchant or "").upper()
@@ -71,15 +71,15 @@ class Rule:
             if part
         )
         
-        # 1. Bewegungstyp matchen
+        # 1. Match transaction type
         if transaction.bewegungstyp not in self.transaction_types:
             return False
 
-        # 1b. Service-Typ matchen (optional)
+        # 1b. Match service type (optional)
         if self.services and service not in [s.upper() for s in self.services]:
             return False
 
-        # 2. Mindestens ein Merchant muss im geparsten Merchant/Empfänger vorkommen
+        # 2. At least one merchant must appear in parsed merchant/recipient
         merchant_haystacks = [merchant_text, recipient_text]
         if self.merchants and not any(
             any(m.upper() in haystack for haystack in merchant_haystacks if haystack)
@@ -87,15 +87,15 @@ class Rule:
         ):
             return False
 
-        # 3. Alle Locations müssen im geparsten Ort vorkommen (wenn definiert)
+        # 3. All locations must appear in parsed location (if defined)
         if self.locations and not all(loc.upper() in location_text for loc in self.locations):
             return False
 
-        # 4. Alle include_keywords müssen in geparsten Feldern vorkommen
+        # 4. All include keywords must appear in parsed fields
         if self.include_keywords and not all(kw.upper() in combined_text for kw in self.include_keywords):
             return False
 
-        # 5. KEINE exclude_keywords dürfen in geparsten Feldern vorkommen
+        # 5. No exclude keyword may appear in parsed fields
         if self.exclude_keywords and any(kw.upper() in combined_text for kw in self.exclude_keywords):
             return False
 

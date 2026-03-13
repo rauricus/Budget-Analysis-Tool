@@ -1,21 +1,21 @@
-"""Kompatibilitäts-Fassade für Avisierungstext-Parsing.
+"""Compatibility facade for notification text parsing.
 
-Neue Service-Parser leben unter `parsers/` und werden über die Registry aufgelöst.
-Diese Klasse bleibt als stabiler Einstiegspunkt für bestehende Aufrufer erhalten.
+New service parsers live under `parsers/` and are resolved via the registry.
+This class remains a stable entry point for existing callers.
 """
 
 from parsers.registry import NotificationParserRegistry
 
 
 class NotificationTextParser:
-    """Öffentlicher Adapter für servicebasiertes Avisierungstext-Parsing."""
+    """Public adapter for service-based notification text parsing."""
 
     _registry = NotificationParserRegistry()
 
     @staticmethod
     def parse(avisierungstext: str) -> dict[str, str]:
         """
-        Parsed Felder aus Avisierungstext über die Parser-Registry.
+        Parse fields from notification text via the parser registry.
 
         Returns:
             {

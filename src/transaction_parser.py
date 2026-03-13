@@ -19,15 +19,15 @@ from notification_parser import NotificationTextParser
 
 
 class TransactionParser:
-    """Parser für einzelne CSV-Zeilen zu Transaction-Objekten."""
+    """Parser for converting single CSV rows into Transaction objects."""
 
     @staticmethod
     def parse_row(row) -> Optional[Transaction]:
         """
-        Parsed eine einzelne CSV-Zeile.
+        Parse a single CSV row.
 
         Returns:
-            Transaction oder None (wenn Zeile übersprungen werden soll).
+            Transaction or None (if the row should be skipped).
         """
         if _is_na(row.get("Datum")):
             return None

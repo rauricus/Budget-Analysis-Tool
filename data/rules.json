@@ -365,15 +365,14 @@
       }
     }
   ],
-  "fallback_category": "Sonstiges",
   "comments": {
-    "transaction_types": "Filter nach Bewegungstyp aus CSV. Momentan nur 'Buchung'.",
-    "services": "Optionaler Filter auf geparsten Service aus Avisierungstext (z.B. APPLE PAY).",
-    "merchants": "Hauptmerchant-Name (case-insensitive matching). ODER-Logik (mind. einer muss matchen).",
-    "locations": "Optional: Ort (z.B. AARAU, ZÜRICH). UND-Logik (alle müssen vorhanden sein).",
-    "include_keywords": "Zusätzliche Keywords die VORHANDEN sein müssen (z.B. TAKE AWAY). UND-Logik.",
-    "exclude_keywords": "Keywords die NICHT vorhanden sein dürfen. KEINE darf vorhanden sein.",
-    "matching": "Regel matcht, wenn ALLE conditions erfüllt sind. Regel mit höchster priority gewinnt.",
-    "fallback": "Wenn keine Regel matcht → fallback_category"
+    "transaction_types": "Filter by transaction type from CSV. Currently only 'Buchung'.",
+    "services": "Required filter on parsed service from notification text (e.g. APPLE PAY).",
+    "merchants": "Primary merchant name (case-insensitive matching). OR logic (at least one must match).",
+    "locations": "Optional location filter (e.g. AARAU, ZÜRICH). AND logic (all must be present).",
+    "include_keywords": "Additional keywords that MUST be present (e.g. TAKE AWAY). AND logic.",
+    "exclude_keywords": "Keywords that must NOT be present. None may be present.",
+    "matching": "A rule matches only if ALL conditions are met. Highest priority wins.",
+    "fallback": "No fallback category. If no rule matches, the transaction remains uncategorized."
   }
 }

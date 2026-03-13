@@ -1,7 +1,7 @@
-"""Service-Parser Paket.
+"""Service parser package.
 
-Enthält service-spezifische Parser-Strategien und die Registry.
-Domänen-/Ingestion-Parser (z.B. TransactionParser) bleiben außerhalb dieses Pakets.
+Contains service-specific parser strategies and the registry.
+Domain/ingestion parsers (e.g. TransactionParser) remain outside this package.
 """
 
 from parsers.apple_pay_parser import ApplePayParser

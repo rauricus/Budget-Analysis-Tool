@@ -7,26 +7,26 @@ from models import Transaction, Rule
 
 class ExportHandler:
     """
-    Export-Handler für kategorisierte Transaktionen.
-    Speichert in strukturiertes Format mit separaten Spalten für Händler und Ort.
+    Export handler for categorized transactions.
+    Saves data in a structured format with separate merchant and location columns.
     """
-    
-    # Standard-Spalten im Export
+
+    # Standard export columns
     EXPORT_COLUMNS = [
-        "Datum",
-        "Transaktionstyp",
-        "Transaktionstyp Detail",
+        "Date",
+        "Transaction Type",
+        "Transaction Type Detail",
         "Service",
-        "Kartennummer",
-        "Händler",
-        "Ort",
-        "Empfänger",
-        "Empfänger IBAN",
-        "Referenz",
-        "Gutschrift in CHF",
-        "Lastschrift in CHF",
+        "Card Number",
+        "Merchant",
+        "Location",
+        "Recipient",
+        "Recipient IBAN",
+        "Reference",
+        "Credit in CHF",
+        "Debit in CHF",
         "Label",
-        "Kategorie",
+        "Category",
     ]
     
     @staticmethod
@@ -35,11 +35,11 @@ class ExportHandler:
         matching_rules: Optional[list] = None
     ) -> tuple[str, str]:
         """
-        Extrahiert Händler und Ort aus Transaktion und zugehörigen Regeln.
-        
-        Strategie:
-        1. Falls Regeln gematched haben: verwende Merchants/Locations aus Regeln
-        2. Ansonsten: versuche aus avisierungstext zu extrahieren
+        Extract merchant and location from the transaction and matching rules.
+
+        Strategy:
+        1. If rules matched: use merchants/locations from rules
+        2. Otherwise: try to extract from notification text
         
         Returns:
             (merchant, location) tuple
@@ -52,29 +52,29 @@ class ExportHandler:
         if transaction.parsed_location:
             location = transaction.parsed_location
         
-        # Wenn Regeln vorhanden, extrahiere Merchant/Location
+        # If rules are present, extract merchant/location
         if matching_rules:
-            # Merchants aus höchster Priority Rule
+            # Merchants from highest-priority rule
             if not merchant and matching_rules[0].merchants:
                 merchant = " / ".join(matching_rules[0].merchants)
-            
-            # Locations aus höchster Priority Rule
+
+            # Locations from highest-priority rule
             if not location and matching_rules[0].locations:
                 location = " / ".join(matching_rules[0].locations)
-        
-        # Fallback: versuche aus Avisierungstext zu extrahieren
-        # Format: "... MERCHANT LOCATION SCHWEIZ" oder "MERCHANT (PLZ) LOCATION SCHWEIZ"
+
+        # Fallback: try to extract from notification text
+        # Format: "... MERCHANT LOCATION SCHWEIZ" or "MERCHANT (ZIP) LOCATION SCHWEIZ"
         if not merchant or not location:
             text_parts = transaction.avisierungstext.split()
-            
-            # Einfache Heuristic: letzte Teile sind meist Ort + Land
-            # z.B. "MIGROS IGELWEID (4213) AARAU SCHWEIZ"
+
+            # Simple heuristic: trailing tokens are often location + country
+            # e.g. "MIGROS IGELWEID (4213) AARAU SCHWEIZ"
             if "SCHWEIZ" in transaction.text_upper:
-                # Location ist das, was vor "SCHWEIZ" kommt
+                # Location is what appears before "SCHWEIZ"
                 switzerland_idx = transaction.text_upper.rfind("SCHWEIZ")
                 before_country = transaction.avisierungstext[:switzerland_idx].strip()
-                
-                # Letztes Wort vor SCHWEIZ ist üblicherweise die Stadt
+
+                # Last token before SCHWEIZ is typically the city
                 last_word = before_country.split()[-1] if before_country else ""
                 if last_word and last_word not in ("VOM", "NR.", "KARTEN"):
                     location = last_word
@@ -88,12 +88,12 @@ class ExportHandler:
         matching_rules_map: Optional[dict] = None,
     ):
         """
-        Speichert Transaktionen im strukturierten Export-Format.
-        
+        Save transactions in a structured export format.
+
         Args:
-            transactions: Liste von Transaktionen
-            output_path: Ziel-Pfad für CSV
-            matching_rules_map: Mapping von Transaction-Index zu matching Rules (optional)
+            transactions: List of transactions
+            output_path: Target CSV path
+            matching_rules_map: Mapping of transaction index to matching rules (optional)
         """
         output_path = Path(output_path)
         output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -104,30 +104,30 @@ class ExportHandler:
             rules = matching_rules_map.get(idx) if matching_rules_map else None
             merchant, location = ExportHandler.extract_merchant_location(txn, rules)
             
-            # Gutschrift/Lastschrift formatting (use NaN for empty values)
+            # Credit/debit formatting (use NaN for empty values)
             gutschrift = txn.gutschrift if txn.gutschrift > 0 else math.nan
             lastschrift = abs(txn.lastschrift) if txn.lastschrift < 0 else math.nan
             
             rows.append({
-                "Datum": txn.datum.strftime("%d.%m.%Y"),
-                "Transaktionstyp": txn.bewegungstyp,
-                "Transaktionstyp Detail": txn.transaction_type_detail,
+                "Date": txn.datum.strftime("%d.%m.%Y"),
+                "Transaction Type": txn.bewegungstyp,
+                "Transaction Type Detail": txn.transaction_type_detail,
                 "Service": txn.service_type,
-                "Kartennummer": txn.card_number,
-                "Händler": merchant,
-                "Ort": location,
-                "Empfänger": txn.recipient,
-                "Empfänger IBAN": txn.recipient_iban,
-                "Referenz": txn.reference,
-                "Gutschrift in CHF": gutschrift,
-                "Lastschrift in CHF": lastschrift,
+                "Card Number": txn.card_number,
+                "Merchant": merchant,
+                "Location": location,
+                "Recipient": txn.recipient,
+                "Recipient IBAN": txn.recipient_iban,
+                "Reference": txn.reference,
+                "Credit in CHF": gutschrift,
+                "Debit in CHF": lastschrift,
                 "Label": txn.label,
-                "Kategorie": txn.kategorie_auto or txn.kategorie or "?",
+                "Category": txn.kategorie_auto or txn.kategorie or "?",
             })
         
         df = pd.DataFrame(rows, columns=ExportHandler.EXPORT_COLUMNS)
         # Replace NaN with empty string for cleaner CSV
         df = df.fillna("")
         df.to_csv(output_path, sep=";", index=False, encoding="utf-8")
-        print(f"✅ {len(transactions)} Transaktionen exportiert: {output_path}")
+        print(f"✅ Exported {len(transactions)} transactions: {output_path}")
         return df

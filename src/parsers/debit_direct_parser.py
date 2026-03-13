@@ -4,7 +4,7 @@ from parsers.base import NotificationParseResult, ServiceParser
 
 
 class DebitDirectParser(ServiceParser):
-    """Parser für CH-DD-BASISLASTSCHRIFT Transaktionen."""
+    """Parser for CH-DD-BASISLASTSCHRIFT transactions."""
 
     PATTERN = re.compile(
         r"^AUFTRAG\s+CH-DD-BASISLASTSCHRIFT",

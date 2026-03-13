@@ -4,7 +4,7 @@ from parsers.base import NotificationParseResult, ServiceParser
 
 
 class DauerauftragParser(ServiceParser):
-    """Parser für LASTSCHRIFT DAUERAUFTRAG Transaktionen."""
+    """Parser for LASTSCHRIFT DAUERAUFTRAG transactions."""
 
     PATTERN = re.compile(
         r"^LASTSCHRIFT\s+DAUERAUFTRAG:\s+(\S+)\s+(CH\S+)\s*(.*)$",

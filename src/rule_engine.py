@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class RuleEngine:
-    """Lädt Rules aus JSON und matched sie gegen Transaktionen"""
+    """Loads rules from JSON and matches them against transactions."""
     
     def __init__(self, rules_path: str = "data/rules.json"):
         self.rules_path = Path(rules_path)
@@ -17,14 +17,14 @@ class RuleEngine:
         self.load_rules()
     
     def load_rules(self):
-        """Rules aus JSON laden"""
+        """Load rules from JSON."""
         if not self.rules_path.exists():
-            raise FileNotFoundError(f"Rules-Datei nicht gefunden: {self.rules_path}")
+            raise FileNotFoundError(f"Rules file not found: {self.rules_path}")
         
         with open(self.rules_path, "r", encoding="utf-8") as f:
             data = json.load(f)
         
-        # Rules parsen
+        # Parse rules
         for rule_data in data.get("rules", []):
             rule = Rule(
                 id=rule_data["id"],
@@ -40,9 +40,9 @@ class RuleEngine:
             )
             self.rules.append(rule)
         
-        # Nach Priorität sortieren (absteigend)
+        # Sort by priority (descending)
         self.rules.sort(key=lambda r: r.priority, reverse=True)
-        print(f"✅ {len(self.rules)} Regeln geladen (sortiert nach Priorität)")
+        print(f"✅ Loaded {len(self.rules)} rules (sorted by priority)")
 
     @staticmethod
     def _service_candidates(rules: list[Rule], service_type: str) -> list[Rule]:
@@ -57,13 +57,13 @@ class RuleEngine:
 
     def categorize(self, transaction: Transaction) -> Optional[str]:
         """
-        Findet die beste Regel für eine Transaktion.
-        Gibt die Kategorie zurück (oder None bei keinem Match).
+        Find the best rule for a transaction.
+        Return the category (or None if no match exists).
         """
         candidate_rules = self._service_candidates(self.rules, transaction.service_type)
         if not candidate_rules:
             if not transaction.service_type:
-                logger.info("Keine Kategorisierung ohne Service-Match: %s", transaction.avisierungstext)
+                logger.info("No categorization without service match: %s", transaction.avisierungstext)
             return None
 
         for rule in candidate_rules:
@@ -74,9 +74,9 @@ class RuleEngine:
     
     def categorize_batch(self, transactions: list[Transaction]) -> tuple[list[Transaction], dict]:
         """
-        Kategorisiert eine Liste von Transaktionen.
-        Modifiziert jede Transaktion in-place (kategorie_auto).
-        
+        Categorize a list of transactions.
+        Modifies each transaction in place (`kategorie_auto`).
+
         Returns:
             (categorized_transactions, matching_rules_map)
             matching_rules_map: {transaction_index: [matching_rules]}
@@ -85,11 +85,11 @@ class RuleEngine:
         for idx, txn in enumerate(transactions):
             candidate_rules = self._service_candidates(self.rules, txn.service_type)
 
-            # Finde alle matching rules (sortiert nach Priorität)
+            # Find all matching rules (already in priority order)
             matching = [r for r in candidate_rules if r.matches(txn)]
             matching_rules_map[idx] = matching
 
-            # Kategorisiere
+            # Categorize
             txn.kategorie_auto = self.categorize(txn)
 
         return transactions, matching_rules_map

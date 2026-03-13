@@ -8,10 +8,10 @@ class NotificationParseResult:
     card_number: str = ""
     merchant: str = ""
     location: str = ""
-    recipient: str = ""  # Für LASTSCHRIFT: Zahlungsempfänger
-    recipient_iban: str = ""  # Für LASTSCHRIFT: IBAN des Empfängers
-    reference: str = ""  # Für LASTSCHRIFT: Referenz-Information
-    transaction_type_detail: str = ""  # Für LASTSCHRIFT: Debit Direct / Zahlung / Dauerauftrag
+    recipient: str = ""  # For LASTSCHRIFT: payment recipient
+    recipient_iban: str = ""  # For LASTSCHRIFT: recipient IBAN
+    reference: str = ""  # For LASTSCHRIFT: reference information
+    transaction_type_detail: str = ""  # For LASTSCHRIFT: Debit Direct / Zahlung / Dauerauftrag
 
     def to_dict(self) -> dict[str, str]:
         return {
@@ -29,8 +29,8 @@ class NotificationParseResult:
 class ServiceParser(ABC):
     @abstractmethod
     def supports(self, text: str) -> bool:
-        """Gibt True zurück, wenn dieser Parser das Format unterstützt."""
+        """Return True if this parser supports the format."""
 
     @abstractmethod
     def parse(self, text: str) -> NotificationParseResult:
-        """Parsed Service-spezifische Daten aus dem Avisierungstext."""
+        """Parse service-specific data from the notification text."""

@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class NotificationParserRegistry:
-    """Registry für service-spezifische Avisierungstext-Parser."""
+    """Registry for service-specific notification text parsers."""
 
     def __init__(self, parsers: Optional[list[ServiceParser]] = None):
         self.parsers = parsers or [
@@ -33,6 +33,6 @@ class NotificationParserRegistry:
             if parser.supports(text):
                 return parser.parse(text)
 
-        logger.warning("Kein ServiceParser-Match für Avisierungstext: %s", text)
+        logger.warning("No ServiceParser match for notification text: %s", text)
 
         return NotificationParseResult()

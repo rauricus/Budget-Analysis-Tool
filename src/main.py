@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Budget-Tool Pipeline
-Lädt CSV → Kategorisiert → Speichert Output
+Load CSV → categorize → save output
 """
 
 import sys
@@ -16,19 +16,19 @@ from export_handler import ExportHandler
 
 
 def main():
-    """Hauptpipeline"""
+    """Main pipeline."""
     
-    # Pfade
-    # Nutze reference/ für bekannte Beispiele, input/ für neue Eingaben
+    # Paths
+    # Use reference/ for known examples, input/ for new inputs
     input_csv = "data/input/export.202401.csv"
     rules_file = "data/rules.json"
     output_csv = "data/output/export.202401.categorized.csv"
     
     print("=" * 60)
-    print("📊 Budget-Tool - Kategorisierungs-Pipeline")
+    print("  Budget Tool - Categorization Pipeline")
     print("=" * 60)
     
-    # 1. CSV laden
+    # 1. Load CSV
     print("\n1️⃣  Loading Transactions...")
     try:
         transactions = CSVHandler.load_csv(input_csv)
@@ -36,7 +36,7 @@ def main():
         print(f"❌ {e}")
         return 1
     
-    # 2. Rules laden
+    # 2. Load rules
     print("\n2️⃣  Loading Rules...")
     try:
         engine = RuleEngine(rules_file)
@@ -44,24 +44,24 @@ def main():
         print(f"❌ {e}")
         return 1
     
-    # 3. Kategorisieren
+    # 3. Categorize
     print("\n3️⃣  Categorizing...")
     transactions, matching_rules_map = engine.categorize_batch(transactions)
     
-    # Statistik
+    # Stats
     categorized_count = sum(1 for t in transactions if t.kategorie_auto)
     uncategorized_count = sum(1 for t in transactions if not t.kategorie_auto)
     
-    print(f"   • Kategorisiert: {categorized_count}/{len(transactions)}")
-    print(f"   • Nicht kategorisiert: {uncategorized_count}/{len(transactions)}")
+    print(f"   • Categorized: {categorized_count}/{len(transactions)}")
+    print(f"   • Uncategorized: {uncategorized_count}/{len(transactions)}")
     
-    # 4. Exportieren (neues strukturiertes Format)
+    # 4. Export (new structured format)
     print("\n4️⃣  Exporting to structured format...")
     ExportHandler.export_csv(transactions, output_csv, matching_rules_map)
     
-    # Zusammenfassung
+    # Summary
     print("\n" + "=" * 60)
-    print("✅ Pipeline erfolgreich abgeschlossen!")
+    print("✅ Pipeline completed successfully!")
     print("=" * 60)
     
     return 0
