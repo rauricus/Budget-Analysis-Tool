@@ -31,7 +31,7 @@ class DauerauftragParser(ServiceParser):
         recipient = rest if rest else ""
 
         return NotificationParseResult(
-            service_type="LASTSCHRIFT",
+            service_type="Lastschrift",
             transaction_type_detail="Dauerauftrag",
             recipient=recipient,
             recipient_iban=recipient_iban,

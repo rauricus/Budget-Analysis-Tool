@@ -26,7 +26,7 @@ class TwintSendenParser(ServiceParser):
             merchant = f"{recipient_phone} {rest}".strip()
 
         return NotificationParseResult(
-            service_type="TWINT",
+            service_type="Twint",
             transaction_type_detail="Geld senden",
             merchant=merchant,
         )

@@ -48,7 +48,7 @@ class DebitDirectParser(ServiceParser):
             reference = mitteilungen_match.group(1).strip()
 
         return NotificationParseResult(
-            service_type="LASTSCHRIFT",
+            service_type="Lastschrift",
             transaction_type_detail="Lastschrift Debit Direct",
             recipient=recipient,
             recipient_iban=recipient_iban,

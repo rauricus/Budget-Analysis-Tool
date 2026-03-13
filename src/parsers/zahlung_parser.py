@@ -32,7 +32,7 @@ class ZahlungParser(ServiceParser):
         recipient = match.group(2).strip()
 
         return NotificationParseResult(
-            service_type="LASTSCHRIFT",
+            service_type="Lastschrift",
             transaction_type_detail="Zahlung",
             recipient=recipient,
             recipient_iban=recipient_iban,

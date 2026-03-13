@@ -5,7 +5,7 @@ Automatic categorization of bank transactions using configurable JSON rules.
 ## 🎯 Features
 
 - ✅ CSV import (PostFinance format)
-- ✅ Service-specific parser registry (Apple Pay, TWINT, Lastschrift variants)
+- ✅ Service-specific parser registry (Apple Pay, Twint, Lastschrift variants)
 - ✅ Rule engine with priority-based matching
 - ✅ Service-scoped rule selection (`services` in rules)
 - ✅ Merchant, location, include/exclude keyword matching
@@ -58,11 +58,11 @@ src/
 └── parsers/
   ├── base.py                    # Parser interface + parse result model
   ├── registry.py                # Parser dispatch (first supporting parser wins)
-  ├── apple_pay_parser.py        # APPLE PAY notification parser
-  ├── twint_senden_parser.py     # TWINT send-money parser
+  ├── apple_pay_parser.py        # Apple Pay notification parser
+  ├── twint_senden_parser.py     # Twint send-money parser
   ├── debit_direct_parser.py     # CH-DD debit direct parser
-  ├── zahlung_parser.py          # LASTSCHRIFT payment parser
-  └── dauerauftrag_parser.py     # LASTSCHRIFT standing-order parser
+  ├── zahlung_parser.py          # Lastschrift payment parser
+  └── dauerauftrag_parser.py     # Lastschrift standing-order parser
 
 src/main.py                        # Pipeline entry point
 tests/                             # Unit/integration-style tests for pipeline components
@@ -93,7 +93,7 @@ Example:
       "category": "Freizeit // Gastronomie",
       "priority": 100,
       "transaction_types": ["Buchung"],
-      "services": ["APPLE PAY"],
+      "services": ["Apple Pay"],
       "triggers": {
         "merchants": ["MIGROS"],
         "locations": [],

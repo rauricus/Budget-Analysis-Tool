@@ -14,14 +14,14 @@ class Transaction:
     label: str
     kategorie: str  # Original category from CSV
     kategorie_auto: Optional[str] = None  # Automatically assigned category
-    service_type: str = ""  # e.g. APPLE PAY, TWINT, LASTSCHRIFT
+    service_type: str = ""  # e.g. Apple Pay, Twint, Lastschrift
     card_number: str = ""  # e.g. XXXX1384 (card)
     parsed_merchant: str = ""
     parsed_location: str = ""
-    recipient: str = ""  # For LASTSCHRIFT: payment recipient
-    recipient_iban: str = ""  # For LASTSCHRIFT: IBAN
-    reference: str = ""  # For LASTSCHRIFT: reference
-    transaction_type_detail: str = ""  # For LASTSCHRIFT: detail type
+    recipient: str = ""  # For Lastschrift: payment recipient
+    recipient_iban: str = ""  # For Lastschrift: IBAN
+    reference: str = ""  # For Lastschrift: reference
+    transaction_type_detail: str = ""  # For Lastschrift: detail type
     
     @property
     def betrag(self) -> float:
@@ -47,7 +47,7 @@ class Rule:
     category: str
     priority: int
     transaction_types: list[str]  # e.g. ["APPLE PAY KAUF/DIENSTLEISTUNG"]
-    services: list[str]  # e.g. ["APPLE PAY"]
+    services: list[str]  # e.g. ["Apple Pay"]
     merchants: list[str]  # e.g. ["MIGROS", "COOP"]
     locations: list[str]  # e.g. ["AARAU", "ZÜRICH"]
     include_keywords: list[str]  # e.g. ["TAKE AWAY"] - must be present

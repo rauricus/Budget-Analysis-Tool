@@ -76,7 +76,7 @@ class LastschriftParser(ServiceParser):
             reference = mitteilungen_match.group(1).strip()
 
         return NotificationParseResult(
-            service_type="LASTSCHRIFT",
+            service_type="Lastschrift",
             transaction_type_detail="Lastschrift Debit Direct",
             recipient=recipient,
             recipient_iban=recipient_iban,
@@ -93,7 +93,7 @@ class LastschriftParser(ServiceParser):
         recipient = rest if rest else ""
 
         return NotificationParseResult(
-            service_type="LASTSCHRIFT",
+            service_type="Lastschrift",
             transaction_type_detail="Dauerauftrag",
             recipient=recipient,
             recipient_iban=recipient_iban,
@@ -107,7 +107,7 @@ class LastschriftParser(ServiceParser):
         recipient = rest if rest else ""
 
         return NotificationParseResult(
-            service_type="LASTSCHRIFT",
+            service_type="Lastschrift",
             transaction_type_detail="Zahlung",
             recipient=recipient,
             recipient_iban=recipient_iban,
