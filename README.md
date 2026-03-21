@@ -11,6 +11,12 @@ Automatic categorization of bank transactions using configurable JSON rules.
 - ✅ Merchant, location, include/exclude keyword matching
 - ✅ Structured CSV export with parsed service fields
 
+### CSV locale support (current)
+
+- Import and export are currently aligned to German PostFinance CSV conventions.
+- Import expects German source columns from PostFinance (for example `Datum`, `Bewegungstyp`, `Avisierungstext`, `Gutschrift in CHF`, `Lastschrift in CHF`, `Kategorie`).
+- Export preserves German transaction content (for example Lastschrift/Zahlung/Dauerauftrag details) in parsed fields.
+
 ## 🚀 Setup
 
 ```bash
