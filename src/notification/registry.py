@@ -1,12 +1,12 @@
 import logging
 from typing import Optional
 
-from parsers.apple_pay_parser import ApplePayParser
-from parsers.base import NotificationParseResult, ServiceParser
-from parsers.dauerauftrag_parser import DauerauftragParser
-from parsers.debit_direct_parser import DebitDirectParser
-from parsers.twint_senden_parser import TwintSendenParser
-from parsers.zahlung_parser import ZahlungParser
+from notification.base import NotificationParseResult, ServiceParser
+from notification.parsers.apple_pay_parser import ApplePayParser
+from notification.parsers.dauerauftrag_parser import DauerauftragParser
+from notification.parsers.debit_direct_parser import DebitDirectParser
+from notification.parsers.twint_senden_parser import TwintSendenParser
+from notification.parsers.zahlung_parser import ZahlungParser
 
 
 logger = logging.getLogger(__name__)

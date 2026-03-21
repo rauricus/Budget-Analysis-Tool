@@ -1,6 +1,6 @@
 import re
 
-from parsers.base import NotificationParseResult, ServiceParser
+from notification.base import NotificationParseResult, ServiceParser
 
 
 class ZahlungParser(ServiceParser):

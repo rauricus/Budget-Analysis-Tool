@@ -4,7 +4,7 @@ Keeps a stable, simple API for callers while delegating to the
 service parser registry.
 """
 
-from parsers.registry import NotificationParserRegistry
+from notification.registry import NotificationParserRegistry
 
 
 class NotificationTextParser:

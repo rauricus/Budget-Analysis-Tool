@@ -54,15 +54,16 @@ src/
 ├── models.py                      # Transaction and Rule dataclasses + matching logic
 ├── rule_engine.py                 # Rule loading + service-filtered categorization
 ├── transaction_parser.py          # Row-to-Transaction conversion
-└── parsers/
+└── notification/
   ├── base.py                    # Parser interface + parse result model
   ├── facade.py                  # Public facade to parser registry
   ├── registry.py                # Parser dispatch (first supporting parser wins)
-  ├── apple_pay_parser.py        # Apple Pay notification parser
-  ├── twint_senden_parser.py     # Twint send-money parser
-  ├── debit_direct_parser.py     # CH-DD debit direct parser
-  ├── zahlung_parser.py          # Lastschrift payment parser
-  └── dauerauftrag_parser.py     # Lastschrift standing-order parser
+  └── parsers/
+    ├── apple_pay_parser.py      # Apple Pay notification parser
+    ├── twint_senden_parser.py   # Twint send-money parser
+    ├── debit_direct_parser.py   # CH-DD debit direct parser
+    ├── zahlung_parser.py        # Lastschrift payment parser
+    └── dauerauftrag_parser.py   # Lastschrift standing-order parser
 
 src/main.py                        # Pipeline entry point
 tests/                             # Unit/integration-style tests for pipeline components
@@ -144,7 +145,7 @@ The structured export currently uses these columns:
 1. Put a new CSV into `data/input/`.
 2. Run `python src/main.py`.
 3. Inspect `data/output/*.categorized.csv`.
-4. Add/refine parser(s) in `src/parsers/` if needed.
+4. Add/refine parser(s) in `src/notification/parsers/` if needed.
 5. Add/refine matching rules in `data/rules.json`.
 6. Repeat until categorization quality is acceptable.
 
