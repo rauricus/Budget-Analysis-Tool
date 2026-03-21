@@ -17,6 +17,7 @@ class Rule:
     locations: list[str]  # e.g. ["AARAU", "ZURICH"]
     include_keywords: list[str]  # e.g. ["TAKE AWAY"] - must be present
     exclude_keywords: list[str]  # e.g. ["TAKE AWAY"] - must NOT be present
+    source: str = ""  # originating rules file (set by RuleEngine)
 
     def matches(self, transaction: Transaction) -> bool:
         """

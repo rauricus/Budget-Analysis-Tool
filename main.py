@@ -57,7 +57,17 @@ def main(argv: Optional[Sequence[str]] = None):
 
     input_dir = run_dir / "input"
     output_dir = run_dir / "output"
-    rules_file = run_dir / "rules.json"
+
+    # Base rules are always data/reference/rules.json
+    base_rules = Path("data/reference/rules.json")
+
+    # Optional overlay: {run_dir}/rules.json, but only when run_dir is not data/reference itself
+    overlay_file = run_dir / "rules.json"
+    overlay_path = (
+        str(overlay_file)
+        if overlay_file.exists() and overlay_file.resolve() != base_rules.resolve()
+        else None
+    )
     
     print("=" * 60)
     print("  Budget Tool - Categorization Pipeline")
@@ -78,7 +88,7 @@ def main(argv: Optional[Sequence[str]] = None):
     # 2. Load rules
     print("\n2. Loading Rules...")
     try:
-        engine = RuleEngine(str(rules_file))
+        engine = RuleEngine(str(base_rules), overlay_path=overlay_path)
     except FileNotFoundError as e:
         print(f"❌ {e}")
         return 1

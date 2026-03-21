@@ -11,20 +11,16 @@ logger = logging.getLogger(__name__)
 class RuleEngine:
     """Loads rules from JSON and matches them against transactions."""
     
-    def __init__(self, rules_path: str = "data/rules.json"):
+    def __init__(self, rules_path: str = "data/reference/rules.json", overlay_path: Optional[str] = None):
         self.rules_path = Path(rules_path)
+        self.overlay_path = Path(overlay_path) if overlay_path else None
         self.rules: list[Rule] = []
         self.load_rules()
     
-    def load_rules(self):
-        """Load rules from JSON."""
-        if not self.rules_path.exists():
-            raise FileNotFoundError(f"Rules file not found: {self.rules_path}")
-        
-        with open(self.rules_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        
-        # Parse rules
+    @staticmethod
+    def _parse_rules(data: dict, source: str = "") -> dict[int, Rule]:
+        """Parse a rules JSON dict into a {id: Rule} mapping."""
+        result = {}
         for rule_data in data.get("rules", []):
             rule = Rule(
                 id=rule_data["id"],
@@ -37,12 +33,30 @@ class RuleEngine:
                 locations=rule_data["triggers"].get("locations", []),
                 include_keywords=rule_data["triggers"].get("include_keywords", []),
                 exclude_keywords=rule_data["triggers"].get("exclude_keywords", []),
+                source=source,
             )
-            self.rules.append(rule)
+            result[rule.id] = rule
+        return result
+
+    def load_rules(self):
+        """Load base rules, then apply overlay rules (same ID overrides, new ID appends)."""
+        if not self.rules_path.exists():
+            raise FileNotFoundError(f"Rules file not found: {self.rules_path}")
         
-        # Sort by priority (descending)
-        self.rules.sort(key=lambda r: r.priority, reverse=True)
-        print(f"   Loaded {len(self.rules)} rules (sorted by priority)")
+        with open(self.rules_path, "r", encoding="utf-8") as f:
+            base_rules = self._parse_rules(json.load(f), source=self.rules_path.name)
+        print(f"   Loaded {len(base_rules)} base rules from {self.rules_path}")
+
+        if self.overlay_path and self.overlay_path.exists():
+            with open(self.overlay_path, "r", encoding="utf-8") as f:
+                overlay_rules = self._parse_rules(json.load(f), source=self.overlay_path.name)
+            overridden = len([k for k in overlay_rules if k in base_rules])
+            added = len(overlay_rules) - overridden
+            base_rules.update(overlay_rules)
+            print(f"   Applied overlay {self.overlay_path}: {overridden} overridden, {added} added")
+
+        self.rules = sorted(base_rules.values(), key=lambda r: r.priority, reverse=True)
+        print(f"   {len(self.rules)} rules active (sorted by priority)")
 
     @staticmethod
     def _service_candidates(rules: list[Rule], service_type: str) -> list[Rule]:
