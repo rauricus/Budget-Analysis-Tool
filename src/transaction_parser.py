@@ -18,6 +18,27 @@ from models import Transaction
 from notification.facade import NotificationTextParser
 
 
+def _parse_amount(val) -> float:
+    """
+    Parse a PostFinance amount string into a float.
+
+    Handles the following PostFinance-specific formats:
+    - Thousands separator: "1'234.50" → 1234.50
+    - Negative debit values: "-1'234.50" → 1234.50 (sign handled by caller)
+    - Empty / NaN values: "", NaN, None → 0.0
+
+    Args:
+        val: Raw cell value from the CSV row.
+
+    Returns:
+        Absolute float value, always >= 0.
+    """
+    if _is_na(val):
+        return 0.0
+    normalized = str(val).replace("'", "").replace("-", "").strip()
+    return float(normalized or 0)
+
+
 class TransactionParser:
     """Parser for converting single CSV rows into Transaction objects."""
 
@@ -32,8 +53,8 @@ class TransactionParser:
         if _is_na(row.get("Datum")):
             return None
 
-        gutschrift = float(row.get("Gutschrift in CHF", 0) or 0)
-        lastschrift = float(str(row.get("Lastschrift in CHF", 0) or 0).replace("-", ""))
+        gutschrift = _parse_amount(row.get("Gutschrift in CHF", 0))
+        lastschrift = _parse_amount(row.get("Lastschrift in CHF", 0))
 
         datum = datetime.strptime(str(row["Datum"]), "%d.%m.%Y")
 
