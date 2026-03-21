@@ -1,9 +1,9 @@
 import re
 
-from notification.base import NotificationParseResult, ServiceParser
+from notification.base import NotificationParseResult, AbstractServiceParser
 
 
-class DebitDirectParser(ServiceParser):
+class DebitDirectParser(AbstractServiceParser):
     """Parser for CH-DD basic direct debit format (CH-DD-BASISLASTSCHRIFT)."""
 
     PATTERN = re.compile(

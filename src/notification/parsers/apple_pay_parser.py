@@ -1,9 +1,9 @@
 import re
 
-from notification.base import NotificationParseResult, ServiceParser
+from notification.base import NotificationParseResult, AbstractServiceParser
 
 
-class ApplePayParser(ServiceParser):
+class ApplePayParser(AbstractServiceParser):
     APPLE_PAY_PATTERN = re.compile(
         r"^(?P<prefix>APPLE PAY KAUF/DIENSTLEISTUNG)\s+VOM\s+\d{2}\.\d{2}\.\d{4}\s+KARTEN NR\.\s+(?P<card>XXXX\d{4})\s+(?P<rest>.+)$",
         re.IGNORECASE,

@@ -26,7 +26,7 @@ class NotificationParseResult:
         }
 
 
-class ServiceParser(ABC):
+class AbstractServiceParser(ABC):
     @abstractmethod
     def supports(self, text: str) -> bool:
         """Return True if this parser supports the format."""
