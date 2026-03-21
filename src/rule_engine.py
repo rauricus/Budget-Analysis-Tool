@@ -63,7 +63,7 @@ class RuleEngine:
         candidate_rules = self._service_candidates(self.rules, transaction.service_type)
         if not candidate_rules:
             if not transaction.service_type:
-                logger.info("No categorization without service match: %s", transaction.avisierungstext)
+                logger.info("No categorization without service match: %s", transaction.notification_text)
             return None
 
         for rule in candidate_rules:
@@ -75,7 +75,7 @@ class RuleEngine:
     def categorize_batch(self, transactions: list[Transaction]) -> tuple[list[Transaction], dict]:
         """
         Categorize a list of transactions.
-        Modifies each transaction in place (`kategorie_auto`).
+        Modifies each transaction in place (`auto_category`).
 
         Returns:
             (categorized_transactions, matching_rules_map)
@@ -90,6 +90,6 @@ class RuleEngine:
             matching_rules_map[idx] = matching
 
             # Categorize
-            txn.kategorie_auto = self.categorize(txn)
+            txn.auto_category = self.categorize(txn)
 
         return transactions, matching_rules_map

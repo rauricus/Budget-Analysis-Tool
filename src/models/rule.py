@@ -37,7 +37,7 @@ class Rule:
         )
 
         # 1. Match transaction type
-        if transaction.bewegungstyp not in self.transaction_types:
+        if transaction.transaction_type not in self.transaction_types:
             return False
 
         # 1b. Match service type (optional)

@@ -65,14 +65,14 @@ class ExportHandler:
         # Fallback: try to extract from notification text
         # Format: "... MERCHANT LOCATION SCHWEIZ" or "MERCHANT (ZIP) LOCATION SCHWEIZ"
         if not merchant or not location:
-            text_parts = transaction.avisierungstext.split()
+            text_parts = transaction.notification_text.split()
 
             # Simple heuristic: trailing tokens are often location + country
             # e.g. "MIGROS IGELWEID (4213) AARAU SCHWEIZ"
-            if "SCHWEIZ" in transaction.text_upper:
+            if "SCHWEIZ" in transaction.notification_text_upper:
                 # Location is what appears before "SCHWEIZ"
-                switzerland_idx = transaction.text_upper.rfind("SCHWEIZ")
-                before_country = transaction.avisierungstext[:switzerland_idx].strip()
+                switzerland_idx = transaction.notification_text_upper.rfind("SCHWEIZ")
+                before_country = transaction.notification_text[:switzerland_idx].strip()
 
                 # Last token before SCHWEIZ is typically the city
                 last_word = before_country.split()[-1] if before_country else ""
@@ -105,12 +105,12 @@ class ExportHandler:
             merchant, location = ExportHandler.extract_merchant_location(txn, rules)
             
             # Credit/debit formatting (use NaN for empty values)
-            gutschrift = txn.gutschrift if txn.gutschrift > 0 else math.nan
-            lastschrift = txn.lastschrift if txn.lastschrift > 0 else math.nan
+            credit = txn.credit if txn.credit > 0 else math.nan
+            debit = txn.debit if txn.debit > 0 else math.nan
             
             rows.append({
-                "Date": txn.datum.strftime("%d.%m.%Y"),
-                "Transaction Type": txn.bewegungstyp,
+                "Date": txn.date.strftime("%d.%m.%Y"),
+                "Transaction Type": txn.transaction_type,
                 "Transaction Type Detail": txn.transaction_type_detail,
                 "Service": txn.service_type,
                 "Card Number": txn.card_number,
@@ -119,10 +119,10 @@ class ExportHandler:
                 "Recipient": txn.recipient,
                 "Recipient IBAN": txn.recipient_iban,
                 "Reference": txn.reference,
-                "Credit in CHF": gutschrift,
-                "Debit in CHF": lastschrift,
+                "Credit in CHF": credit,
+                "Debit in CHF": debit,
                 "Label": txn.label,
-                "Category": txn.kategorie_auto or txn.kategorie or "?",
+                "Category": txn.auto_category or txn.category or "?",
             })
         
         df = pd.DataFrame(rows, columns=ExportHandler.EXPORT_COLUMNS)

@@ -53,23 +53,23 @@ class TransactionParser:
         if _is_na(row.get("Datum")):
             return None
 
-        gutschrift = _parse_amount(row.get("Gutschrift in CHF", 0))
-        lastschrift = _parse_amount(row.get("Lastschrift in CHF", 0))
+        credit = _parse_amount(row.get("Gutschrift in CHF", 0))
+        debit = _parse_amount(row.get("Lastschrift in CHF", 0))
 
-        datum = datetime.strptime(str(row["Datum"]), "%d.%m.%Y")
+        date = datetime.strptime(str(row["Datum"]), "%d.%m.%Y")
 
-        avisierung_raw = row.get("Avisierungstext", "")
-        avisierungstext = "" if _is_na(avisierung_raw) else str(avisierung_raw).strip()
-        parsed = NotificationTextParser.parse(avisierungstext)
+        notification_text_raw = row.get("Avisierungstext", "")
+        notification_text = "" if _is_na(notification_text_raw) else str(notification_text_raw).strip()
+        parsed = NotificationTextParser.parse(notification_text)
 
         return Transaction(
-            datum=datum,
-            bewegungstyp=str(row["Bewegungstyp"]).strip(),
-            avisierungstext=avisierungstext,
-            gutschrift=gutschrift,
-            lastschrift=lastschrift,
+            date=date,
+            transaction_type=str(row["Bewegungstyp"]).strip(),
+            notification_text=notification_text,
+            credit=credit,
+            debit=debit,
             label=TransactionParser._clean_value(row.get("Label", "")),
-            kategorie=TransactionParser._clean_value(row.get("Kategorie", "")),
+            category=TransactionParser._clean_value(row.get("Kategorie", "")),
             service_type=parsed["service_type"],
             card_number=parsed["card_number"],
             parsed_merchant=parsed["merchant"],

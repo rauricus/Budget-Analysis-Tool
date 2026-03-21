@@ -7,14 +7,14 @@ from typing import Optional
 class Transaction:
     """Single bank transaction parsed from CSV."""
 
-    datum: datetime
-    bewegungstyp: str
-    avisierungstext: str
-    gutschrift: float
-    lastschrift: float
+    date: datetime
+    transaction_type: str
+    notification_text: str
+    credit: float
+    debit: float
     label: str
-    kategorie: str  # Original category from CSV
-    kategorie_auto: Optional[str] = None  # Automatically assigned category
+    category: str  # Original category from CSV
+    auto_category: Optional[str] = None  # Automatically assigned category
     service_type: str = ""  # e.g. Apple Pay, Twint, Lastschrift
     card_number: str = ""  # e.g. XXXX1384 (card)
     parsed_merchant: str = ""
@@ -25,16 +25,16 @@ class Transaction:
     transaction_type_detail: str = ""  # For Lastschrift: detail type
 
     @property
-    def betrag(self) -> float:
+    def amount(self) -> float:
         """Amount (positive for income, negative for expenses)."""
-        return self.gutschrift - self.lastschrift
+        return self.credit - self.debit
 
     @property
     def is_income(self) -> bool:
         """Is income?"""
-        return self.betrag > 0
+        return self.amount > 0
 
     @property
-    def text_upper(self) -> str:
+    def notification_text_upper(self) -> str:
         """Notification text in uppercase for case-insensitive matching."""
-        return self.avisierungstext.upper()
+        return self.notification_text.upper()
