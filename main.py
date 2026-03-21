@@ -38,15 +38,20 @@ def main(argv: Optional[Sequence[str]] = None):
     """Main pipeline.
 
     Usage:
-        python main.py <run_dir>
+        python main.py <run_dir> [--debug]
 
     Example:
-        python main.py reference
+        python main.py reference --debug
     """
     argv = argv if argv is not None else sys.argv[1:]
+    debug = False
+    if "--debug" in argv:
+        debug = True
+        argv = [arg for arg in argv if arg != "--debug"]
+
     if len(argv) != 1:
-        print("Usage: python main.py <run_dir>")
-        print("Example: python main.py reference")
+        print("Usage: python main.py <run_dir> [--debug]")
+        print("Example: python main.py reference --debug")
         return 2
 
     try:
@@ -88,7 +93,7 @@ def main(argv: Optional[Sequence[str]] = None):
     # 2. Load rules
     print("\n2. Loading Rules...")
     try:
-        engine = RuleEngine(str(base_rules), overlay_path=overlay_path)
+        engine = RuleEngine(str(base_rules), overlay_path=overlay_path, debug=debug)
     except FileNotFoundError as e:
         print(f"❌ {e}")
         return 1

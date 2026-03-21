@@ -1,20 +1,22 @@
 #!/usr/bin/env python3
-"""Tests for RuleEngine base rules and overlay merging."""
+"""Tests for RuleEngine base rules, overlay merging, and debug output."""
 import json
 import sys
 import os
+from datetime import datetime
 
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
+from models import Transaction
 from rule_engine import RuleEngine
 
 
-def _rule(id, category="Kategorie A", priority=50, merchant="TESTLADEN"):
+def _rule(id, category="Kategorie A", priority=50, merchant="TESTLADEN", name=None):
     return {
         "id": id,
-        "name": f"Regel {id}",
+        "name": name or f"Regel {id}",
         "category": category,
         "priority": priority,
         "transaction_types": ["Buchung"],
@@ -96,7 +98,7 @@ class TestOverlay:
 
         engine = RuleEngine(str(base))
 
-        assert engine.rules[0].source == "base.json"
+        assert engine.rules[0].source == str(base)
 
     def test_source_attribute_set_from_overlay(self, tmp_path):
         base = tmp_path / "base.json"
@@ -107,8 +109,8 @@ class TestOverlay:
         engine = RuleEngine(str(base), overlay_path=str(overlay))
 
         by_id = {r.id: r for r in engine.rules}
-        assert by_id[1].source == "base.json"
-        assert by_id[2].source == "overlay.json"
+        assert by_id[1].source == str(base)
+        assert by_id[2].source == str(overlay)
 
     def test_source_updated_on_override(self, tmp_path):
         """When an overlay overrides a base rule, source reflects the overlay file."""
@@ -120,7 +122,72 @@ class TestOverlay:
         engine = RuleEngine(str(base), overlay_path=str(overlay))
 
         rule = next(r for r in engine.rules if r.id == 1)
-        assert rule.source == "overlay.json"
+        assert rule.source == str(overlay)
+
+    def test_debug_output_lists_overridden_rules(self, tmp_path, capsys):
+        base = tmp_path / "base.json"
+        overlay = tmp_path / "overlay.json"
+        _write(base, [_rule(1, category="Alt")])
+        _write(overlay, [_rule(1, name="Neu", category="Neu")])
+
+        RuleEngine(str(base), overlay_path=str(overlay), debug=True)
+
+        captured = capsys.readouterr()
+        assert f"Applied overlay {overlay}: 1 overridden, 0 added" in captured.out
+        assert f"Override #1: 'Regel 1' from {base} -> 'Neu' from {overlay}" in captured.out
+
+    def test_debug_output_lists_matched_rule_and_source(self, tmp_path, capsys):
+        base = tmp_path / "base.json"
+        _write(base, [_rule(1, category="Kategorie Test", merchant="MATCHSHOP")])
+        engine = RuleEngine(str(base), debug=True)
+
+        transaction = Transaction(
+            date=datetime(2025, 3, 21),
+            transaction_type="Buchung",
+            notification_text="Apple Pay MATCHSHOP Aarau",
+            credit=0.0,
+            debit=12.5,
+            label="",
+            category="",
+            service_type="Apple Pay",
+            parsed_merchant="MATCHSHOP",
+            parsed_location="Aarau",
+        )
+
+        engine.categorize_batch([transaction])
+
+        captured = capsys.readouterr()
+        assert "Rule matched: #1 'Regel 1'" in captured.out
+        assert f"from {base}" in captured.out
+        assert "-> Kategorie Test" in captured.out
+
+    def test_debug_output_suppressed_without_debug_flag(self, tmp_path, capsys):
+        base = tmp_path / "base.json"
+        overlay = tmp_path / "overlay.json"
+        _write(base, [_rule(1, category="Alt", merchant="MATCHSHOP")])
+        _write(overlay, [_rule(1, name="Neu", category="Neu", merchant="MATCHSHOP")])
+
+        engine = RuleEngine(str(base), overlay_path=str(overlay), debug=False)
+
+        transaction = Transaction(
+            date=datetime(2025, 3, 21),
+            transaction_type="Buchung",
+            notification_text="Apple Pay MATCHSHOP Aarau",
+            credit=0.0,
+            debit=12.5,
+            label="",
+            category="",
+            service_type="Apple Pay",
+            parsed_merchant="MATCHSHOP",
+            parsed_location="Aarau",
+        )
+
+        capsys.readouterr()
+        engine.categorize_batch([transaction])
+
+        captured = capsys.readouterr()
+        assert "Override #1:" not in captured.out
+        assert "Rule matched:" not in captured.out
 
     def test_overlay_missing_is_silently_skipped(self, tmp_path):
         base = tmp_path / "base.json"

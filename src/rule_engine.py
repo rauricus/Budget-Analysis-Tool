@@ -11,9 +11,15 @@ logger = logging.getLogger(__name__)
 class RuleEngine:
     """Loads rules from JSON and matches them against transactions."""
     
-    def __init__(self, rules_path: str = "data/reference/rules.json", overlay_path: Optional[str] = None):
+    def __init__(
+        self,
+        rules_path: str = "data/reference/rules.json",
+        overlay_path: Optional[str] = None,
+        debug: bool = False,
+    ):
         self.rules_path = Path(rules_path)
         self.overlay_path = Path(overlay_path) if overlay_path else None
+        self.debug = debug
         self.rules: list[Rule] = []
         self.load_rules()
     
@@ -38,22 +44,48 @@ class RuleEngine:
             result[rule.id] = rule
         return result
 
+    @staticmethod
+    def _transaction_debug_label(transaction: Transaction) -> str:
+        """Build a short, readable transaction label for debug output."""
+        counterparty = (
+            transaction.parsed_merchant
+            or transaction.recipient
+            or transaction.notification_text[:60]
+        )
+        return (
+            f"{transaction.date.strftime('%Y-%m-%d')} | "
+            f"{transaction.service_type or transaction.transaction_type} | "
+            f"{counterparty}"
+        )
+
     def load_rules(self):
         """Load base rules, then apply overlay rules (same ID overrides, new ID appends)."""
         if not self.rules_path.exists():
             raise FileNotFoundError(f"Rules file not found: {self.rules_path}")
         
         with open(self.rules_path, "r", encoding="utf-8") as f:
-            base_rules = self._parse_rules(json.load(f), source=self.rules_path.name)
+            base_rules = self._parse_rules(json.load(f), source=self.rules_path.as_posix())
         print(f"   Loaded {len(base_rules)} base rules from {self.rules_path}")
 
         if self.overlay_path and self.overlay_path.exists():
             with open(self.overlay_path, "r", encoding="utf-8") as f:
-                overlay_rules = self._parse_rules(json.load(f), source=self.overlay_path.name)
-            overridden = len([k for k in overlay_rules if k in base_rules])
+                overlay_rules = self._parse_rules(json.load(f), source=self.overlay_path.as_posix())
+            overridden_rules = [
+                (base_rules[rule_id], overlay_rules[rule_id])
+                for rule_id in overlay_rules
+                if rule_id in base_rules
+            ]
+            overridden = len(overridden_rules)
             added = len(overlay_rules) - overridden
             base_rules.update(overlay_rules)
             print(f"   Applied overlay {self.overlay_path}: {overridden} overridden, {added} added")
+            if self.debug:
+                for previous_rule, new_rule in overridden_rules:
+                    print(
+                        "      Override "
+                        f"#{new_rule.id}: '{previous_rule.name}' from {previous_rule.source} "
+                        f"-> '{new_rule.name}' from {new_rule.source}"
+                    )
 
         self.rules = sorted(base_rules.values(), key=lambda r: r.priority, reverse=True)
         print(f"   {len(self.rules)} rules active (sorted by priority)")
@@ -104,6 +136,15 @@ class RuleEngine:
             matching_rules_map[idx] = matching
 
             # Categorize
-            txn.auto_category = self.categorize(txn)
+            best_match = matching[0] if matching else None
+            txn.auto_category = best_match.category if best_match else None
+
+            if best_match and self.debug:
+                print(
+                    "      Rule matched: "
+                    f"#{best_match.id} '{best_match.name}' from {best_match.source} "
+                    f"-> {best_match.category} | "
+                    f"{self._transaction_debug_label(txn)}"
+                )
 
         return transactions, matching_rules_map
