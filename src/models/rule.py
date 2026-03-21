@@ -1,47 +1,12 @@
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Optional
 
-
-@dataclass
-class Transaction:
-    """Single bank transaction parsed from CSV."""
-    datum: datetime
-    bewegungstyp: str
-    avisierungstext: str
-    gutschrift: float
-    lastschrift: float
-    label: str
-    kategorie: str  # Original category from CSV
-    kategorie_auto: Optional[str] = None  # Automatically assigned category
-    service_type: str = ""  # e.g. Apple Pay, Twint, Lastschrift
-    card_number: str = ""  # e.g. XXXX1384 (card)
-    parsed_merchant: str = ""
-    parsed_location: str = ""
-    recipient: str = ""  # For Lastschrift: payment recipient
-    recipient_iban: str = ""  # For Lastschrift: IBAN
-    reference: str = ""  # For Lastschrift: reference
-    transaction_type_detail: str = ""  # For Lastschrift: detail type
-    
-    @property
-    def betrag(self) -> float:
-        """Amount (positive for income, negative for expenses)."""
-        return self.gutschrift - self.lastschrift
-    
-    @property
-    def is_income(self) -> bool:
-        """Is income?"""
-        return self.betrag > 0
-    
-    @property
-    def text_upper(self) -> str:
-        """Notification text in uppercase for case-insensitive matching."""
-        return self.avisierungstext.upper()
+from models.transaction import Transaction
 
 
 @dataclass
 class Rule:
     """Categorization rule."""
+
     id: int
     name: str
     category: str
@@ -49,10 +14,10 @@ class Rule:
     transaction_types: list[str]  # e.g. ["APPLE PAY KAUF/DIENSTLEISTUNG"]
     services: list[str]  # e.g. ["Apple Pay"]
     merchants: list[str]  # e.g. ["MIGROS", "COOP"]
-    locations: list[str]  # e.g. ["AARAU", "ZÜRICH"]
+    locations: list[str]  # e.g. ["AARAU", "ZURICH"]
     include_keywords: list[str]  # e.g. ["TAKE AWAY"] - must be present
     exclude_keywords: list[str]  # e.g. ["TAKE AWAY"] - must NOT be present
-    
+
     def matches(self, transaction: Transaction) -> bool:
         """
         Check whether this rule matches the transaction.
@@ -70,7 +35,7 @@ class Rule:
             for part in [merchant_text, location_text, recipient_text, reference_text, detail_text, service]
             if part
         )
-        
+
         # 1. Match transaction type
         if transaction.bewegungstyp not in self.transaction_types:
             return False

@@ -51,7 +51,9 @@ data/
 src/
 ├── csv_handler.py                 # CSV load/save utilities
 ├── export_handler.py              # Structured CSV export builder
-├── models.py                      # Transaction and Rule dataclasses + matching logic
+├── models/                        # Domain model package
+│ ├── transaction.py               # Transaction dataclass
+│ └── rule.py                      # Rule dataclass + matching logic
 ├── rule_engine.py                 # Rule loading + service-filtered categorization
 ├── transaction_parser.py          # Row-to-Transaction conversion
 └── notification/
