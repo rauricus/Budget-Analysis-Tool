@@ -49,5 +49,4 @@ htmlcov/
 .hypothesis/
 
 # Project specific
-data/input/
-data/output/
+data/private
