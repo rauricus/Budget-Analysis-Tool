@@ -10,7 +10,7 @@ from pathlib import Path
 # Add src/ to path
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
-from csv_handler import CSVHandler
+from import_handler import ImportHandler
 from rule_engine import RuleEngine
 from export_handler import ExportHandler
 
@@ -31,7 +31,7 @@ def main():
     # 1. Load CSV
     print("\n1. Loading Transactions...")
     try:
-        transactions = CSVHandler.load_csv(input_csv)
+        transactions = ImportHandler.load_csv(input_csv)
     except FileNotFoundError as e:
         print(f"❌ {e}")
         return 1

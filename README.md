@@ -49,7 +49,7 @@ data/
   └── output/                    # Expected/known categorized outputs
 
 src/
-├── csv_handler.py                 # CSV load/save utilities
+├── import_handler.py              # CSV import utilities
 ├── export_handler.py              # Structured CSV export builder
 ├── models/                        # Domain model package
 │ ├── transaction.py               # Transaction dataclass
@@ -75,7 +75,7 @@ tests/                             # Unit/integration-style tests for pipeline c
 
 ```text
 data/input/*.csv
-   -> CSVHandler.load_csv
+   -> ImportHandler.load_csv
    -> TransactionParser.parse_row
    -> NotificationTextParser.parse (via parser registry)
    -> RuleEngine.categorize_batch
