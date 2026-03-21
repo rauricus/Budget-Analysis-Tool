@@ -67,7 +67,7 @@ class TransactionParser:
             bewegungstyp=str(row["Bewegungstyp"]).strip(),
             avisierungstext=avisierungstext,
             gutschrift=gutschrift,
-            lastschrift=-lastschrift,
+            lastschrift=lastschrift,
             label=TransactionParser._clean_value(row.get("Label", "")),
             kategorie=TransactionParser._clean_value(row.get("Kategorie", "")),
             service_type=parsed["service_type"],

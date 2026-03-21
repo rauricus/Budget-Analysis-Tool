@@ -106,7 +106,7 @@ class ExportHandler:
             
             # Credit/debit formatting (use NaN for empty values)
             gutschrift = txn.gutschrift if txn.gutschrift > 0 else math.nan
-            lastschrift = abs(txn.lastschrift) if txn.lastschrift < 0 else math.nan
+            lastschrift = txn.lastschrift if txn.lastschrift > 0 else math.nan
             
             rows.append({
                 "Date": txn.datum.strftime("%d.%m.%Y"),
