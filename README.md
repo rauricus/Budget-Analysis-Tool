@@ -21,7 +21,7 @@ micromamba env create -f environment.yml
 micromamba activate bat
 
 # Run pipeline
-python src/main.py
+python main.py
 ```
 
 ## ✅ Tests
@@ -67,7 +67,7 @@ src/
     ├── zahlung_parser.py        # Lastschrift payment parser
     └── dauerauftrag_parser.py   # Lastschrift standing-order parser
 
-src/main.py                        # Pipeline entry point
+main.py                            # Pipeline entry point
 tests/                             # Unit/integration-style tests for pipeline components
 ```
 
@@ -145,7 +145,7 @@ The structured export currently uses these columns:
 ## 🧪 Iterative workflow
 
 1. Put a new CSV into `data/input/`.
-2. Run `python src/main.py`.
+2. Run `python main.py`.
 3. Inspect `data/output/*.categorized.csv`.
 4. Add/refine parser(s) in `src/notification/parsers/` if needed.
 5. Add/refine matching rules in `data/rules.json`.
