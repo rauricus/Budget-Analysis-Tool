@@ -45,7 +45,7 @@ Date;Transaction Type;Transaction Type Detail;Service;Card Number;Merchant;Locat
 24.03.2025;Buchung;Kauf/Dienstleistung;Apple Pay;XXXX4821;COOP-5510 RIVERSIDE REST.;LUZERN;;;;;44.0;;Einkaufen // Supermärkte
 24.03.2025;Buchung;Kauf/Dienstleistung;Apple Pay;XXXX4821;MIGROS MARKTHALLE (8812);SOLOTHURN;;;;;53.5;;Einkaufen // Supermärkte
 24.03.2025;Buchung;Kauf/Dienstleistung;Apple Pay;XXXX4821;MIGROS CITY TAKE AWAY (6624);BASEL;;;;;6.8;;Freizeit // Gastronomie
-24.03.2025;Buchung;Zahlung;Lastschrift;;MEDICURA;;MEDICURA PLUS AG GESUNDHEITSWEG 8 4052 BASEL;CH1830000001400099001;;;77.45;;Leben // Gesundheit
+24.03.2025;Buchung;Zahlung;Lastschrift;;MEDICURA / SYMPANY;;MEDICURA PLUS AG GESUNDHEITSWEG 8 4052 BASEL;CH1830000001400099001;;;77.45;;Leben // Gesundheit
 23.03.2025;Buchung;Kauf/Dienstleistung;Apple Pay;XXXX4821;BÄCKEREI HUG;OLTEN;;;;;17.3;;Einkaufen // Detail-Lebensmittel
 23.03.2025;Buchung;Kauf/Dienstleistung;Apple Pay;XXXX4821;MANOR AG - 771 (CENTRA);BERN;;;;;23.95;;Überträge
 23.03.2025;Buchung;Geld senden;Twint;;+41796666222 KEBAB, IMBISS;;;;;;13.5;;Freizeit // Gastronomie
