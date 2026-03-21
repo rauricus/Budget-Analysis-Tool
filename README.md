@@ -52,11 +52,11 @@ src/
 ├── csv_handler.py                 # CSV load/save utilities
 ├── export_handler.py              # Structured CSV export builder
 ├── models.py                      # Transaction and Rule dataclasses + matching logic
-├── notification_parser.py         # Compatibility facade to parser registry
 ├── rule_engine.py                 # Rule loading + service-filtered categorization
 ├── transaction_parser.py          # Row-to-Transaction conversion
 └── parsers/
   ├── base.py                    # Parser interface + parse result model
+  ├── facade.py                  # Public facade to parser registry
   ├── registry.py                # Parser dispatch (first supporting parser wins)
   ├── apple_pay_parser.py        # Apple Pay notification parser
   ├── twint_senden_parser.py     # Twint send-money parser

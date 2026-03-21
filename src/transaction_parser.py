@@ -15,7 +15,7 @@ def _is_na(x):
     return s == "" or s.lower() == "nan" or s == "<NA>"
 
 from models import Transaction
-from notification_parser import NotificationTextParser
+from parsers.facade import NotificationTextParser
 
 
 class TransactionParser:

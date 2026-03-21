@@ -1,7 +1,7 @@
-"""Compatibility facade for notification text parsing.
+"""Public facade for service-based notification text parsing.
 
-New service parsers live under `parsers/` and are resolved via the registry.
-This class remains a stable entry point for existing callers.
+Keeps a stable, simple API for callers while delegating to the
+service parser registry.
 """
 
 from parsers.registry import NotificationParserRegistry
