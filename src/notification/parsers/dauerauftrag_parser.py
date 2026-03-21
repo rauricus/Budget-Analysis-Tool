@@ -4,7 +4,7 @@ from notification.base import NotificationParseResult, ServiceParser
 
 
 class DauerauftragParser(ServiceParser):
-    """Parser for LASTSCHRIFT DAUERAUFTRAG transactions."""
+    """Parser for standing-order direct debit format (LASTSCHRIFT DAUERAUFTRAG)."""
 
     PATTERN = re.compile(
         r"^LASTSCHRIFT\s+DAUERAUFTRAG:\s+(\S+)\s+(CH\S+)\s*(.*)$",

@@ -4,9 +4,9 @@ from notification.base import NotificationParseResult, ServiceParser
 
 
 class ZahlungParser(ServiceParser):
-    """Parser for LASTSCHRIFT payments (debit with IBAN)."""
+    """Parser for direct debit payment format (LASTSCHRIFT ... CH<iban> ...)."""
 
-    # LASTSCHRIFT CH<iban> <merchant> (but not DAUERAUFTRAG)
+    # Pattern: LASTSCHRIFT CH<iban> <merchant> (but not DAUERAUFTRAG)
     PATTERN = re.compile(
         r"^LASTSCHRIFT\s+(CH\S+)\s+(.+)$",
         re.IGNORECASE,
@@ -14,7 +14,7 @@ class ZahlungParser(ServiceParser):
 
     def supports(self, text: str) -> bool:
         text_stripped = (text or "").strip()
-        # Must be LASTSCHRIFT, but not DAUERAUFTRAG
+        # Must be LASTSCHRIFT, but not a DAUERAUFTRAG variant.
         if not self.PATTERN.match(text_stripped):
             return False
         return "DAUERAUFTRAG" not in text_stripped.upper()

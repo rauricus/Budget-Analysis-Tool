@@ -15,14 +15,14 @@ class Transaction:
     label: str
     category: str  # Original category from CSV
     auto_category: Optional[str] = None  # Automatically assigned category
-    service_type: str = ""  # e.g. Apple Pay, Twint, Lastschrift
+    service_type: str = ""  # e.g. Apple Pay, Twint, direct debit (Lastschrift)
     card_number: str = ""  # e.g. XXXX1384 (card)
     parsed_merchant: str = ""
     parsed_location: str = ""
-    recipient: str = ""  # For Lastschrift: payment recipient
-    recipient_iban: str = ""  # For Lastschrift: IBAN
-    reference: str = ""  # For Lastschrift: reference
-    transaction_type_detail: str = ""  # For Lastschrift: detail type
+    recipient: str = ""  # For direct debit (Lastschrift): payment recipient
+    recipient_iban: str = ""  # For direct debit (Lastschrift): IBAN
+    reference: str = ""  # For direct debit (Lastschrift): reference
+    transaction_type_detail: str = ""  # For direct debit (Lastschrift): detail type
 
     @property
     def amount(self) -> float:
