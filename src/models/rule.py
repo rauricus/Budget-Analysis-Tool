@@ -12,12 +12,12 @@ class Rule:
     category: str
     priority: int
     transaction_types: list[str]  # e.g. ["APPLE PAY KAUF/DIENSTLEISTUNG"]
-    services: list[str]  # e.g. ["Karteneinkauf", "Twint", "Lastschrift"]
-    merchants: list[str]  # e.g. ["MIGROS", "COOP"]
-    locations: list[str]  # e.g. ["AARAU", "ZURICH"]
-    include_keywords: list[str]  # e.g. ["TAKE AWAY"] - must be present
-    exclude_keywords: list[str]  # e.g. ["TAKE AWAY"] - must NOT be present
-    providers: list[str] = field(default_factory=list)  # e.g. ["Apple Pay"]
+    services: list[str] = field(default_factory=list)  # Optional filter, e.g. ["Karteneinkauf", "Twint"]
+    merchants: list[str] = field(default_factory=list)  # Optional filter, e.g. ["MIGROS", "COOP"]
+    locations: list[str] = field(default_factory=list)  # Optional filter, e.g. ["AARAU", "ZURICH"]
+    include_keywords: list[str] = field(default_factory=list)  # Optional filter; all must be present
+    exclude_keywords: list[str] = field(default_factory=list)  # Optional filter; none may be present
+    providers: list[str] = field(default_factory=list)  # Optional filter, e.g. ["Apple Pay"]
     source: str = ""  # originating rules file (set by RuleEngine)
 
     def matches(self, transaction: Transaction) -> bool:

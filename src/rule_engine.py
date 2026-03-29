@@ -99,18 +99,15 @@ class RuleEngine:
         if not service_upper:
             return []
 
-        candidates = [
-            rule
-            for rule in rules
-            if rule.services and service_upper in [service.upper() for service in rule.services]
-        ]
+        candidates: list[Rule] = []
+        for rule in rules:
+            if rule.services and service_upper not in [service.upper() for service in rule.services]:
+                continue
+            if rule.providers and provider_upper not in [provider.upper() for provider in rule.providers]:
+                continue
+            candidates.append(rule)
 
-        return [
-            rule
-            for rule in candidates
-            if not rule.providers
-            or provider_upper in [provider.upper() for provider in rule.providers]
-        ]
+        return candidates
 
     def categorize(self, transaction: Transaction) -> Optional[str]:
         """

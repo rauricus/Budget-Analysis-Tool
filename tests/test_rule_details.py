@@ -79,6 +79,19 @@ def test_rule_service_filtering():
     assert not rule.matches(txn), "Rule should not match when provider filter excludes Apple Pay"
 
 
+def test_rule_without_service_filter_can_match():
+    """A rule without services filter should rely on other criteria."""
+    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
+    engine = RuleEngine('data/reference/rules.json')
+
+    txn = txns[4]
+    rule = [r for r in engine.rules if r.id == 3][0]
+
+    rule.services = []
+    rule.providers = []
+    assert rule.matches(txn), "Rule without service/provider filters should still match by merchant criteria"
+
+
 if __name__ == '__main__':
     test_migros_supermarket_rule()
     test_rule_matching_order()
