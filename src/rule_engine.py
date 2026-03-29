@@ -35,6 +35,7 @@ class RuleEngine:
                 priority=rule_data["priority"],
                 transaction_types=rule_data.get("transaction_types", []),
                 services=rule_data.get("services", []),
+                providers=rule_data.get("providers", []),
                 merchants=rule_data["triggers"].get("merchants", []),
                 locations=rule_data["triggers"].get("locations", []),
                 include_keywords=rule_data["triggers"].get("include_keywords", []),
@@ -91,14 +92,24 @@ class RuleEngine:
         print(f"   {len(self.rules)} rules active (sorted by priority)")
 
     @staticmethod
-    def _service_candidates(rules: list[Rule], service_type: str) -> list[Rule]:
-        service_upper = (service_type or "").upper()
+    def _service_provider_candidates(rules: list[Rule], transaction: Transaction) -> list[Rule]:
+        """Filter rules by service and optional provider against the parsed transaction."""
+        service_upper = (transaction.service_type or "").upper()
+        provider_upper = (transaction.provider or "").upper()
         if not service_upper:
             return []
-        return [
+
+        candidates = [
             rule
             for rule in rules
             if rule.services and service_upper in [service.upper() for service in rule.services]
+        ]
+
+        return [
+            rule
+            for rule in candidates
+            if not rule.providers
+            or provider_upper in [provider.upper() for provider in rule.providers]
         ]
 
     def categorize(self, transaction: Transaction) -> Optional[str]:
@@ -106,7 +117,7 @@ class RuleEngine:
         Find the best rule for a transaction.
         Return the category (or None if no match exists).
         """
-        candidate_rules = self._service_candidates(self.rules, transaction.service_type)
+        candidate_rules = self._service_provider_candidates(self.rules, transaction)
         if not candidate_rules:
             if not transaction.service_type:
                 logger.info("No categorization without service match: %s", transaction.notification_text)
@@ -129,7 +140,7 @@ class RuleEngine:
         """
         matching_rules_map = {}
         for idx, txn in enumerate(transactions):
-            candidate_rules = self._service_candidates(self.rules, txn.service_type)
+            candidate_rules = self._service_provider_candidates(self.rules, txn)
 
             # Find all matching rules (already in priority order)
             matching = [r for r in candidate_rules if r.matches(txn)]

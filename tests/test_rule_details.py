@@ -60,18 +60,23 @@ def test_rule_matching_order():
 
 
 def test_rule_service_filtering():
-    """Test that optional service filters in rules work"""
+    """Test that optional service/provider filters in rules work"""
     txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
     engine = RuleEngine('data/reference/rules.json')
 
     txn = txns[4]
     rule = [r for r in engine.rules if r.id == 3][0]
 
-    rule.services = ["Apple Pay"]
-    assert rule.matches(txn), "Rule should match when service filter includes Apple Pay"
+    rule.services = ["Karteneinkauf"]
+    rule.providers = ["Apple Pay"]
+    assert rule.matches(txn), "Rule should match when service/provider filters include Karteneinkauf + Apple Pay"
 
     rule.services = ["Twint"]
-    assert not rule.matches(txn), "Rule should not match when service filter excludes Apple Pay"
+    assert not rule.matches(txn), "Rule should not match when service filter excludes Karteneinkauf"
+
+    rule.services = ["Karteneinkauf"]
+    rule.providers = ["Google Pay"]
+    assert not rule.matches(txn), "Rule should not match when provider filter excludes Apple Pay"
 
 
 if __name__ == '__main__':

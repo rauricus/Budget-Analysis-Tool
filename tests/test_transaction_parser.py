@@ -19,7 +19,8 @@ def test_parse_row_apple_pay():
     txn = TransactionParser.parse_row(row)
 
     assert txn is not None, "Parser should return a transaction"
-    assert txn.service_type == 'Apple Pay', "Service type should be parsed"
+    assert txn.service_type == 'Karteneinkauf', "Service type should be Karteneinkauf"
+    assert txn.provider == 'Apple Pay', "Provider should be Apple Pay"
     assert txn.card_number == 'XXXX4821', "Card number should be parsed"
     assert txn.parsed_merchant == 'CITY TANKSTELLE', "Merchant should be parsed"
     assert txn.parsed_location == 'OLTEN', "Location should be parsed"

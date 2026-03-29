@@ -5,6 +5,7 @@ from dataclasses import dataclass
 @dataclass
 class NotificationParseResult:
     service_type: str = ""
+    provider: str = ""  # Specific payment provider, e.g. "Apple Pay" for card purchases
     card_number: str = ""
     merchant: str = ""
     location: str = ""
@@ -16,6 +17,7 @@ class NotificationParseResult:
     def to_dict(self) -> dict[str, str]:
         return {
             "service_type": self.service_type,
+            "provider": self.provider,
             "card_number": self.card_number,
             "merchant": self.merchant,
             "location": self.location,

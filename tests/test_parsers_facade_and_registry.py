@@ -25,7 +25,8 @@ def test_registry_delegates_to_apple_pay_parser():
     text = "APPLE PAY KAUF/DIENSTLEISTUNG VOM 31.03.2025 KARTEN NR. XXXX4821 CITY TANKSTELLE OLTEN WAREN 10.34"
 
     result = registry.parse(text)
-    assert result.service_type == "Apple Pay"
+    assert result.service_type == "Karteneinkauf"
+    assert result.provider == "Apple Pay"
     assert result.card_number == "XXXX4821"
     assert result.merchant == "CITY TANKSTELLE"
     assert result.location == "OLTEN"
@@ -37,7 +38,8 @@ def test_notification_text_parser_facade_api_contract():
     parsed = NotificationTextParser.parse(text)
 
     assert isinstance(parsed, dict), "Facade should return dict"
-    assert parsed["service_type"] == "Apple Pay"
+    assert parsed["service_type"] == "Karteneinkauf"
+    assert parsed["provider"] == "Apple Pay"
     assert parsed["card_number"] == "XXXX4821"
     assert parsed["merchant"] == "KKIOSK 45810"
     assert parsed["location"] == "BERN"

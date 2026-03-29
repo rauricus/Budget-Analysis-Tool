@@ -74,10 +74,12 @@ def test_export_includes_service_fields():
         df = pd.read_csv(output_path, sep=";", encoding="utf-8")
 
         assert "Service" in df.columns, "Service column should exist"
+        assert "Provider" in df.columns, "Provider column should exist"
         assert "Card Number" in df.columns, "Card Number column should exist"
 
         first_row = df.iloc[0]
-        assert first_row["Service"] == "Apple Pay", "First row service should be Apple Pay"
+        assert first_row["Service"] == "Karteneinkauf", "First row service should be Karteneinkauf"
+        assert first_row["Provider"] == "Apple Pay", "First row provider should be Apple Pay"
         assert first_row["Card Number"] == "XXXX4821", "First row card number should be parsed"
 
 

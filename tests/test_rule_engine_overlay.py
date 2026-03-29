@@ -20,7 +20,8 @@ def _rule(id, category="Kategorie A", priority=50, merchant="TESTLADEN", name=No
         "category": category,
         "priority": priority,
         "transaction_types": ["Buchung"],
-        "services": ["Apple Pay"],
+        "services": ["Karteneinkauf"],
+        "providers": ["Apple Pay"],
         "triggers": {
             "merchants": [merchant],
             "locations": [],
@@ -149,7 +150,8 @@ class TestOverlay:
             debit=12.5,
             label="",
             category="",
-            service_type="Apple Pay",
+            service_type="Karteneinkauf",
+            provider="Apple Pay",
             parsed_merchant="MATCHSHOP",
             parsed_location="Aarau",
         )
@@ -177,7 +179,8 @@ class TestOverlay:
             debit=12.5,
             label="",
             category="",
-            service_type="Apple Pay",
+            service_type="Karteneinkauf",
+            provider="Apple Pay",
             parsed_merchant="MATCHSHOP",
             parsed_location="Aarau",
         )

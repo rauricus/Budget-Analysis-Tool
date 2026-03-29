@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from models.transaction import Transaction
 
@@ -12,11 +12,12 @@ class Rule:
     category: str
     priority: int
     transaction_types: list[str]  # e.g. ["APPLE PAY KAUF/DIENSTLEISTUNG"]
-    services: list[str]  # e.g. ["Apple Pay"]
+    services: list[str]  # e.g. ["Karteneinkauf", "Twint", "Lastschrift"]
     merchants: list[str]  # e.g. ["MIGROS", "COOP"]
     locations: list[str]  # e.g. ["AARAU", "ZURICH"]
     include_keywords: list[str]  # e.g. ["TAKE AWAY"] - must be present
     exclude_keywords: list[str]  # e.g. ["TAKE AWAY"] - must NOT be present
+    providers: list[str] = field(default_factory=list)  # e.g. ["Apple Pay"]
     source: str = ""  # originating rules file (set by RuleEngine)
 
     def matches(self, transaction: Transaction) -> bool:
@@ -25,6 +26,7 @@ class Rule:
         ALL conditions must be satisfied (AND logic).
         """
         service = (transaction.service_type or "").upper()
+        provider = (transaction.provider or "").upper()
         merchant_text = (transaction.parsed_merchant or "").upper()
         location_text = (transaction.parsed_location or "").upper()
         recipient_text = (transaction.recipient or "").upper()
@@ -33,7 +35,7 @@ class Rule:
 
         combined_text = " ".join(
             part
-            for part in [merchant_text, location_text, recipient_text, reference_text, detail_text, service]
+            for part in [merchant_text, location_text, recipient_text, reference_text, detail_text, service, provider]
             if part
         )
 
@@ -43,6 +45,10 @@ class Rule:
 
         # 1b. Match service type (optional)
         if self.services and service not in [s.upper() for s in self.services]:
+            return False
+
+        # 1c. Match provider (optional)
+        if self.providers and provider not in [p.upper() for p in self.providers]:
             return False
 
         # 2. At least one merchant must appear in parsed merchant/recipient

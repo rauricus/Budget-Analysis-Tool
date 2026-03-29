@@ -71,6 +71,7 @@ class TransactionParser:
             label=TransactionParser._clean_value(row.get("Label", "")),
             category=TransactionParser._clean_value(row.get("Kategorie", "")),
             service_type=parsed["service_type"],
+            provider=parsed["provider"],
             card_number=parsed["card_number"],
             parsed_merchant=parsed["merchant"],
             parsed_location=parsed["location"],

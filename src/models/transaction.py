@@ -15,7 +15,8 @@ class Transaction:
     label: str
     category: str  # Original category from CSV
     auto_category: Optional[str] = None  # Automatically assigned category
-    service_type: str = ""  # e.g. Apple Pay, Twint, direct debit (Lastschrift)
+    service_type: str = ""  # e.g. Karteneinkauf, Twint, Lastschrift
+    provider: str = ""  # Specific payment provider, e.g. "Apple Pay" for card purchases
     card_number: str = ""  # e.g. XXXX1384 (card)
     parsed_merchant: str = ""
     parsed_location: str = ""
