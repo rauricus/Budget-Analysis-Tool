@@ -385,14 +385,16 @@
     }
   ],
   "comments": {
-    "transaction_types": "Filter by transaction type from CSV. Currently only 'Buchung'.",
-    "services": "Required filter on parsed generic service type from notification text (e.g. Karteneinkauf, Twint, Lastschrift).",
-    "providers": "Optional filter on payment provider (e.g. Apple Pay).",
-    "merchants": "Primary merchant name (case-insensitive matching). OR logic (at least one must match).",
-    "locations": "Optional location filter (e.g. AARAU, ZÜRICH). AND logic (all must be present).",
-    "include_keywords": "Additional keywords that MUST be present (e.g. TAKE AWAY). AND logic.",
-    "exclude_keywords": "Keywords that must NOT be present. None may be present.",
-    "matching": "A rule matches only if ALL conditions are met. Highest priority wins.",
-    "fallback": "No fallback category. If no rule matches, the transaction remains uncategorized."
+    "required_fields": "Rule fields that should always be set: id, name, category, priority, transaction_types.",
+    "optional_fields": "Optional rule filters: services, providers, merchants, locations, include_keywords, exclude_keywords. Empty list means 'do not filter by this field'.",
+    "transaction_types": "Required filter by transaction type from CSV (currently usually 'Buchung').",
+    "services": "Optional filter on parsed generic service type (e.g. Karteneinkauf, Twint, Lastschrift).",
+    "providers": "Optional filter on payment provider (e.g. Apple Pay). Provider must NOT be encoded in services.",
+    "merchants": "Optional merchant filter (case-insensitive). OR logic (at least one must match).",
+    "locations": "Optional location filter (case-insensitive). AND logic (all listed locations must match).",
+    "include_keywords": "Optional keywords that MUST be present. AND logic.",
+    "exclude_keywords": "Optional keywords that must NOT be present. NONE may be present.",
+    "matching": "A rule matches only if all active (non-empty) filters are satisfied. Highest priority wins.",
+    "fallback": "No fallback category. If no rule matches, transaction stays uncategorized."
   }
 }
