@@ -3,24 +3,26 @@ import re
 from notification.base import NotificationParseResult, AbstractServiceParser
 
 
-class ApplePayParser(AbstractServiceParser):
-    APPLE_PAY_PATTERN = re.compile(
-        r"^(?P<prefix>APPLE PAY KAUF/DIENSTLEISTUNG)\s+VOM\s+\d{2}\.\d{2}\.\d{4}\s+KARTEN NR\.\s+(?P<card>XXXX\d{4})\s+(?P<rest>.+)$",
+class CardPurchaseParser(AbstractServiceParser):
+    # Optional provider prefix (e.g. "APPLE PAY") before KAUF/DIENSTLEISTUNG.
+    PATTERN = re.compile(
+        r"^(?:(?P<provider>.+?)\s+)?KAUF/DIENSTLEISTUNG\s+VOM\s+\d{2}\.\d{2}\.\d{4}\s+KARTEN NR\.\s+(?P<card>XXXX\d{4})\s+(?P<rest>.+)$",
         re.IGNORECASE,
     )
 
     def supports(self, text: str) -> bool:
-        return bool(self.APPLE_PAY_PATTERN.match((text or "").strip()))
+        return bool(self.PATTERN.match((text or "").strip()))
 
     def parse(self, text: str) -> NotificationParseResult:
-        match = self.APPLE_PAY_PATTERN.match((text or "").strip())
+        match = self.PATTERN.match((text or "").strip())
         if not match:
             return NotificationParseResult()
 
+        provider = (match.group("provider") or "").strip().title()
         merchant, location = self._extract_merchant_location(match.group("rest").strip())
         return NotificationParseResult(
             service_type="Karteneinkauf",
-            provider="Apple Pay",
+            provider=provider,
             transaction_type_detail="Kauf/Dienstleistung",
             card_number=match.group("card").strip(),
             merchant=merchant,

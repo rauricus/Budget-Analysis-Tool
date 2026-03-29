@@ -7,9 +7,26 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from notification.parsers.twint_senden_parser import TwintSendenParser
+from notification.parsers.card_purchase_parser import CardPurchaseParser
 from notification.parsers.debit_direct_parser import DebitDirectParser
 from notification.parsers.zahlung_parser import ZahlungParser
 from notification.parsers.dauerauftrag_parser import DauerauftragParser
+
+
+def test_card_purchase_parser_for_generic_card_purchase():
+    """CardPurchaseParser should parse generic card purchases without provider."""
+    parser = CardPurchaseParser()
+    text = "KAUF/DIENSTLEISTUNG VOM 27.03.2025 KARTEN NR. XXXX4821 YOOJI'S ROSENGARTEN BIEL SCHWEIZ"
+
+    assert parser.supports(text), "Card purchase parser should support generic card purchase format"
+
+    result = parser.parse(text)
+    assert result.service_type == "Karteneinkauf"
+    assert result.provider == ""
+    assert result.transaction_type_detail == "Kauf/Dienstleistung"
+    assert result.card_number == "XXXX4821"
+    assert result.merchant == "YOOJI'S ROSENGARTEN"
+    assert result.location == "BIEL"
 
 
 def test_twint_senden_parser_supports():
@@ -75,6 +92,7 @@ def test_dauerauftrag_parser():
 
 
 if __name__ == '__main__':
+    test_card_purchase_parser_for_generic_card_purchase()
     test_twint_senden_parser_supports()
     test_twint_senden_parser_parse()
     test_debit_direct_parser()

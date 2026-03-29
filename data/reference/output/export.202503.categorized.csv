@@ -24,7 +24,7 @@ Date;Transaction Type;Transaction Type Detail;Service;Provider;Card Number;Merch
 27.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;YOOJI'S ROSENGARTEN;BIEL;;;;;6.9;;Freizeit // Gastronomie
 27.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;CONFISERIE SPRÜNGLI AG;LUZERN;;;;;22.05;;Einkaufen // Detail-Lebensmittel
 27.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;THE BODY SHOP;LAUSANNE;;;;;24.95;;Leben // Styling und Wellness
-27.03.2025;Buchung;;;;;;BIEL;;;;;11.9;;Freizeit // Gastronomie
+27.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;;XXXX4821;YOOJI'S ROSENGARTEN;BIEL;;;;;11.9;;Freizeit // Gastronomie
 27.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;YOOJI'S ROSENGARTEN;BIEL;;;;;43.5;;Freizeit // Gastronomie
 27.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;COFFEE AND PLANTS;BIEL;;;;;10.0;;Freizeit // Gastronomie
 27.03.2025;Buchung;;;;;;;;;;;80.0;;Finanzen // Bargeldbezug

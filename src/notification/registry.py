@@ -2,7 +2,7 @@ import logging
 from typing import Optional
 
 from notification.base import NotificationParseResult, AbstractServiceParser
-from notification.parsers.apple_pay_parser import ApplePayParser
+from notification.parsers.card_purchase_parser import CardPurchaseParser
 from notification.parsers.dauerauftrag_parser import DauerauftragParser
 from notification.parsers.debit_direct_parser import DebitDirectParser
 from notification.parsers.twint_senden_parser import TwintSendenParser
@@ -17,7 +17,7 @@ class NotificationParserRegistry:
 
     def __init__(self, parsers: Optional[list[AbstractServiceParser]] = None):
         self.parsers = parsers or [
-            ApplePayParser(),
+            CardPurchaseParser(),
             TwintSendenParser(),
             DebitDirectParser(),
             DauerauftragParser(),

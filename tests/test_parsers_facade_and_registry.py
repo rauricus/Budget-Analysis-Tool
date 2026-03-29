@@ -7,20 +7,22 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from notification.facade import NotificationTextParser
-from notification.parsers.apple_pay_parser import ApplePayParser
+from notification.parsers.card_purchase_parser import CardPurchaseParser
 from notification.registry import NotificationParserRegistry
 
 
-def test_apple_pay_service_parser_supports():
-    """ApplePayParser should detect Apple Pay notification texts"""
-    parser = ApplePayParser()
+def test_card_purchase_parser_supports_apple_pay_and_generic_card_purchase():
+    """CardPurchaseParser should detect Apple Pay and generic card purchases."""
+    parser = CardPurchaseParser()
     text = "APPLE PAY KAUF/DIENSTLEISTUNG VOM 30.03.2025 KARTEN NR. XXXX4821 BYRO BASEL SCHWEIZ"
+    generic_text = "KAUF/DIENSTLEISTUNG VOM 27.03.2025 KARTEN NR. XXXX4821 YOOJI'S ROSENGARTEN BIEL SCHWEIZ"
 
-    assert parser.supports(text), "Apple Pay parser should support valid Apple Pay text"
+    assert parser.supports(text), "Card purchase parser should support valid Apple Pay text"
+    assert parser.supports(generic_text), "Card purchase parser should support valid generic card purchase text"
 
 
-def test_registry_delegates_to_apple_pay_parser():
-    """Registry should delegate to ApplePayParser and return parsed fields"""
+def test_registry_delegates_to_card_purchase_parser_for_apple_pay():
+    """Registry should delegate to CardPurchaseParser and return Apple Pay fields."""
     registry = NotificationParserRegistry()
     text = "APPLE PAY KAUF/DIENSTLEISTUNG VOM 31.03.2025 KARTEN NR. XXXX4821 CITY TANKSTELLE OLTEN WAREN 10.34"
 
@@ -30,6 +32,19 @@ def test_registry_delegates_to_apple_pay_parser():
     assert result.card_number == "XXXX4821"
     assert result.merchant == "CITY TANKSTELLE"
     assert result.location == "OLTEN"
+
+
+def test_registry_delegates_to_card_purchase_parser_for_generic_card_purchase():
+    """Registry should parse generic card purchases without provider."""
+    registry = NotificationParserRegistry()
+    text = "KAUF/DIENSTLEISTUNG VOM 27.03.2025 KARTEN NR. XXXX4821 YOOJI'S ROSENGARTEN BIEL SCHWEIZ"
+
+    result = registry.parse(text)
+    assert result.service_type == "Karteneinkauf"
+    assert result.provider == ""
+    assert result.card_number == "XXXX4821"
+    assert result.merchant == "YOOJI'S ROSENGARTEN"
+    assert result.location == "BIEL"
 
 
 def test_notification_text_parser_facade_api_contract():
@@ -46,7 +61,8 @@ def test_notification_text_parser_facade_api_contract():
 
 
 if __name__ == '__main__':
-    test_apple_pay_service_parser_supports()
-    test_registry_delegates_to_apple_pay_parser()
+    test_card_purchase_parser_supports_apple_pay_and_generic_card_purchase()
+    test_registry_delegates_to_card_purchase_parser_for_apple_pay()
+    test_registry_delegates_to_card_purchase_parser_for_generic_card_purchase()
     test_notification_text_parser_facade_api_contract()
     print("✓ All parser facade and registry tests passed")
