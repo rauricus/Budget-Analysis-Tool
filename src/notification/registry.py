@@ -2,6 +2,7 @@ import logging
 from typing import Optional
 
 from notification.base import NotificationParseResult, AbstractServiceParser
+from notification.parsers.cash_withdrawal_parser import CashWithdrawalParser
 from notification.parsers.card_purchase_parser import CardPurchaseParser
 from notification.parsers.dauerauftrag_parser import DauerauftragParser
 from notification.parsers.debit_direct_parser import DebitDirectParser
@@ -18,6 +19,7 @@ class NotificationParserRegistry:
     def __init__(self, parsers: Optional[list[AbstractServiceParser]] = None):
         self.parsers = parsers or [
             CardPurchaseParser(),
+            CashWithdrawalParser(),
             TwintSendenParser(),
             DebitDirectParser(),
             DauerauftragParser(),

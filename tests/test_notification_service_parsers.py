@@ -7,6 +7,7 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from notification.parsers.twint_senden_parser import TwintSendenParser
+from notification.parsers.cash_withdrawal_parser import CashWithdrawalParser
 from notification.parsers.card_purchase_parser import CardPurchaseParser
 from notification.parsers.debit_direct_parser import DebitDirectParser
 from notification.parsers.zahlung_parser import ZahlungParser
@@ -43,6 +44,21 @@ def test_card_purchase_parser_for_online_shopping():
     assert result.card_number == "XXXX4821"
     assert result.merchant == "APPLE.COM/BILL"
     assert result.location == "CORK"
+
+
+def test_cash_withdrawal_parser():
+    """CashWithdrawalParser should parse cash withdrawal transactions."""
+    parser = CashWithdrawalParser()
+    text = "BARGELDBEZUG VOM 27.03.2025 KARTEN NR. XXXX4821 EINKAUFSZENTRUM METROPOLE BIEL"
+
+    assert parser.supports(text), "Cash withdrawal parser should support valid cash withdrawal format"
+
+    result = parser.parse(text)
+    assert result.service_type == "Bargeldbezug"
+    assert result.transaction_type_detail == "Bargeldbezug"
+    assert result.card_number == "XXXX4821"
+    assert result.merchant == "EINKAUFSZENTRUM METROPOLE"
+    assert result.location == "BIEL"
 
 
 def test_twint_senden_parser_supports():
@@ -110,6 +126,7 @@ def test_dauerauftrag_parser():
 if __name__ == '__main__':
     test_card_purchase_parser_for_generic_card_purchase()
     test_card_purchase_parser_for_online_shopping()
+    test_cash_withdrawal_parser()
     test_twint_senden_parser_supports()
     test_twint_senden_parser_parse()
     test_debit_direct_parser()

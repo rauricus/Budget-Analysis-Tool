@@ -63,6 +63,19 @@ def test_registry_delegates_to_card_purchase_parser_for_online_shopping():
     assert result.location == "CORK"
 
 
+def test_registry_delegates_to_cash_withdrawal_parser():
+    """Registry should parse cash withdrawal card transactions."""
+    registry = NotificationParserRegistry()
+    text = "BARGELDBEZUG VOM 27.03.2025 KARTEN NR. XXXX4821 EINKAUFSZENTRUM METROPOLE BIEL"
+
+    result = registry.parse(text)
+    assert result.service_type == "Bargeldbezug"
+    assert result.transaction_type_detail == "Bargeldbezug"
+    assert result.card_number == "XXXX4821"
+    assert result.merchant == "EINKAUFSZENTRUM METROPOLE"
+    assert result.location == "BIEL"
+
+
 def test_notification_text_parser_facade_api_contract():
     """Facade API should return dict and delegate through the registry."""
     text = "APPLE PAY KAUF/DIENSTLEISTUNG VOM 31.03.2025 KARTEN NR. XXXX4821 KKIOSK 45810 BERN SCHWEIZ"
@@ -81,5 +94,6 @@ if __name__ == '__main__':
     test_registry_delegates_to_card_purchase_parser_for_apple_pay()
     test_registry_delegates_to_card_purchase_parser_for_generic_card_purchase()
     test_registry_delegates_to_card_purchase_parser_for_online_shopping()
+    test_registry_delegates_to_cash_withdrawal_parser()
     test_notification_text_parser_facade_api_contract()
     print("✓ All parser facade and registry tests passed")
