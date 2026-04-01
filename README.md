@@ -4,12 +4,12 @@ Automatic categorization of bank transactions using configurable JSON rules.
 
 ## 🎯 Features
 
-- ✅ CSV import (PostFinance format)
-- ✅ Service-specific parser registry (Apple Pay, Twint, Lastschrift variants)
-- ✅ Rule engine with priority-based matching
-- ✅ Service-scoped rule selection (`services` in rules)
-- ✅ Merchant, location, include/exclude keyword matching
-- ✅ Structured CSV export with parsed service fields
+- CSV import (PostFinance format)
+- Service-specific parser registry (card purchases incl. provider, cash withdrawals, credit transfers, Twint, Lastschrift variants, bank fees)
+- Rule engine with priority-based matching
+- Service/provider-scoped rule selection (`services` + optional `providers` in rules)
+- Merchant, location, include/exclude keyword matching
+- Structured CSV export with parsed service fields
 
 ### CSV locale support (current)
 
@@ -60,18 +60,21 @@ src/
 ├── models/                        # Domain model package
 │ ├── transaction.py               # Transaction dataclass
 │ └── rule.py                      # Rule dataclass + matching logic
-├── rule_engine.py                 # Rule loading + service-filtered categorization
+├── rule_engine.py                 # Rule loading + service/provider-filtered categorization
 ├── transaction_parser.py          # Row-to-Transaction conversion
 └── notification/
   ├── base.py                    # Parser interface + parse result model
   ├── facade.py                  # Public facade to parser registry
   ├── registry.py                # Parser dispatch (first supporting parser wins)
   └── parsers/
-    ├── apple_pay_parser.py      # Apple Pay notification parser
-    ├── twint_senden_parser.py   # Twint send-money parser
+    ├── card_purchase_parser.py  # Card purchase parser (Kauf/Dienstleistung + Online-Shopping, optional provider)
+    ├── cash_withdrawal_parser.py# Cash withdrawal parser (Bargeldbezug)
+    ├── credit_transfer_parser.py# Credit transfer parser (Gutschrift Auftraggeber/Absender)
+    ├── bank_package_fee_parser.py# Bank package fee parser
+    ├── twint_send_parser.py     # Twint send-money parser
     ├── debit_direct_parser.py   # CH-DD debit direct parser
-    ├── zahlung_parser.py        # Lastschrift payment parser
-    └── dauerauftrag_parser.py   # Lastschrift standing-order parser
+    ├── payment_parser.py        # Lastschrift payment parser
+    └── standing_order_parser.py # Lastschrift standing-order parser
 
 main.py                            # Pipeline entry point
 tests/                             # Unit/integration-style tests for pipeline components
@@ -102,7 +105,8 @@ Example:
       "category": "Freizeit // Gastronomie",
       "priority": 100,
       "transaction_types": ["Buchung"],
-      "services": ["Apple Pay"],
+      "services": ["Karteneinkauf"],
+      "providers": ["Apple Pay"],
       "triggers": {
         "merchants": ["MIGROS"],
         "locations": [],
@@ -117,7 +121,7 @@ Example:
 ### Matching behavior
 
 - Rules are sorted by descending `priority`.
-- Only rules that include the transaction's parsed `service_type` in `services` are considered.
+- Rules can filter by parsed `service_type` (`services`) and optional `provider` (`providers`).
 - A rule matches only if all configured conditions match.
 - `merchants`: OR logic (at least one must match).
 - `locations`: AND logic (all must match).
@@ -137,11 +141,12 @@ The structured export currently uses these columns:
 - Transaction Type
 - Transaction Type Detail
 - Service
+- Provider
 - Card Number
 - Merchant
 - Location
-- Recipient
-- Recipient IBAN
+- Counterparty
+- Counterparty IBAN
 - Reference
 - Credit in CHF
 - Debit in CHF
@@ -159,6 +164,5 @@ The structured export currently uses these columns:
 
 ## 🎯 Next steps
 
-- [ ] Add parser(s) for currently uncategorized service formats
 - [ ] Add category-level reporting summaries
 - [ ] Add optional chart/export modules
