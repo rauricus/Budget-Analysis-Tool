@@ -9,8 +9,8 @@ class NotificationParseResult:
     card_number: str = ""
     merchant: str = ""
     location: str = ""
-    recipient: str = ""  # For direct debit (Lastschrift): payment recipient
-    recipient_iban: str = ""  # For direct debit (Lastschrift): recipient IBAN
+    counterparty: str = ""  # Neutral counterparty name across debit/credit transactions
+    counterparty_iban: str = ""  # Neutral counterparty IBAN across debit/credit transactions
     reference: str = ""  # For direct debit (Lastschrift): reference information
     transaction_type_detail: str = ""  # For direct debit (Lastschrift): Debit Direct / payment (Zahlung) / standing order (Dauerauftrag)
 
@@ -21,8 +21,8 @@ class NotificationParseResult:
             "card_number": self.card_number,
             "merchant": self.merchant,
             "location": self.location,
-            "recipient": self.recipient,
-            "recipient_iban": self.recipient_iban,
+            "counterparty": self.counterparty,
+            "counterparty_iban": self.counterparty_iban,
             "reference": self.reference,
             "transaction_type_detail": self.transaction_type_detail,
         }

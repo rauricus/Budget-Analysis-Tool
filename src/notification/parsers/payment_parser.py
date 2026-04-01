@@ -28,12 +28,12 @@ class PaymentParser(AbstractServiceParser):
         if not match:
             return NotificationParseResult()
 
-        recipient_iban = match.group(1).strip()
-        recipient = match.group(2).strip()
+        counterparty_iban = match.group(1).strip()
+        counterparty = match.group(2).strip()
 
         return NotificationParseResult(
             service_type="Lastschrift",
             transaction_type_detail="Zahlung",
-            recipient=recipient,
-            recipient_iban=recipient_iban,
+            counterparty=counterparty,
+            counterparty_iban=counterparty_iban,
         )

@@ -4,10 +4,10 @@ from notification.base import NotificationParseResult, AbstractServiceParser
 
 
 class CreditTransferParser(AbstractServiceParser):
-    """Parser for salary-like credit transfers (GUTSCHRIFT AUFTRAGGEBER...)."""
+    """Parser for credit transfers (GUTSCHRIFT AUFTRAGGEBER/ABSENDER ...)."""
 
     PATTERN = re.compile(
-        r"^GUTSCHRIFT\s+AUFTRAGGEBER:\s+(?P<sender>.+?)(?:\s+MITTEILUNGEN:\s+(?P<message>.+?))?(?:\s+REFERENZEN:\s+(?P<references>.+))?$",
+        r"^GUTSCHRIFT(?:\s+(?P<iban>CH\S+))?\s+(?:AUFTRAGGEBER|ABSENDER):\s+(?P<sender>.+?)(?:\s+MITTEILUNGEN:\s+(?P<message>.+?))?(?:\s+REFERENZEN:\s+(?P<references>.+))?$",
         re.IGNORECASE,
     )
 
@@ -19,6 +19,7 @@ class CreditTransferParser(AbstractServiceParser):
         if not match:
             return NotificationParseResult()
 
+        iban = (match.group("iban") or "").strip()
         sender = (match.group("sender") or "").strip()
         message = (match.group("message") or "").strip()
         references = (match.group("references") or "").strip()
@@ -29,6 +30,7 @@ class CreditTransferParser(AbstractServiceParser):
         return NotificationParseResult(
             service_type="Gutschrift",
             transaction_type_detail="Gutschrift",
-            recipient=sender,
+            counterparty=sender,
+            counterparty_iban=iban,
             reference=reference,
         )

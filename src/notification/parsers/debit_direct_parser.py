@@ -19,8 +19,8 @@ class DebitDirectParser(AbstractServiceParser):
         if not self.supports(text):
             return NotificationParseResult()
 
-        recipient = ""
-        recipient_iban = ""
+        counterparty = ""
+        counterparty_iban = ""
         reference = ""
 
         id_nr_match = re.search(
@@ -29,7 +29,7 @@ class DebitDirectParser(AbstractServiceParser):
             re.IGNORECASE,
         )
         if id_nr_match:
-            recipient_iban = id_nr_match.group(1).strip()
+            counterparty_iban = id_nr_match.group(1).strip()
 
         zahlungsempfaenger_match = re.search(
             r"ZAHLUNGSEMPFÄNGER:\s+([^M]+?)(?:MITTEILUNGEN:|$)",
@@ -37,7 +37,7 @@ class DebitDirectParser(AbstractServiceParser):
             re.IGNORECASE,
         )
         if zahlungsempfaenger_match:
-            recipient = zahlungsempfaenger_match.group(1).strip()
+            counterparty = zahlungsempfaenger_match.group(1).strip()
 
         mitteilungen_match = re.search(
             r"MITTEILUNGEN:\s+(.+?)(?:TRANSAKTIONS-ID:|$)",
@@ -50,7 +50,7 @@ class DebitDirectParser(AbstractServiceParser):
         return NotificationParseResult(
             service_type="Lastschrift",
             transaction_type_detail="Lastschrift Debit Direct",
-            recipient=recipient,
-            recipient_iban=recipient_iban,
+            counterparty=counterparty,
+            counterparty_iban=counterparty_iban,
             reference=reference,
         )

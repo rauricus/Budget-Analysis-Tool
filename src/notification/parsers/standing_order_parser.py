@@ -25,15 +25,15 @@ class StandingOrderParser(AbstractServiceParser):
             return NotificationParseResult()
 
         reference = match.group(1).strip()
-        recipient_iban = match.group(2).strip()
+        counterparty_iban = match.group(2).strip()
         rest = match.group(3).strip()
 
-        recipient = rest if rest else ""
+        counterparty = rest if rest else ""
 
         return NotificationParseResult(
             service_type="Lastschrift",
             transaction_type_detail="Dauerauftrag",
-            recipient=recipient,
-            recipient_iban=recipient_iban,
+            counterparty=counterparty,
+            counterparty_iban=counterparty_iban,
             reference=reference,
         )

@@ -1,4 +1,4 @@
-Date;Transaction Type;Transaction Type Detail;Service;Provider;Card Number;Merchant;Location;Recipient;Recipient IBAN;Reference;Credit in CHF;Debit in CHF;Label;Category
+Date;Transaction Type;Transaction Type Detail;Service;Provider;Card Number;Merchant;Location;Counterparty;Counterparty IBAN;Reference;Credit in CHF;Debit in CHF;Label;Category
 31.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;CITY TANKSTELLE;OLTEN;;;;;10.34;;Einkaufen // Detail-Lebensmittel
 31.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;CITY TANKSTELLE;OLTEN;;;;;6.55;;Einkaufen // Detail-Lebensmittel
 31.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;SUMUP *DELIAS HAIRSTY;LUZERN;;;;;50.0;;Leben // Styling und Wellness
@@ -39,7 +39,7 @@ Date;Transaction Type;Transaction Type Detail;Service;Provider;Card Number;Merch
 25.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;BRANKOVIC BREZELSTUBE;THUN;;;;;4.3;;Einkaufen // Detail-Lebensmittel
 25.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;MIGROS M RIVERSIDE (7741);ZUG;;;;;10.35;;Einkaufen // Supermärkte
 25.03.2025;Buchung;Gutschrift;Gutschrift;;;;;ALPENWERK AG INDUSTRIESTRASSE 12 CH-5430 WETTINGEN AG;;SALAER MAERZ 2025 | SALA80E5ED528784F48B451A4175649C112 9988776655/1XXXX 250325CH7LMNQRTS;6966.35;;;Einkommen
-25.03.2025;Buchung;;;;;;;;;;1787.95;;;Überträge
+25.03.2025;Buchung;Gutschrift;Gutschrift;;;;;MEDICURA PLUS AG GESUNDHEITSWEG 8 4052 BASEL;CH6709000000400099001;LEISTUNGSABRECHNUNG NR.: 700112233445566 VERSICHERTE PERSON 445566 BETRIFFT LEISTUNGEN | MED95CB11F8253446278F81749F26F10588;1787.95;;;Überträge
 24.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;WAKARA GMBH;SURSEE;;;;;27.6;;Einkaufen // Detail-Lebensmittel
 24.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;THE BODY SHOP;GENEVE;;;;;4.95;;Leben // Styling und Wellness
 24.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;COOP-5510 RIVERSIDE REST.;LUZERN;;;;;44.0;;Einkaufen // Supermärkte

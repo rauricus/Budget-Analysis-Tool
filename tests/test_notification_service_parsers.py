@@ -72,8 +72,23 @@ def test_credit_transfer_parser_salary_credit():
     result = parser.parse(text)
     assert result.service_type == "Gutschrift"
     assert result.transaction_type_detail == "Gutschrift"
-    assert result.recipient == "ALPENWERK AG INDUSTRIESTRASSE 12 CH-5430 WETTINGEN AG"
+    assert result.counterparty == "ALPENWERK AG INDUSTRIESTRASSE 12 CH-5430 WETTINGEN AG"
     assert "SALAER MAERZ 2025" in result.reference
+
+
+def test_credit_transfer_parser_sender_credit_with_iban():
+    """CreditTransferParser should parse ABSENDER credit format with IBAN."""
+    parser = CreditTransferParser()
+    text = "GUTSCHRIFT CH6709000000400025000 ABSENDER: VIVAO SYMPANY AG PETER MERIAN-WEG 4 4052 BASEL MITTEILUNGEN: RECHNUNG NR.: 201941771110536469 WE DER ANDREAS110536469 WEDER ANDREASB ETRIFFT DIV. ABRECHNUNGEN REFERENZEN: SYM95CB11F8253446278F81749F26F10588"
+
+    assert parser.supports(text), "Credit transfer parser should support ABSENDER format"
+
+    result = parser.parse(text)
+    assert result.service_type == "Gutschrift"
+    assert result.transaction_type_detail == "Gutschrift"
+    assert result.counterparty_iban == "CH6709000000400025000"
+    assert result.counterparty == "VIVAO SYMPANY AG PETER MERIAN-WEG 4 4052 BASEL"
+    assert "RECHNUNG NR." in result.reference
 
 
 def test_twint_send_parser_supports():
@@ -105,8 +120,8 @@ def test_debit_direct_parser():
     result = parser.parse(text)
     assert result.service_type == "Lastschrift"
     assert result.transaction_type_detail == "Lastschrift Debit Direct"
-    assert result.recipient == "STEUERDIENSTE REGION WEST"
-    assert result.recipient_iban == "41101000000123456"
+    assert result.counterparty == "STEUERDIENSTE REGION WEST"
+    assert result.counterparty_iban == "41101000000123456"
     assert "2025/04/01 / 7045128" in result.reference
 
 
@@ -120,8 +135,8 @@ def test_payment_parser():
     result = parser.parse(text)
     assert result.service_type == "Lastschrift"
     assert result.transaction_type_detail == "Zahlung"
-    assert result.recipient_iban == "CH6330000011998877665"
-    assert "SUNRISE GMBH POSTFACH 8050 ZURICH" in result.recipient
+    assert result.counterparty_iban == "CH6330000011998877665"
+    assert "SUNRISE GMBH POSTFACH 8050 ZURICH" in result.counterparty
 
 
 def test_standing_order_parser():
@@ -134,7 +149,7 @@ def test_standing_order_parser():
     result = parser.parse(text)
     assert result.service_type == "Lastschrift"
     assert result.transaction_type_detail == "Dauerauftrag"
-    assert result.recipient_iban == "CH3409000000802999554"
+    assert result.counterparty_iban == "CH3409000000802999554"
     assert result.reference == "90-33445566"
 
 
@@ -143,6 +158,7 @@ if __name__ == '__main__':
     test_card_purchase_parser_for_online_shopping()
     test_cash_withdrawal_parser()
     test_credit_transfer_parser_salary_credit()
+    test_credit_transfer_parser_sender_credit_with_iban()
     test_twint_send_parser_supports()
     test_twint_send_parser_parse()
     test_debit_direct_parser()

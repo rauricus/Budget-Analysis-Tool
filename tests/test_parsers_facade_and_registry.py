@@ -84,8 +84,21 @@ def test_registry_delegates_to_credit_transfer_parser():
     result = registry.parse(text)
     assert result.service_type == "Gutschrift"
     assert result.transaction_type_detail == "Gutschrift"
-    assert result.recipient == "ALPENWERK AG INDUSTRIESTRASSE 12 CH-5430 WETTINGEN AG"
+    assert result.counterparty == "ALPENWERK AG INDUSTRIESTRASSE 12 CH-5430 WETTINGEN AG"
     assert "SALAER MAERZ 2025" in result.reference
+
+
+def test_registry_delegates_to_credit_transfer_parser_sender_with_iban():
+    """Registry should parse ABSENDER credit transfers with IBAN."""
+    registry = NotificationParserRegistry()
+    text = "GUTSCHRIFT CH6709000000400025000 ABSENDER: VIVAO SYMPANY AG PETER MERIAN-WEG 4 4052 BASEL MITTEILUNGEN: RECHNUNG NR.: 201941771110536469 WE DER ANDREAS110536469 WEDER ANDREASB ETRIFFT DIV. ABRECHNUNGEN REFERENZEN: SYM95CB11F8253446278F81749F26F10588"
+
+    result = registry.parse(text)
+    assert result.service_type == "Gutschrift"
+    assert result.transaction_type_detail == "Gutschrift"
+    assert result.counterparty_iban == "CH6709000000400025000"
+    assert result.counterparty == "VIVAO SYMPANY AG PETER MERIAN-WEG 4 4052 BASEL"
+    assert "RECHNUNG NR." in result.reference
 
 
 def test_notification_text_parser_facade_api_contract():
@@ -108,5 +121,6 @@ if __name__ == '__main__':
     test_registry_delegates_to_card_purchase_parser_for_online_shopping()
     test_registry_delegates_to_cash_withdrawal_parser()
     test_registry_delegates_to_credit_transfer_parser()
+    test_registry_delegates_to_credit_transfer_parser_sender_with_iban()
     test_notification_text_parser_facade_api_contract()
     print("✓ All parser facade and registry tests passed")

@@ -20,8 +20,8 @@ class Transaction:
     card_number: str = ""  # e.g. XXXX1384 (card)
     parsed_merchant: str = ""
     parsed_location: str = ""
-    recipient: str = ""  # For direct debit (Lastschrift): payment recipient
-    recipient_iban: str = ""  # For direct debit (Lastschrift): IBAN
+    counterparty: str = ""  # Neutral counterparty name across debit/credit transactions
+    counterparty_iban: str = ""  # Neutral counterparty IBAN across debit/credit transactions
     reference: str = ""  # For direct debit (Lastschrift): reference
     transaction_type_detail: str = ""  # For direct debit (Lastschrift): detail type
 

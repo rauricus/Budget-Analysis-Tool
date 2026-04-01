@@ -29,13 +29,13 @@ class Rule:
         provider = (transaction.provider or "").upper()
         merchant_text = (transaction.parsed_merchant or "").upper()
         location_text = (transaction.parsed_location or "").upper()
-        recipient_text = (transaction.recipient or "").upper()
+        counterparty_text = (transaction.counterparty or "").upper()
         reference_text = (transaction.reference or "").upper()
         detail_text = (transaction.transaction_type_detail or "").upper()
 
         combined_text = " ".join(
             part
-            for part in [merchant_text, location_text, recipient_text, reference_text, detail_text, service, provider]
+            for part in [merchant_text, location_text, counterparty_text, reference_text, detail_text, service, provider]
             if part
         )
 
@@ -51,8 +51,8 @@ class Rule:
         if self.providers and provider not in [p.upper() for p in self.providers]:
             return False
 
-        # 2. At least one merchant must appear in parsed merchant/recipient
-        merchant_haystacks = [merchant_text, recipient_text]
+        # 2. At least one merchant must appear in parsed merchant/counterparty
+        merchant_haystacks = [merchant_text, counterparty_text]
         if self.merchants and not any(
             any(m.upper() in haystack for haystack in merchant_haystacks if haystack)
             for m in self.merchants

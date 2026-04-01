@@ -50,7 +50,7 @@ class RuleEngine:
         """Build a short, readable transaction label for debug output."""
         counterparty = (
             transaction.parsed_merchant
-            or transaction.recipient
+            or transaction.counterparty
             or transaction.notification_text[:60]
         )
         return (

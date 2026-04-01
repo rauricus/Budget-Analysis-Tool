@@ -75,8 +75,8 @@ class TransactionParser:
             card_number=parsed["card_number"],
             parsed_merchant=parsed["merchant"],
             parsed_location=parsed["location"],
-            recipient=parsed["recipient"],
-            recipient_iban=parsed["recipient_iban"],
+            counterparty=parsed["counterparty"],
+            counterparty_iban=parsed["counterparty_iban"],
             reference=parsed["reference"],
             transaction_type_detail=parsed["transaction_type_detail"],
         )
