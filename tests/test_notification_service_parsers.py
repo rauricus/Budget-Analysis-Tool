@@ -9,6 +9,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from notification.parsers.twint_send_parser import TwintSendParser
 from notification.parsers.cash_withdrawal_parser import CashWithdrawalParser
 from notification.parsers.card_purchase_parser import CardPurchaseParser
+from notification.parsers.credit_transfer_parser import CreditTransferParser
 from notification.parsers.debit_direct_parser import DebitDirectParser
 from notification.parsers.payment_parser import PaymentParser
 from notification.parsers.standing_order_parser import StandingOrderParser
@@ -59,6 +60,20 @@ def test_cash_withdrawal_parser():
     assert result.card_number == "XXXX4821"
     assert result.merchant == "EINKAUFSZENTRUM METROPOLE"
     assert result.location == "BIEL"
+
+
+def test_credit_transfer_parser_salary_credit():
+    """CreditTransferParser should parse salary-like credit transfer format."""
+    parser = CreditTransferParser()
+    text = "GUTSCHRIFT AUFTRAGGEBER: ALPENWERK AG INDUSTRIESTRASSE 12 CH-5430 WETTINGEN AG MITTEILUNGEN: SALAER MAERZ 2025 REFERENZEN: SALA80E5ED528784F48B451A4175649C112 9988776655/1XXXX 250325CH7LMNQRTS"
+
+    assert parser.supports(text), "Credit transfer parser should support salary credit format"
+
+    result = parser.parse(text)
+    assert result.service_type == "Gutschrift"
+    assert result.transaction_type_detail == "Gutschrift"
+    assert result.recipient == "ALPENWERK AG INDUSTRIESTRASSE 12 CH-5430 WETTINGEN AG"
+    assert "SALAER MAERZ 2025" in result.reference
 
 
 def test_twint_send_parser_supports():
@@ -127,6 +142,7 @@ if __name__ == '__main__':
     test_card_purchase_parser_for_generic_card_purchase()
     test_card_purchase_parser_for_online_shopping()
     test_cash_withdrawal_parser()
+    test_credit_transfer_parser_salary_credit()
     test_twint_send_parser_supports()
     test_twint_send_parser_parse()
     test_debit_direct_parser()

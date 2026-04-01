@@ -76,6 +76,18 @@ def test_registry_delegates_to_cash_withdrawal_parser():
     assert result.location == "BIEL"
 
 
+def test_registry_delegates_to_credit_transfer_parser():
+    """Registry should parse salary-like credit transfers (Auftraggeber format)."""
+    registry = NotificationParserRegistry()
+    text = "GUTSCHRIFT AUFTRAGGEBER: ALPENWERK AG INDUSTRIESTRASSE 12 CH-5430 WETTINGEN AG MITTEILUNGEN: SALAER MAERZ 2025 REFERENZEN: SALA80E5ED528784F48B451A4175649C112 9988776655/1XXXX 250325CH7LMNQRTS"
+
+    result = registry.parse(text)
+    assert result.service_type == "Gutschrift"
+    assert result.transaction_type_detail == "Gutschrift"
+    assert result.recipient == "ALPENWERK AG INDUSTRIESTRASSE 12 CH-5430 WETTINGEN AG"
+    assert "SALAER MAERZ 2025" in result.reference
+
+
 def test_notification_text_parser_facade_api_contract():
     """Facade API should return dict and delegate through the registry."""
     text = "APPLE PAY KAUF/DIENSTLEISTUNG VOM 31.03.2025 KARTEN NR. XXXX4821 KKIOSK 45810 BERN SCHWEIZ"
@@ -95,5 +107,6 @@ if __name__ == '__main__':
     test_registry_delegates_to_card_purchase_parser_for_generic_card_purchase()
     test_registry_delegates_to_card_purchase_parser_for_online_shopping()
     test_registry_delegates_to_cash_withdrawal_parser()
+    test_registry_delegates_to_credit_transfer_parser()
     test_notification_text_parser_facade_api_contract()
     print("✓ All parser facade and registry tests passed")

@@ -38,7 +38,7 @@ Date;Transaction Type;Transaction Type Detail;Service;Provider;Card Number;Merch
 25.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;BÄCKEREI HUG;OLTEN;;;;;6.1;;Einkaufen // Detail-Lebensmittel
 25.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;BRANKOVIC BREZELSTUBE;THUN;;;;;4.3;;Einkaufen // Detail-Lebensmittel
 25.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;MIGROS M RIVERSIDE (7741);ZUG;;;;;10.35;;Einkaufen // Supermärkte
-25.03.2025;Buchung;;;;;;;;;;6966.35;;;Einkommen
+25.03.2025;Buchung;Gutschrift;Gutschrift;;;;;ALPENWERK AG INDUSTRIESTRASSE 12 CH-5430 WETTINGEN AG;;SALAER MAERZ 2025 | SALA80E5ED528784F48B451A4175649C112 9988776655/1XXXX 250325CH7LMNQRTS;6966.35;;;Einkommen
 25.03.2025;Buchung;;;;;;;;;;1787.95;;;Überträge
 24.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;WAKARA GMBH;SURSEE;;;;;27.6;;Einkaufen // Detail-Lebensmittel
 24.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;THE BODY SHOP;GENEVE;;;;;4.95;;Leben // Styling und Wellness
