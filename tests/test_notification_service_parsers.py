@@ -29,6 +29,22 @@ def test_card_purchase_parser_for_generic_card_purchase():
     assert result.location == "BIEL"
 
 
+def test_card_purchase_parser_for_online_shopping():
+    """CardPurchaseParser should parse online shopping card purchases."""
+    parser = CardPurchaseParser()
+    text = "KAUF/ONLINE-SHOPPING VOM 27.03.2025 KARTEN NR. XXXX4821 APPLE.COM/BILL CORK"
+
+    assert parser.supports(text), "Card purchase parser should support online shopping format"
+
+    result = parser.parse(text)
+    assert result.service_type == "Karteneinkauf"
+    assert result.provider == ""
+    assert result.transaction_type_detail == "Kauf/Online-Shopping"
+    assert result.card_number == "XXXX4821"
+    assert result.merchant == "APPLE.COM/BILL"
+    assert result.location == "CORK"
+
+
 def test_twint_senden_parser_supports():
     """TwintSendenParser should detect TWINT transaction texts"""
     parser = TwintSendenParser()
@@ -93,6 +109,7 @@ def test_dauerauftrag_parser():
 
 if __name__ == '__main__':
     test_card_purchase_parser_for_generic_card_purchase()
+    test_card_purchase_parser_for_online_shopping()
     test_twint_senden_parser_supports()
     test_twint_senden_parser_parse()
     test_debit_direct_parser()

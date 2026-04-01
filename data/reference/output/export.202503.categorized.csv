@@ -14,13 +14,13 @@ Date;Transaction Type;Transaction Type Detail;Service;Provider;Card Number;Merch
 29.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;BÄCKEREI HUG;OLTEN;;;;;8.5;;Einkaufen // Detail-Lebensmittel
 29.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;MIGROS M RIVERSIDE (7741);ZUG;;;;;2.9;;Einkaufen // Supermärkte
 29.03.2025;Buchung;Zahlung;Lastschrift;;;SUNRISE;;SUNRISE GMBH POSTFACH 8050 ZURICH;CH6330000011998877665;;;49.6;;Wohnen // Kommunikation
-28.03.2025;Buchung;;;;;;;;;;;34.3;;Mobilität // Öffentlicher Verkehr
+28.03.2025;Buchung;Kauf/Online-Shopping;Karteneinkauf;;XXXX4821;TRANSPORTS PUBLICS FRIBOURGEOIS (FAIRTIQ) N/A PAYMENT ID 250328064754083058ZX BESTELLNUMMER;QWE9AWE5JCNXFN05A3;;;;;34.3;;Mobilität // Öffentlicher Verkehr
 28.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;SUMUP *BACKEREI ZUR K;THUN;;;;;11.1;;Einkaufen // Detail-Lebensmittel
 28.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;KKIOSK 45810;BERN;;;;;7.1;;Einkaufen // Sonstiges Einkaufen
 28.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;BAHNHOF APOTHEKE AG;BERN;;;;;24.4;;Leben // Gesundheit
 28.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;BÄCKEREI HUG;OLTEN;;;;;8.1;;Einkaufen // Detail-Lebensmittel
 28.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;MIGROS M RIVERSIDE (7741);ZUG;;;;;28.35;;Einkaufen // Supermärkte
-27.03.2025;Buchung;;;;;;;;;;;2.0;;Wohnen // Kommunikation
+27.03.2025;Buchung;Kauf/Online-Shopping;Karteneinkauf;;XXXX4821;APPLE.COM/BILL;CORK;;;;;2.0;;Wohnen // Kommunikation
 27.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;YOOJI'S ROSENGARTEN;BIEL;;;;;6.9;;Freizeit // Gastronomie
 27.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;CONFISERIE SPRÜNGLI AG;LUZERN;;;;;22.05;;Einkaufen // Detail-Lebensmittel
 27.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;THE BODY SHOP;LAUSANNE;;;;;24.95;;Leben // Styling und Wellness
@@ -31,7 +31,7 @@ Date;Transaction Type;Transaction Type Detail;Service;Provider;Card Number;Merch
 27.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;YUMIHANA;FRIBOURG;;;;;18.55;;Einkaufen // Detail-Lebensmittel
 27.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;YUMI HANA;FRIBOURG;;;;;26.8;;Einkaufen // Detail-Lebensmittel
 27.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;COOP - 7811 QUAI WEST;BERN;;;;;7.75;;Einkaufen // Supermärkte
-26.03.2025;Buchung;;;;;;;;;;;62.6;;Mobilität // Öffentlicher Verkehr
+26.03.2025;Buchung;Kauf/Online-Shopping;Karteneinkauf;;XXXX4821;TRANSPORTS PUBLICS FRIBOURGEOIS (FAIRTIQ) N/A PAYMENT ID 250326064915818975ZX BESTELLNUMMER;ZUNCTYVS45RXNGTQIH;;;;;62.6;;Mobilität // Öffentlicher Verkehr
 26.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;JUMBO-7782 INDUSTRIEPARK;WINTERTHUR;;;;;10.9;;Einkaufen // Supermärkte
 26.03.2025;Buchung;Geld senden;Twint;;;+41796666222 KEBAB, IMBISS MITTEILUNGEN: KEBAB;;;;;;14.0;;Freizeit // Gastronomie
 26.03.2025;Buchung;Dauerauftrag;Lastschrift;;;;;FAMILIENKASSE MUSTERHAUSEN SENDER REFERENZ: FAMILIENZULAGE;CH3409000000802999554;90-33445566;;200.0;;Leben // Familie

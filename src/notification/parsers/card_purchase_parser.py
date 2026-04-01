@@ -4,9 +4,9 @@ from notification.base import NotificationParseResult, AbstractServiceParser
 
 
 class CardPurchaseParser(AbstractServiceParser):
-    # Optional provider prefix (e.g. "APPLE PAY") before KAUF/DIENSTLEISTUNG.
+    # Optional provider prefix (e.g. "APPLE PAY") before KAUF/<detail>.
     PATTERN = re.compile(
-        r"^(?:(?P<provider>.+?)\s+)?KAUF/DIENSTLEISTUNG\s+VOM\s+\d{2}\.\d{2}\.\d{4}\s+KARTEN NR\.\s+(?P<card>XXXX\d{4})\s+(?P<rest>.+)$",
+        r"^(?:(?P<provider>.+?)\s+)?KAUF/(?P<detail>DIENSTLEISTUNG|ONLINE-SHOPPING)\s+VOM\s+\d{2}\.\d{2}\.\d{4}\s+KARTEN NR\.\s+(?P<card>XXXX\d{4})\s+(?P<rest>.+)$",
         re.IGNORECASE,
     )
 
@@ -19,11 +19,16 @@ class CardPurchaseParser(AbstractServiceParser):
             return NotificationParseResult()
 
         provider = (match.group("provider") or "").strip().title()
+        detail = (match.group("detail") or "").strip().upper()
+        detail_map = {
+            "DIENSTLEISTUNG": "Kauf/Dienstleistung",
+            "ONLINE-SHOPPING": "Kauf/Online-Shopping",
+        }
         merchant, location = self._extract_merchant_location(match.group("rest").strip())
         return NotificationParseResult(
             service_type="Karteneinkauf",
             provider=provider,
-            transaction_type_detail="Kauf/Dienstleistung",
+            transaction_type_detail=detail_map.get(detail, ""),
             card_number=match.group("card").strip(),
             merchant=merchant,
             location=location,

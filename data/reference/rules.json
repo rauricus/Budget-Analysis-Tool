@@ -261,7 +261,7 @@
       "category": "Mobilität // Öffentlicher Verkehr",
       "priority": 70,
       "transaction_types": ["Buchung"],
-      "services": ["Fairtiq"],
+      "services": ["Karteneinkauf"],
       "triggers": {
         "merchants": ["TRANSPORTS PUBLICS", "FAIRTIQ"],
         "locations": [],
@@ -289,7 +289,7 @@
       "category": "Wohnen // Kommunikation",
       "priority": 60,
       "transaction_types": ["Buchung"],
-      "services": ["Apple.com"],
+      "services": ["Karteneinkauf"],
       "triggers": {
         "merchants": ["APPLE.COM"],
         "locations": [],
