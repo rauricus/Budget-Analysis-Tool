@@ -3,7 +3,7 @@ import re
 from notification.base import NotificationParseResult, AbstractServiceParser
 
 
-class DauerauftragParser(AbstractServiceParser):
+class StandingOrderParser(AbstractServiceParser):
     """Parser for standing-order direct debit format (LASTSCHRIFT DAUERAUFTRAG)."""
 
     PATTERN = re.compile(

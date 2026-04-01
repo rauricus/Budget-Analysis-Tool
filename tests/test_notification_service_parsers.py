@@ -6,12 +6,12 @@ import os
 # Add src directory to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from notification.parsers.twint_senden_parser import TwintSendenParser
+from notification.parsers.twint_send_parser import TwintSendParser
 from notification.parsers.cash_withdrawal_parser import CashWithdrawalParser
 from notification.parsers.card_purchase_parser import CardPurchaseParser
 from notification.parsers.debit_direct_parser import DebitDirectParser
-from notification.parsers.zahlung_parser import ZahlungParser
-from notification.parsers.dauerauftrag_parser import DauerauftragParser
+from notification.parsers.payment_parser import PaymentParser
+from notification.parsers.standing_order_parser import StandingOrderParser
 
 
 def test_card_purchase_parser_for_generic_card_purchase():
@@ -61,17 +61,17 @@ def test_cash_withdrawal_parser():
     assert result.location == "BIEL"
 
 
-def test_twint_senden_parser_supports():
-    """TwintSendenParser should detect TWINT transaction texts"""
-    parser = TwintSendenParser()
+def test_twint_send_parser_supports():
+    """TwintSendParser should detect TWINT transaction texts"""
+    parser = TwintSendParser()
     text = "TWINT GELD SENDEN VOM 26.03.2025 VON TELEFON-NR. +41795555111 AN TELEFON-NR. +41796666222 KEBAB, IMBISS MITTEILUNGEN: KEBAB"
 
     assert parser.supports(text), "TWINT parser should support valid TWINT text"
 
 
-def test_twint_senden_parser_parse():
-    """TwintSendenParser should extract merchant and transaction type"""
-    parser = TwintSendenParser()
+def test_twint_send_parser_parse():
+    """TwintSendParser should extract merchant and transaction type"""
+    parser = TwintSendParser()
     text = "TWINT GELD SENDEN VOM 26.03.2025 VON TELEFON-NR. +41795555111 AN TELEFON-NR. +41796666222 KEBAB, IMBISS MITTEILUNGEN: KEBAB"
 
     result = parser.parse(text)
@@ -95,9 +95,9 @@ def test_debit_direct_parser():
     assert "2025/04/01 / 7045128" in result.reference
 
 
-def test_zahlung_parser():
-    """ZahlungParser should parse Zahlung (payment) format"""
-    parser = ZahlungParser()
+def test_payment_parser():
+    """PaymentParser should parse Zahlung (payment) format"""
+    parser = PaymentParser()
     text = "LASTSCHRIFT CH6330000011998877665 SUNRISE GMBH POSTFACH 8050 ZURICH"
 
     assert parser.supports(text), "Should support Zahlung format"
@@ -109,9 +109,9 @@ def test_zahlung_parser():
     assert "SUNRISE GMBH POSTFACH 8050 ZURICH" in result.recipient
 
 
-def test_dauerauftrag_parser():
-    """DauerauftragParser should parse Dauerauftrag (standing order) format"""
-    parser = DauerauftragParser()
+def test_standing_order_parser():
+    """StandingOrderParser should parse Dauerauftrag (standing order) format"""
+    parser = StandingOrderParser()
     text = "LASTSCHRIFT DAUERAUFTRAG: 90-33445566 CH3409000000802999554 FAMILIENKASSE MUSTERHAUSEN SENDER REFERENZ: FAMILIENZULAGE"
 
     assert parser.supports(text), "Should support Dauerauftrag format"
@@ -127,9 +127,9 @@ if __name__ == '__main__':
     test_card_purchase_parser_for_generic_card_purchase()
     test_card_purchase_parser_for_online_shopping()
     test_cash_withdrawal_parser()
-    test_twint_senden_parser_supports()
-    test_twint_senden_parser_parse()
+    test_twint_send_parser_supports()
+    test_twint_send_parser_parse()
     test_debit_direct_parser()
-    test_zahlung_parser()
-    test_dauerauftrag_parser()
+    test_payment_parser()
+    test_standing_order_parser()
     print("✓ All notification service parser tests passed")

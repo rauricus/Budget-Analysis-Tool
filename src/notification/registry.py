@@ -4,10 +4,10 @@ from typing import Optional
 from notification.base import NotificationParseResult, AbstractServiceParser
 from notification.parsers.cash_withdrawal_parser import CashWithdrawalParser
 from notification.parsers.card_purchase_parser import CardPurchaseParser
-from notification.parsers.dauerauftrag_parser import DauerauftragParser
+from notification.parsers.standing_order_parser import StandingOrderParser
 from notification.parsers.debit_direct_parser import DebitDirectParser
-from notification.parsers.twint_senden_parser import TwintSendenParser
-from notification.parsers.zahlung_parser import ZahlungParser
+from notification.parsers.twint_send_parser import TwintSendParser
+from notification.parsers.payment_parser import PaymentParser
 
 
 logger = logging.getLogger(__name__)
@@ -20,10 +20,10 @@ class NotificationParserRegistry:
         self.parsers = parsers or [
             CardPurchaseParser(),
             CashWithdrawalParser(),
-            TwintSendenParser(),
+            TwintSendParser(),
             DebitDirectParser(),
-            DauerauftragParser(),
-            ZahlungParser(),
+            StandingOrderParser(),
+            PaymentParser(),
         ]
 
     def parse(self, avisierungstext: str) -> NotificationParseResult:

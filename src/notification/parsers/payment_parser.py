@@ -3,7 +3,7 @@ import re
 from notification.base import NotificationParseResult, AbstractServiceParser
 
 
-class ZahlungParser(AbstractServiceParser):
+class PaymentParser(AbstractServiceParser):
     """Parser for direct debit payment format (LASTSCHRIFT ... CH<iban> ...)."""
 
     # Pattern: LASTSCHRIFT CH<iban> <merchant> (but not DAUERAUFTRAG)

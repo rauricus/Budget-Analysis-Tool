@@ -3,7 +3,7 @@ import re
 from notification.base import NotificationParseResult, AbstractServiceParser
 
 
-class TwintSendenParser(AbstractServiceParser):
+class TwintSendParser(AbstractServiceParser):
     TWINT_PATTERN = re.compile(
         r"^TWINT\s+GELD\s+SENDEN\s+VOM\s+\d{2}\.\d{2}\.\d{4}\s+VON\s+TELEFON-NR\.\s+(\S+)\s+AN\s+TELEFON-NR\.\s+(\S+)\s+(.*)$",
         re.IGNORECASE,
