@@ -7,6 +7,7 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from notification.parsers.twint_send_parser import TwintSendParser
+from notification.parsers.bank_package_fee_parser import BankPackageFeeParser
 from notification.parsers.cash_withdrawal_parser import CashWithdrawalParser
 from notification.parsers.card_purchase_parser import CardPurchaseParser
 from notification.parsers.credit_transfer_parser import CreditTransferParser
@@ -91,6 +92,19 @@ def test_credit_transfer_parser_sender_credit_with_iban():
     assert "RECHNUNG NR." in result.reference
 
 
+def test_bank_package_fee_parser():
+    """BankPackageFeeParser should parse bank package fee notifications."""
+    parser = BankPackageFeeParser()
+    text = "PREIS FÜR BANKPAKET SMART 02.2025"
+
+    assert parser.supports(text), "Bank package fee parser should support fee format"
+
+    result = parser.parse(text)
+    assert result.service_type == "Gebühren"
+    assert result.transaction_type_detail == "Bankpaketpreis"
+    assert result.reference == "PREIS FÜR BANKPAKET SMART 02.2025"
+
+
 def test_twint_send_parser_supports():
     """TwintSendParser should detect TWINT transaction texts"""
     parser = TwintSendParser()
@@ -159,6 +173,7 @@ if __name__ == '__main__':
     test_cash_withdrawal_parser()
     test_credit_transfer_parser_salary_credit()
     test_credit_transfer_parser_sender_credit_with_iban()
+    test_bank_package_fee_parser()
     test_twint_send_parser_supports()
     test_twint_send_parser_parse()
     test_debit_direct_parser()

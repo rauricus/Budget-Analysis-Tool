@@ -2,6 +2,7 @@ import logging
 from typing import Optional
 
 from notification.base import NotificationParseResult, AbstractServiceParser
+from notification.parsers.bank_package_fee_parser import BankPackageFeeParser
 from notification.parsers.cash_withdrawal_parser import CashWithdrawalParser
 from notification.parsers.card_purchase_parser import CardPurchaseParser
 from notification.parsers.credit_transfer_parser import CreditTransferParser
@@ -22,6 +23,7 @@ class NotificationParserRegistry:
             CardPurchaseParser(),
             CashWithdrawalParser(),
             CreditTransferParser(),
+            BankPackageFeeParser(),
             TwintSendParser(),
             DebitDirectParser(),
             StandingOrderParser(),

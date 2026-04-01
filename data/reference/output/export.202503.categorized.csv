@@ -4,7 +4,7 @@ Date;Transaction Type;Transaction Type Detail;Service;Provider;Card Number;Merch
 31.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;SUMUP *DELIAS HAIRSTY;LUZERN;;;;;50.0;;Leben // Styling und Wellness
 31.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;KKIOSK 45810;BERN;;;;;7.55;;Einkaufen // Sonstiges Einkaufen
 31.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;MIGROS MARKTHALLE (8812);SOLOTHURN;;;;;22.2;;Einkaufen // Supermärkte
-31.03.2025;Buchung;;;;;;;;;;;5.0;;Finanzen // Gebühren
+31.03.2025;Buchung;Bankpaketpreis;Gebühren;;;;;;;PREIS FÜR BANKPAKET SMART 02.2025;;5.0;;Finanzen // Gebühren
 31.03.2025;Buchung;Lastschrift Debit Direct;Lastschrift;;;;;STEUERDIENSTE REGION WEST;41101000000123456;2025/04/01 / 7045128;;1774.0;;Wohnen // Nebenkosten
 30.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;SIGNOR ROSSI;WINTERTHUR;;;;;20.0;;Freizeit // Gastronomie
 30.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;MIGROS MARKTHALLE (8812);SOLOTHURN;;;;;20.7;;Einkaufen // Supermärkte

@@ -101,6 +101,17 @@ def test_registry_delegates_to_credit_transfer_parser_sender_with_iban():
     assert "RECHNUNG NR." in result.reference
 
 
+def test_registry_delegates_to_bank_package_fee_parser():
+    """Registry should parse bank package fee notifications."""
+    registry = NotificationParserRegistry()
+    text = "PREIS FÜR BANKPAKET SMART 02.2025"
+
+    result = registry.parse(text)
+    assert result.service_type == "Gebühren"
+    assert result.transaction_type_detail == "Bankpaketpreis"
+    assert result.reference == "PREIS FÜR BANKPAKET SMART 02.2025"
+
+
 def test_notification_text_parser_facade_api_contract():
     """Facade API should return dict and delegate through the registry."""
     text = "APPLE PAY KAUF/DIENSTLEISTUNG VOM 31.03.2025 KARTEN NR. XXXX4821 KKIOSK 45810 BERN SCHWEIZ"
@@ -122,5 +133,6 @@ if __name__ == '__main__':
     test_registry_delegates_to_cash_withdrawal_parser()
     test_registry_delegates_to_credit_transfer_parser()
     test_registry_delegates_to_credit_transfer_parser_sender_with_iban()
+    test_registry_delegates_to_bank_package_fee_parser()
     test_notification_text_parser_facade_api_contract()
     print("✓ All parser facade and registry tests passed")
