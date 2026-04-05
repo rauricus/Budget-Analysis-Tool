@@ -2,7 +2,7 @@
 
 Automatic categorization of bank transactions using configurable JSON rules.
 
-## 🎯 Features
+## Features
 
 - CSV import (PostFinance format)
 - Service-specific parser registry (card purchases incl. provider, cash withdrawals, credit transfers, Twint, Lastschrift variants, bank fees)
@@ -17,7 +17,7 @@ Automatic categorization of bank transactions using configurable JSON rules.
 - Import expects German source columns from PostFinance (for example `Datum`, `Bewegungstyp`, `Avisierungstext`, `Gutschrift in CHF`, `Lastschrift in CHF`, `Kategorie`).
 - Export preserves German transaction content (for example Lastschrift/Zahlung/Dauerauftrag details) in parsed fields.
 
-## 🚀 Setup
+## Setup
 
 ```bash
 # Create environment
@@ -30,7 +30,7 @@ micromamba activate bat
 python main.py
 ```
 
-## ✅ Tests
+## Tests
 
 ```bash
 # Run all tests
@@ -43,7 +43,7 @@ micromamba run -n bat pytest -v
 micromamba run -n bat pytest tests/test_rule_matching.py
 ```
 
-## 📂 Structure
+## Structure
 
 ```text
 data/
@@ -80,7 +80,7 @@ main.py                            # Pipeline entry point
 tests/                             # Unit/integration-style tests for pipeline components
 ```
 
-## 🔄 Data Flow
+## Data flow
 
 ```text
 data/input/*.csv
@@ -92,7 +92,7 @@ data/input/*.csv
    -> data/output/*.categorized.csv
 ```
 
-## 🎨 Rules (`data/rules.json`)
+## Rules (`data/rules.json`)
 
 Example:
 
@@ -133,7 +133,7 @@ Example:
 There is no fallback category in the engine.
 If no parser matches a service or no rule matches that service, the transaction stays uncategorized.
 
-## 📤 Export Format
+## Export format
 
 The structured export currently uses these columns:
 
@@ -153,7 +153,7 @@ The structured export currently uses these columns:
 - Label
 - Category
 
-## 🧪 Iterative workflow
+## Iterative workflow
 
 1. Put a new CSV into `data/input/`.
 2. Run `python main.py`.
@@ -162,7 +162,7 @@ The structured export currently uses these columns:
 5. Add/refine matching rules in `data/rules.json`.
 6. Repeat until categorization quality is acceptable.
 
-## 🎯 Next steps
+## Next steps
 
 - [ ] Add category-level reporting summaries
 - [ ] Add optional chart/export modules
