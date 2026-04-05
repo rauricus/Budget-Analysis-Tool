@@ -30,6 +30,29 @@ class ExportHandler:
         "Category",
         "Subcategory",
     ]
+
+    @staticmethod
+    def split_category_fields(
+        transaction: Transaction,
+        use_input_category_fallback: bool = False,
+    ) -> tuple[str, str]:
+        """Return category/subcategory for export.
+
+        Prefer rule-based automatic categorization. Optionally, a transaction
+        can fall back to the original CSV category for export compatibility.
+        """
+        if transaction.auto_category:
+            return transaction.auto_category, transaction.auto_subcategory or ""
+
+        if not use_input_category_fallback:
+            return "?", ""
+
+        raw_category = (transaction.category or "").strip()
+        if " // " in raw_category:
+            category, subcategory = raw_category.split(" // ", 1)
+            return category, subcategory
+
+        return raw_category or "?", ""
     
     @staticmethod
     def extract_merchant_location(
@@ -88,6 +111,7 @@ class ExportHandler:
         transactions: list,
         output_path: str,
         matching_rules_map: Optional[dict] = None,
+        use_input_category_fallback: bool = False,
     ):
         """
         Save transactions in a structured export format.
@@ -96,6 +120,8 @@ class ExportHandler:
             transactions: List of transactions
             output_path: Target CSV path
             matching_rules_map: Mapping of transaction index to matching rules (optional)
+            use_input_category_fallback: If True, reuse the original CSV category
+                when no automatic categorization is available.
         """
         output_path = Path(output_path)
         output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -105,6 +131,10 @@ class ExportHandler:
             # Get matching rules if provided
             rules = matching_rules_map.get(idx) if matching_rules_map else None
             merchant, location = ExportHandler.extract_merchant_location(txn, rules)
+            category, subcategory = ExportHandler.split_category_fields(
+                txn,
+                use_input_category_fallback=use_input_category_fallback,
+            )
             
             # Credit/debit formatting (use NaN for empty values)
             credit = txn.credit if txn.credit > 0 else math.nan
@@ -125,8 +155,8 @@ class ExportHandler:
                 "Credit in CHF": credit,
                 "Debit in CHF": debit,
                 "Label": txn.label,
-                "Category": txn.auto_category or txn.category or "?",
-                "Subcategory": txn.auto_subcategory or "",
+                "Category": category,
+                "Subcategory": subcategory,
             })
         
         df = pd.DataFrame(rows, columns=ExportHandler.EXPORT_COLUMNS)

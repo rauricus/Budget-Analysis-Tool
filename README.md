@@ -32,6 +32,9 @@ python main.py reference
 # Optional: run pipeline for your own local dataset/overlay setup
 # I use a dataset in `data/private` only as a example here. If you choose to use that, howeever, it that's already gitignored.
 python main.py private
+
+# Optional: reuse original input CSV categories for otherwise uncategorized rows
+python main.py reference --use-input-category-fallback
 ```
 
 ## Tests
@@ -143,6 +146,8 @@ Example:
 
 There is no fallback category in the engine.
 If no parser matches a service or no rule matches that service, the transaction stays uncategorized.
+
+For export compatibility only, `main.py` can optionally reuse the original input CSV category via `--use-input-category-fallback`.
 
 ## Export format
 

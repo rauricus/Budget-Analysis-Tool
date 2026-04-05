@@ -11,7 +11,9 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from import_handler import ImportHandler
 from export_handler import ExportHandler
 from rule_engine import RuleEngine
+from models import Transaction
 import pandas as pd
+from datetime import datetime
 
 
 def test_export_format():
@@ -112,9 +114,41 @@ def test_export_preserves_amounts():
                         f"Debit should be populated for txn {idx}"
 
 
+def test_export_splits_legacy_category_into_subcategory():
+    """Legacy CSV categories should only be reused when fallback is enabled."""
+    txn = Transaction(
+        date=datetime(2025, 3, 31),
+        transaction_type="Buchung",
+        notification_text="Legacy category transaction",
+        credit=0.0,
+        debit=10.0,
+        label="",
+        category="Einkaufen // Detail-Lebensmittel",
+        service_type="Karteneinkauf",
+        provider="Apple Pay",
+    )
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        output_path = os.path.join(tmpdir, "test_legacy_category.csv")
+        ExportHandler.export_csv([txn], output_path, {})
+
+        df = pd.read_csv(output_path, sep=";", encoding="utf-8")
+        assert df.iloc[0]["Category"] == "?"
+        assert pd.isna(df.iloc[0]["Subcategory"]) or df.iloc[0]["Subcategory"] == ""
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        output_path = os.path.join(tmpdir, "test_legacy_category_with_fallback.csv")
+        ExportHandler.export_csv([txn], output_path, {}, use_input_category_fallback=True)
+
+        df = pd.read_csv(output_path, sep=";", encoding="utf-8")
+        assert df.iloc[0]["Category"] == "Einkaufen"
+        assert df.iloc[0]["Subcategory"] == "Detail-Lebensmittel"
+
+
 if __name__ == '__main__':
     test_export_format()
     test_merchant_location_extraction()
     test_export_preserves_amounts()
     test_export_includes_service_fields()
+    test_export_splits_legacy_category_into_subcategory()
     print("✓ All export tests passed")

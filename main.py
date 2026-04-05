@@ -38,19 +38,23 @@ def main(argv: Optional[Sequence[str]] = None):
     """Main pipeline.
 
     Usage:
-        python main.py <run_dir> [--debug]
+        python main.py <run_dir> [--debug] [--use-input-category-fallback]
 
     Example:
         python main.py reference --debug
     """
     argv = argv if argv is not None else sys.argv[1:]
     debug = False
+    use_input_category_fallback = False
     if "--debug" in argv:
         debug = True
         argv = [arg for arg in argv if arg != "--debug"]
+    if "--use-input-category-fallback" in argv:
+        use_input_category_fallback = True
+        argv = [arg for arg in argv if arg != "--use-input-category-fallback"]
 
     if len(argv) != 1:
-        print("Usage: python main.py <run_dir> [--debug]")
+        print("Usage: python main.py <run_dir> [--debug] [--use-input-category-fallback]")
         print("Example: python main.py reference --debug")
         return 2
 
@@ -103,6 +107,8 @@ def main(argv: Optional[Sequence[str]] = None):
 
     # 3/4. Process each input file
     print("\n3. Processing Files...")
+    if use_input_category_fallback:
+        print("   Input category fallback is enabled for uncategorized transactions.")
     for input_csv in input_files:
         print(f"\n   -> {input_csv.name}")
 
@@ -121,7 +127,12 @@ def main(argv: Optional[Sequence[str]] = None):
         print(f"      Uncategorized: {uncategorized_count}/{len(transactions)}")
 
         output_csv = output_dir / f"{input_csv.stem}.categorized.csv"
-        ExportHandler.export_csv(transactions, str(output_csv), matching_rules_map)
+        ExportHandler.export_csv(
+            transactions,
+            str(output_csv),
+            matching_rules_map,
+            use_input_category_fallback=use_input_category_fallback,
+        )
 
         total_txns += len(transactions)
         total_categorized += categorized_count
