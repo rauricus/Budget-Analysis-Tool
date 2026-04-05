@@ -3,7 +3,8 @@
     {
       "id": 1,
       "name": "Migros Take-Away → Gastronomie",
-      "category": "Freizeit // Gastronomie",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
       "priority": 100,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -18,7 +19,8 @@
     {
       "id": 2,
       "name": "Coop Take-Away → Gastronomie",
-      "category": "Freizeit // Gastronomie",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
       "priority": 100,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -33,7 +35,8 @@
     {
       "id": 3,
       "name": "Migros Supermarkt",
-      "category": "Einkaufen // Supermärkte",
+      "category": "Einkaufen",
+      "subcategory": "Supermärkte",
       "priority": 50,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -48,7 +51,8 @@
     {
       "id": 4,
       "name": "Coop Supermarkt",
-      "category": "Einkaufen // Supermärkte",
+      "category": "Einkaufen",
+      "subcategory": "Supermärkte",
       "priority": 50,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -63,7 +67,8 @@
     {
       "id": 5,
       "name": "Jumbo Supermarkt",
-      "category": "Einkaufen // Supermärkte",
+      "category": "Einkaufen",
+      "subcategory": "Supermärkte",
       "priority": 50,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -78,7 +83,8 @@
     {
       "id": 6,
       "name": "Bäckereien",
-      "category": "Einkaufen // Detail-Lebensmittel",
+      "category": "Einkaufen",
+      "subcategory": "Detail-Lebensmittel",
       "priority": 40,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -93,7 +99,8 @@
     {
       "id": 7,
       "name": "Confiserie",
-      "category": "Einkaufen // Detail-Lebensmittel",
+      "category": "Einkaufen",
+      "subcategory": "Detail-Lebensmittel",
       "priority": 40,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -108,7 +115,8 @@
     {
       "id": 8,
       "name": "Yumihana",
-      "category": "Einkaufen // Detail-Lebensmittel",
+      "category": "Einkaufen",
+      "subcategory": "Detail-Lebensmittel",
       "priority": 40,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -123,7 +131,8 @@
     {
       "id": 9,
       "name": "Wakara",
-      "category": "Einkaufen // Detail-Lebensmittel",
+      "category": "Einkaufen",
+      "subcategory": "Detail-Lebensmittel",
       "priority": 40,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -138,7 +147,8 @@
     {
       "id": 10,
       "name": "Yooji's Restaurant",
-      "category": "Freizeit // Gastronomie",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
       "priority": 60,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -153,7 +163,8 @@
     {
       "id": 11,
       "name": "Signor Rossi Restaurant",
-      "category": "Freizeit // Gastronomie",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
       "priority": 60,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -168,7 +179,8 @@
     {
       "id": 12,
       "name": "Coffee & Plants",
-      "category": "Freizeit // Gastronomie",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
       "priority": 60,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -183,7 +195,8 @@
     {
       "id": 13,
       "name": "Apotheken",
-      "category": "Leben // Gesundheit",
+      "category": "Leben",
+      "subcategory": "Gesundheit",
       "priority": 45,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -198,7 +211,8 @@
     {
       "id": 14,
       "name": "The Body Shop",
-      "category": "Leben // Styling und Wellness",
+      "category": "Leben",
+      "subcategory": "Styling und Wellness",
       "priority": 45,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -213,7 +227,8 @@
     {
       "id": 15,
       "name": "Friseur",
-      "category": "Leben // Styling und Wellness",
+      "category": "Leben",
+      "subcategory": "Styling und Wellness",
       "priority": 45,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -228,7 +243,8 @@
     {
       "id": 16,
       "name": "Kiosk",
-      "category": "Einkaufen // Sonstiges Einkaufen",
+      "category": "Einkaufen",
+      "subcategory": "Sonstiges Einkaufen",
       "priority": 30,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -243,7 +259,8 @@
     {
       "id": 17,
       "name": "Bahnhof Kiosk",
-      "category": "Einkaufen // Sonstiges Einkaufen",
+      "category": "Einkaufen",
+      "subcategory": "Sonstiges Einkaufen",
       "priority": 30,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -258,7 +275,8 @@
     {
       "id": 18,
       "name": "Fairtiq (Öffentlicher Verkehr)",
-      "category": "Mobilität // Öffentlicher Verkehr",
+      "category": "Mobilität",
+      "subcategory": "Öffentlicher Verkehr",
       "priority": 70,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -272,7 +290,8 @@
     {
       "id": 19,
       "name": "Sunrise (Kommunikation)",
-      "category": "Wohnen // Kommunikation",
+      "category": "Wohnen",
+      "subcategory": "Kommunikation",
       "priority": 70,
       "transaction_types": ["Buchung"],
       "services": ["Lastschrift"],
@@ -286,7 +305,8 @@
     {
       "id": 20,
       "name": "Apple (Subscription/Dienstleistung)",
-      "category": "Wohnen // Kommunikation",
+      "category": "Wohnen",
+      "subcategory": "Kommunikation",
       "priority": 60,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -300,7 +320,8 @@
     {
       "id": 21,
       "name": "Bargeldbezug",
-      "category": "Finanzen // Bargeldbezug",
+      "category": "Finanzen",
+      "subcategory": "Bargeldbezug",
       "priority": 80,
       "transaction_types": ["Buchung"],
       "services": ["Bargeldbezug"],
@@ -314,7 +335,8 @@
     {
       "id": 22,
       "name": "Nebenkosten (Strom/Wasser)",
-      "category": "Wohnen // Nebenkosten",
+      "category": "Wohnen",
+      "subcategory": "Nebenkosten",
       "priority": 60,
       "transaction_types": ["Buchung"],
       "services": ["Lastschrift"],
@@ -328,7 +350,8 @@
     {
       "id": 23,
       "name": "Krankenversicherung",
-      "category": "Leben // Gesundheit",
+      "category": "Leben",
+      "subcategory": "Gesundheit",
       "priority": 70,
       "transaction_types": ["Buchung"],
       "services": ["Lastschrift"],
@@ -342,7 +365,8 @@
     {
       "id": 24,
       "name": "Byro (Freizeit/Hobby)",
-      "category": "Leben // Sonstiges Leben",
+      "category": "Leben",
+      "subcategory": "Sonstiges Leben",
       "priority": 35,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -357,7 +381,8 @@
     {
       "id": 25,
       "name": "Twint Geldtransfer",
-      "category": "Freizeit // Gastronomie",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
       "priority": 55,
       "transaction_types": ["Buchung"],
       "services": ["Twint"],
@@ -372,6 +397,7 @@
       "id": 26,
       "name": "Manor (Kaufhaus/Transfers)",
       "category": "Überträge",
+      "subcategory": "",
       "priority": 50,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -385,7 +411,7 @@
     }
   ],
   "comments": {
-    "required_fields": "Rule fields that should always be set: id, name, category, priority, transaction_types.",
+    "required_fields": "Rule fields that should always be set: id, name, category, subcategory, priority, transaction_types.",
     "optional_fields": "Optional rule filters: services, providers, merchants, locations, include_keywords, exclude_keywords. Empty list means 'do not filter by this field'.",
     "transaction_types": "Required filter by transaction type from CSV (currently usually 'Buchung').",
     "services": "Optional filter on parsed generic service type (e.g. Karteneinkauf, Twint, Lastschrift).",
@@ -395,6 +421,7 @@
     "include_keywords": "Optional keywords that MUST be present. AND logic.",
     "exclude_keywords": "Optional keywords that must NOT be present. NONE may be present.",
     "matching": "A rule matches only if all active (non-empty) filters are satisfied. Highest priority wins.",
-    "fallback": "No fallback category. If no rule matches, transaction stays uncategorized."
+    "fallback": "No fallback category. If no rule matches, transaction stays uncategorized.",
+    "subcategory": "Subcategory for fine-grained classification (e.g. 'Gastronomie' within 'Freizeit'). Empty string if not applicable."
   }
 }

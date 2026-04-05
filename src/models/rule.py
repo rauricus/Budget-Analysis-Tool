@@ -10,6 +10,7 @@ class Rule:
     id: int
     name: str
     category: str
+    subcategory: str
     priority: int
     transaction_types: list[str]  # e.g. ["APPLE PAY KAUF/DIENSTLEISTUNG"]
     services: list[str] = field(default_factory=list)  # Optional filter, e.g. ["Karteneinkauf", "Twint"]

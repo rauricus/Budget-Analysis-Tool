@@ -32,6 +32,7 @@ class RuleEngine:
                 id=rule_data["id"],
                 name=rule_data["name"],
                 category=rule_data["category"],
+                subcategory=rule_data.get("subcategory", ""),
                 priority=rule_data["priority"],
                 transaction_types=rule_data.get("transaction_types", []),
                 services=rule_data.get("services", []),
@@ -146,12 +147,18 @@ class RuleEngine:
             # Categorize
             best_match = matching[0] if matching else None
             txn.auto_category = best_match.category if best_match else None
+            txn.auto_subcategory = best_match.subcategory if best_match else None
 
             if best_match and self.debug:
+                category_label = (
+                    f"{best_match.category} / {best_match.subcategory}"
+                    if best_match.subcategory
+                    else best_match.category
+                )
                 print(
                     "      Rule matched: "
                     f"#{best_match.id} '{best_match.name}' from {best_match.source} "
-                    f"-> {best_match.category} | "
+                    f"-> {category_label} | "
                     f"{self._transaction_debug_label(txn)}"
                 )
 

@@ -13,11 +13,12 @@ from models import Transaction
 from rule_engine import RuleEngine
 
 
-def _rule(id, category="Kategorie A", priority=50, merchant="TESTLADEN", name=None):
+def _rule(id, category="Kategorie A", subcategory="", priority=50, merchant="TESTLADEN", name=None):
     return {
         "id": id,
         "name": name or f"Regel {id}",
         "category": category,
+        "subcategory": subcategory,
         "priority": priority,
         "transaction_types": ["Buchung"],
         "services": ["Karteneinkauf"],

@@ -28,6 +28,7 @@ class ExportHandler:
         "Debit in CHF",
         "Label",
         "Category",
+        "Subcategory",
     ]
     
     @staticmethod
@@ -125,6 +126,7 @@ class ExportHandler:
                 "Debit in CHF": debit,
                 "Label": txn.label,
                 "Category": txn.auto_category or txn.category or "?",
+                "Subcategory": txn.auto_subcategory or "",
             })
         
         df = pd.DataFrame(rows, columns=ExportHandler.EXPORT_COLUMNS)

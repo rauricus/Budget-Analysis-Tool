@@ -15,6 +15,7 @@ class Transaction:
     label: str
     category: str  # Original category from CSV
     auto_category: Optional[str] = None  # Automatically assigned category
+    auto_subcategory: Optional[str] = None  # Automatically assigned subcategory
     service_type: str = ""  # e.g. Karteneinkauf, Twint, Lastschrift
     provider: str = ""  # Specific payment provider, e.g. "Apple Pay" for card purchases
     card_number: str = ""  # e.g. XXXX1384 (card)
