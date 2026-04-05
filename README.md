@@ -26,8 +26,12 @@ micromamba env create -f environment.yml
 # Activate environment
 micromamba activate bat
 
-# Run pipeline
-python main.py
+# Run pipeline for reference dataset
+python main.py reference
+
+# Optional: run pipeline for your own local dataset/overlay setup
+# I use a dataset in `data/private` only as a example here. If you choose to use that, howeever, it that's already gitignored.
+python main.py private
 ```
 
 ## Tests
@@ -47,12 +51,14 @@ micromamba run -n bat pytest tests/test_rule_matching.py
 
 ```text
 data/
-├── rules.json                     # Rule definitions (service-scoped matching)
-├── input/                         # New raw input CSV files
-├── output/                        # Generated categorized CSV outputs
-└── reference/                     # Versioned reference datasets
-  ├── input/                     # Stable sample input CSV files
-  └── output/                    # Expected/known categorized outputs
+├── reference/                     # Base rules + stable sample dataset
+│ ├── rules.json                   # Base rule definitions (service-scoped matching)
+│ ├── input/                       # Stable sample input CSV files
+│ └── output/                      # Expected/known categorized outputs
+└── private/                       # Example for local-only data + optional rule overrides (gitignored)
+  ├── rules.json                   # Overlay rules (same id overrides base, new id adds)
+  ├── input/                       # Your own local input CSV files
+  └── output/                      # Generated local categorized CSV outputs
 
 src/
 ├── import_handler.py              # CSV import utilities
@@ -83,16 +89,19 @@ tests/                             # Unit/integration-style tests for pipeline c
 ## Data flow
 
 ```text
-data/input/*.csv
+data/{reference|private}/input/*.csv
    -> ImportHandler.load_csv
    -> TransactionParser.parse_row
    -> NotificationTextParser.parse (via parser registry)
    -> RuleEngine.categorize_batch
    -> ExportHandler.export_csv
-   -> data/output/*.categorized.csv
+  -> data/{reference|private}/output/*.categorized.csv
 ```
 
-## Rules (`data/rules.json`)
+## Rules
+
+`data/reference/rules.json` is the shared base configuration.
+`data/private/rules.json` is an optional local overlay example for personal rules and is typically not committed.
 
 Example:
 
@@ -102,7 +111,8 @@ Example:
     {
       "id": 1,
       "name": "Migros Take-Away",
-      "category": "Freizeit // Gastronomie",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
       "priority": 100,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -121,6 +131,7 @@ Example:
 ### Matching behavior
 
 - Rules are sorted by descending `priority`.
+- Category assignment uses two levels: `category` and `subcategory`.
 - Rules can filter by parsed `service_type` (`services`) and optional `provider` (`providers`).
 - A rule matches only if all configured conditions match.
 - `merchants`: OR logic (at least one must match).
@@ -152,14 +163,15 @@ The structured export currently uses these columns:
 - Debit in CHF
 - Label
 - Category
+- Subcategory
 
 ## Iterative workflow
 
-1. Put a new CSV into `data/input/`.
-2. Run `python main.py`.
-3. Inspect `data/output/*.categorized.csv`.
+1. Put a new CSV into `data/reference/input/` (shared) or into your local `data/private/input/` setup.
+2. Run `python main.py reference` or, for your local setup, `python main.py private`.
+3. Inspect `data/reference/output/*.categorized.csv` or your local `data/private/output/*.categorized.csv`.
 4. Add/refine parser(s) in `src/notification/parsers/` if needed.
-5. Add/refine matching rules in `data/rules.json`.
+5. Add/refine matching rules in `data/reference/rules.json` (base) and/or optional personal overrides in `data/private/rules.json`.
 6. Repeat until categorization quality is acceptable.
 
 ## Next steps
