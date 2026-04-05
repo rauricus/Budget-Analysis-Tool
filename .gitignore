@@ -50,3 +50,4 @@ htmlcov/
 
 # Project specific
 data/private
+*.analysis.xlsx
