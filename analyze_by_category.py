@@ -179,97 +179,50 @@ def _create_overview_sheet(ws, category_stats: pd.DataFrame, original_filename: 
     ws['B8'].number_format = '#,##0.00'
     ws['B8'].font = Font(bold=True)
 
-    # Category breakdown table
-    ws['A11'] = 'Category Breakdown'
-    ws['A11'].font = Font(size=12, bold=True)
+    # Filter income and expense categories
+    income_data = category_stats[category_stats['Credit in CHF'] > 0].copy()
+    expense_data = category_stats[category_stats['Debit in CHF'] > 0].copy()
 
-    # Add headers
-    headers = ['Category', 'Income (CHF)', 'Expenses (CHF)', 'Net (CHF)']
-    for col, header in enumerate(headers, start=1):
-        cell = ws.cell(row=13, column=col)
-        cell.value = header
-        cell.font = Font(bold=True)
-        cell.fill = PatternFill(start_color='366092', end_color='366092', fill_type='solid')
-        cell.font = Font(color='FFFFFF', bold=True)
+    # Income section
+    current_row = 11
+    ws[f'A{current_row}'] = 'Income by Category'
+    ws[f'A{current_row}'].font = Font(size=12, bold=True)
 
-    # Add data rows
-    for idx, (_, row) in enumerate(category_stats.iterrows(), start=14):
-        ws.cell(row=idx, column=1, value=row['Category'])
-        ws.cell(row=idx, column=2, value=row['Credit in CHF']).number_format = '#,##0.00'
-        ws.cell(row=idx, column=3, value=row['Debit in CHF']).number_format = '#,##0.00'
-        ws.cell(row=idx, column=4, value=row['Net in CHF']).number_format = '#,##0.00'
+    current_row += 2
+    income_table_start = current_row
+    _add_income_table_and_chart(ws, income_data, start_row=current_row)
 
-    # Add pie charts for expenses and income
-    _add_expense_pie_chart(ws, category_stats, start_row=13)
-    _add_income_pie_chart(ws, category_stats, start_row=13)
+    # Expense section (positioned below income section)
+    current_row = income_table_start + len(income_data) + 5  # Add spacing
+    ws[f'A{current_row}'] = 'Expenses by Category'
+    ws[f'A{current_row}'].font = Font(size=12, bold=True)
+
+    current_row += 2
+    _add_expense_table_and_chart(ws, expense_data, start_row=current_row)
 
     # Adjust column widths
     ws.column_dimensions['A'].width = 20
     ws.column_dimensions['B'].width = 15
-    ws.column_dimensions['C'].width = 15
-    ws.column_dimensions['D'].width = 15
 
 
-def _add_expense_pie_chart(ws, category_stats: pd.DataFrame, start_row: int):
-    """Add a pie chart for expenses by category."""
-    # Filter out categories with zero expenses
-    expense_data = category_stats[category_stats['Debit in CHF'] > 0].copy()
-
-    if expense_data.empty:
-        return
-
-    # Write expense-only data to a dedicated area for the chart (starting at column G)
-    chart_start_row = start_row
-    chart_col = 7  # Column G
-
-    # Write header
-    ws.cell(row=chart_start_row, column=chart_col, value="Expense Category")
-    ws.cell(row=chart_start_row, column=chart_col + 1, value="Amount")
-
-    # Write data
-    for idx, (_, row) in enumerate(expense_data.iterrows(), start=1):
-        ws.cell(row=chart_start_row + idx, column=chart_col, value=row['Category'])
-        ws.cell(row=chart_start_row + idx, column=chart_col + 1, value=row['Debit in CHF'])
-
-    # Create pie chart
-    chart = PieChart()
-    chart.title = "Expenses by Category"
-    chart.style = 10
-    chart.height = 12
-    chart.width = 16
-
-    # Reference the dedicated chart data
-    data_rows = len(expense_data)
-    labels = Reference(ws, min_col=chart_col, min_row=chart_start_row + 1, max_row=chart_start_row + data_rows)
-    data = Reference(ws, min_col=chart_col + 1, min_row=chart_start_row, max_row=chart_start_row + data_rows)
-
-    chart.add_data(data, titles_from_data=True)
-    chart.set_categories(labels)
-
-    # Position chart
-    ws.add_chart(chart, "F11")
-
-
-def _add_income_pie_chart(ws, category_stats: pd.DataFrame, start_row: int):
-    """Add a pie chart for income by category."""
-    # Filter out categories with zero income
-    income_data = category_stats[category_stats['Credit in CHF'] > 0].copy()
-
+def _add_income_table_and_chart(ws, income_data: pd.DataFrame, start_row: int):
+    """Add income table with blue header and pie chart next to it."""
     if income_data.empty:
+        ws.cell(row=start_row, column=1, value="No income data available.")
         return
 
-    # Write income-only data to a dedicated area for the chart (starting at column J)
-    chart_start_row = start_row
-    chart_col = 10  # Column J
+    # Add table headers (blue background, white text)
+    headers = ['Category', 'Amount (CHF)']
+    for col, header in enumerate(headers, start=1):
+        cell = ws.cell(row=start_row, column=col)
+        cell.value = header
+        cell.font = Font(color='FFFFFF', bold=True)
+        cell.fill = PatternFill(start_color='366092', end_color='366092', fill_type='solid')
 
-    # Write header
-    ws.cell(row=chart_start_row, column=chart_col, value="Income Category")
-    ws.cell(row=chart_start_row, column=chart_col + 1, value="Amount")
-
-    # Write data
+    # Add data rows
     for idx, (_, row) in enumerate(income_data.iterrows(), start=1):
-        ws.cell(row=chart_start_row + idx, column=chart_col, value=row['Category'])
-        ws.cell(row=chart_start_row + idx, column=chart_col + 1, value=row['Credit in CHF'])
+        ws.cell(row=start_row + idx, column=1, value=row['Category'])
+        ws.cell(row=start_row + idx, column=2, value=row['Credit in CHF']).number_format = '#,##0.00'
 
     # Create pie chart
     chart = PieChart()
@@ -278,16 +231,56 @@ def _add_income_pie_chart(ws, category_stats: pd.DataFrame, start_row: int):
     chart.height = 12
     chart.width = 16
 
-    # Reference the dedicated chart data
+    # Reference the table data for the chart
     data_rows = len(income_data)
-    labels = Reference(ws, min_col=chart_col, min_row=chart_start_row + 1, max_row=chart_start_row + data_rows)
-    data = Reference(ws, min_col=chart_col + 1, min_row=chart_start_row, max_row=chart_start_row + data_rows)
+    labels = Reference(ws, min_col=1, min_row=start_row + 1, max_row=start_row + data_rows)
+    data = Reference(ws, min_col=2, min_row=start_row, max_row=start_row + data_rows)
 
     chart.add_data(data, titles_from_data=True)
     chart.set_categories(labels)
 
-    # Position chart to the right of the expense chart (moved further right to avoid overlap)
-    ws.add_chart(chart, "N11")
+    # Position chart to the right of the table (column D)
+    chart_cell = f"D{start_row}"
+    ws.add_chart(chart, chart_cell)
+
+
+def _add_expense_table_and_chart(ws, expense_data: pd.DataFrame, start_row: int):
+    """Add expense table with blue header and pie chart next to it."""
+    if expense_data.empty:
+        ws.cell(row=start_row, column=1, value="No expense data available.")
+        return
+
+    # Add table headers (blue background, white text)
+    headers = ['Category', 'Amount (CHF)']
+    for col, header in enumerate(headers, start=1):
+        cell = ws.cell(row=start_row, column=col)
+        cell.value = header
+        cell.font = Font(color='FFFFFF', bold=True)
+        cell.fill = PatternFill(start_color='366092', end_color='366092', fill_type='solid')
+
+    # Add data rows
+    for idx, (_, row) in enumerate(expense_data.iterrows(), start=1):
+        ws.cell(row=start_row + idx, column=1, value=row['Category'])
+        ws.cell(row=start_row + idx, column=2, value=row['Debit in CHF']).number_format = '#,##0.00'
+
+    # Create pie chart
+    chart = PieChart()
+    chart.title = "Expenses by Category"
+    chart.style = 10
+    chart.height = 12
+    chart.width = 16
+
+    # Reference the table data for the chart
+    data_rows = len(expense_data)
+    labels = Reference(ws, min_col=1, min_row=start_row + 1, max_row=start_row + data_rows)
+    data = Reference(ws, min_col=2, min_row=start_row, max_row=start_row + data_rows)
+
+    chart.add_data(data, titles_from_data=True)
+    chart.set_categories(labels)
+
+    # Position chart to the right of the table (column D)
+    chart_cell = f"D{start_row}"
+    ws.add_chart(chart, chart_cell)
 
 
 def _create_category_sheet(ws, category_stats: pd.DataFrame):
