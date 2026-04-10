@@ -295,9 +295,8 @@ def _create_category_sheet(ws, category_stats: pd.DataFrame):
 
             # Format header
             if row_idx == 3:
-                cell.font = Font(bold=True)
-                cell.fill = PatternFill(start_color='366092', end_color='366092', fill_type='solid')
                 cell.font = Font(color='FFFFFF', bold=True)
+                cell.fill = PatternFill(start_color='366092', end_color='366092', fill_type='solid')
                 cell.alignment = Alignment(horizontal='center')
 
             # Format numbers
@@ -323,9 +322,8 @@ def _create_subcategory_sheet(ws, subcategory_stats: pd.DataFrame):
 
             # Format header
             if row_idx == 3:
-                cell.font = Font(bold=True)
-                cell.fill = PatternFill(start_color='366092', end_color='366092', fill_type='solid')
                 cell.font = Font(color='FFFFFF', bold=True)
+                cell.fill = PatternFill(start_color='366092', end_color='366092', fill_type='solid')
                 cell.alignment = Alignment(horizontal='center')
 
             # Format numbers
