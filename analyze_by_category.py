@@ -130,10 +130,15 @@ def create_excel_report(category_stats: pd.DataFrame, subcategory_stats: pd.Data
     ws_category = wb.create_sheet("Category Analysis", 1)
     _create_category_sheet(ws_category, category_stats)
 
-    # Create Subcategory Analysis sheet if there's data
+    # Always create Subcategory Analysis sheet for a consistent workbook layout
+    ws_subcategory = wb.create_sheet("Subcategory Analysis", 2)
     if not subcategory_stats.empty:
-        ws_subcategory = wb.create_sheet("Subcategory Analysis", 2)
         _create_subcategory_sheet(ws_subcategory, subcategory_stats)
+    else:
+        ws_subcategory['A1'] = "Subcategory Analysis"
+        ws_subcategory['A1'].font = Font(bold=True, size=14)
+        ws_subcategory['A3'] = "No subcategory data available."
+        ws_subcategory['A3'].font = Font(italic=True)
 
     # Ensure output directory exists before saving
     output_file = Path(output_path)
