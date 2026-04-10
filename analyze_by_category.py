@@ -218,6 +218,19 @@ def _add_expense_pie_chart(ws, category_stats: pd.DataFrame, start_row: int):
     if expense_data.empty:
         return
 
+    # Write expense-only data to a dedicated area for the chart (starting at column G)
+    chart_start_row = start_row
+    chart_col = 7  # Column G
+
+    # Write header
+    ws.cell(row=chart_start_row, column=chart_col, value="Expense Category")
+    ws.cell(row=chart_start_row, column=chart_col + 1, value="Amount")
+
+    # Write data
+    for idx, (_, row) in enumerate(expense_data.iterrows(), start=1):
+        ws.cell(row=chart_start_row + idx, column=chart_col, value=row['Category'])
+        ws.cell(row=chart_start_row + idx, column=chart_col + 1, value=row['Debit in CHF'])
+
     # Create pie chart
     chart = PieChart()
     chart.title = "Expenses by Category"
@@ -225,14 +238,10 @@ def _add_expense_pie_chart(ws, category_stats: pd.DataFrame, start_row: int):
     chart.height = 12
     chart.width = 16
 
-    # Calculate chart data range
+    # Reference the dedicated chart data
     data_rows = len(expense_data)
-
-    # Categories (labels)
-    labels = Reference(ws, min_col=1, min_row=start_row + 1, max_row=start_row + data_rows)
-
-    # Data (expenses - column 3)
-    data = Reference(ws, min_col=3, min_row=start_row, max_row=start_row + data_rows)
+    labels = Reference(ws, min_col=chart_col, min_row=chart_start_row + 1, max_row=chart_start_row + data_rows)
+    data = Reference(ws, min_col=chart_col + 1, min_row=chart_start_row, max_row=chart_start_row + data_rows)
 
     chart.add_data(data, titles_from_data=True)
     chart.set_categories(labels)
@@ -249,6 +258,19 @@ def _add_income_pie_chart(ws, category_stats: pd.DataFrame, start_row: int):
     if income_data.empty:
         return
 
+    # Write income-only data to a dedicated area for the chart (starting at column J)
+    chart_start_row = start_row
+    chart_col = 10  # Column J
+
+    # Write header
+    ws.cell(row=chart_start_row, column=chart_col, value="Income Category")
+    ws.cell(row=chart_start_row, column=chart_col + 1, value="Amount")
+
+    # Write data
+    for idx, (_, row) in enumerate(income_data.iterrows(), start=1):
+        ws.cell(row=chart_start_row + idx, column=chart_col, value=row['Category'])
+        ws.cell(row=chart_start_row + idx, column=chart_col + 1, value=row['Credit in CHF'])
+
     # Create pie chart
     chart = PieChart()
     chart.title = "Income by Category"
@@ -256,20 +278,16 @@ def _add_income_pie_chart(ws, category_stats: pd.DataFrame, start_row: int):
     chart.height = 12
     chart.width = 16
 
-    # Calculate chart data range
+    # Reference the dedicated chart data
     data_rows = len(income_data)
-
-    # Categories (labels)
-    labels = Reference(ws, min_col=1, min_row=start_row + 1, max_row=start_row + data_rows)
-
-    # Data (income - column 2)
-    data = Reference(ws, min_col=2, min_row=start_row, max_row=start_row + data_rows)
+    labels = Reference(ws, min_col=chart_col, min_row=chart_start_row + 1, max_row=chart_start_row + data_rows)
+    data = Reference(ws, min_col=chart_col + 1, min_row=chart_start_row, max_row=chart_start_row + data_rows)
 
     chart.add_data(data, titles_from_data=True)
     chart.set_categories(labels)
 
-    # Position chart to the right of the expense chart
-    ws.add_chart(chart, "M11")
+    # Position chart to the right of the expense chart (moved further right to avoid overlap)
+    ws.add_chart(chart, "N11")
 
 
 def _create_category_sheet(ws, category_stats: pd.DataFrame):
