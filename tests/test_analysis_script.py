@@ -136,7 +136,28 @@ def test_excel_report_creation():
         # Verify Overview sheet has expected headers
         ws_overview = wb['Overview']
         assert ws_overview['A1'].value == 'Budget Analysis by Category', "Should have title"
-        assert ws_overview['A11'].value == 'Category Breakdown', "Should have category breakdown section"
+        assert ws_overview['A11'].value == 'Income by Category', "Should have income section"
+
+        # Verify income table has proper headers
+        # Income table starts at row 13 (A11 is section title, A12 is blank, A13 is header row)
+        assert ws_overview['A13'].value == 'Category', "Should have Category header for income table"
+        assert ws_overview['B13'].value == 'Amount (CHF)', "Should have Amount header for income table"
+
+        # Find and verify expense section exists
+        # The expense section should be below income section
+        expense_section_found = False
+        for row in range(15, 30):  # Search in reasonable range
+            if ws_overview[f'A{row}'].value == 'Expenses by Category':
+                expense_section_found = True
+                # Verify expense table headers are 2 rows below
+                expense_header_row = row + 2
+                assert ws_overview[f'A{expense_header_row}'].value == 'Category', \
+                    "Should have Category header for expense table"
+                assert ws_overview[f'B{expense_header_row}'].value == 'Amount (CHF)', \
+                    "Should have Amount header for expense table"
+                break
+
+        assert expense_section_found, "Should have Expenses by Category section"
 
         # Verify Category Analysis sheet has data
         ws_category = wb['Category Analysis']
