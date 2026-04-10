@@ -30,7 +30,7 @@ micromamba activate bat
 python categorize_transactions.py reference
 
 # Optional: run pipeline for your own local dataset/overlay setup
-# I use a dataset in `data/private` only as a example here. If you choose to use that, howeever, it that's already gitignored.
+# I use a dataset in `data/private` only as an example here. If you choose to use that, however, note that it is already gitignored.
 python categorize_transactions.py private
 
 # Optional: reuse original input CSV categories for otherwise uncategorized rows
