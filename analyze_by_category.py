@@ -34,7 +34,7 @@ def load_categorized_csv(csv_path: str) -> pd.DataFrame:
     Returns:
         DataFrame with transaction data
     """
-    df = pd.read_csv(csv_path, sep=';', decimal=',')
+    df = pd.read_csv(csv_path, sep=';', decimal=',', encoding='utf-8')
 
     # Convert amount columns to numeric
     df['Credit in CHF'] = pd.to_numeric(df['Credit in CHF'], errors='coerce').fillna(0)
