@@ -8,7 +8,6 @@ from pathlib import Path
 # Add root directory to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-import pandas as pd
 from openpyxl import load_workbook
 from analyze_by_category import (
     load_categorized_csv,
