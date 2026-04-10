@@ -27,14 +27,14 @@ micromamba env create -f environment.yml
 micromamba activate bat
 
 # Run pipeline for reference dataset
-python main.py reference
+python categorize_transactions.py reference
 
 # Optional: run pipeline for your own local dataset/overlay setup
-# I use a dataset in `data/private` only as a example here. If you choose to use that, howeever, it that's already gitignored.
-python main.py private
+# I use a dataset in `data/private` only as an example here. If you choose to use that, however, note that it is already gitignored.
+python categorize_transactions.py private
 
 # Optional: reuse original input CSV categories for otherwise uncategorized rows
-python main.py reference --use-input-category-fallback
+python categorize_transactions.py reference --use-input-category-fallback
 ```
 
 ## Analysis
@@ -104,7 +104,7 @@ src/
     ├── payment_parser.py        # Lastschrift payment parser
     └── standing_order_parser.py # Lastschrift standing-order parser
 
-main.py                            # Pipeline entry point
+categorize_transactions.py                # Pipeline entry point
 tests/                             # Unit/integration-style tests for pipeline components
 ```
 
@@ -166,7 +166,7 @@ Example:
 There is no fallback category in the engine.
 If no parser matches a service or no rule matches that service, the transaction stays uncategorized.
 
-For export compatibility only, `main.py` can optionally reuse the original input CSV category via `--use-input-category-fallback`.
+For export compatibility only, `categorize_transactions.py` can optionally reuse the original input CSV category via `--use-input-category-fallback`.
 
 ## Export format
 
@@ -192,7 +192,7 @@ The structured export currently uses these columns:
 ## Iterative workflow
 
 1. Put a new CSV into `data/reference/input/` (shared) or into your local `data/private/input/` setup.
-2. Run `python main.py reference` or, for your local setup, `python main.py private`.
+2. Run `python categorize_transactions.py reference` or, for your local setup, `python categorize_transactions.py private`.
 3. Inspect `data/reference/output/*.categorized.csv` or your local `data/private/output/*.categorized.csv`.
 4. Add/refine parser(s) in `src/notification/parsers/` if needed.
 5. Add/refine matching rules in `data/reference/rules.json` (base) and/or optional personal overrides in `data/private/rules.json`.
