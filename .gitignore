@@ -51,3 +51,4 @@ htmlcov/
 # Project specific
 data/private
 *.analysis.xlsx
+!data/reference/output/*.analysis.xlsx
