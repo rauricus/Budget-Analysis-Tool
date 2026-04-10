@@ -37,6 +37,25 @@ python main.py private
 python main.py reference --use-input-category-fallback
 ```
 
+## Analysis
+
+After categorizing transactions, you can generate an Excel report with category analysis:
+
+```bash
+# Generate analysis for a categorized CSV file
+python analyze_by_category.py data/reference/output/export.202503.categorized.csv
+
+# Specify a custom output file
+python analyze_by_category.py data/reference/output/export.202503.categorized.csv my_analysis.xlsx
+```
+
+The generated Excel file includes:
+- **Overview sheet**: Summary statistics with pie charts for expenses and income by category
+- **Category Analysis sheet**: Detailed breakdown by main category
+- **Subcategory Analysis sheet**: Detailed breakdown by category and subcategory
+
+The Excel format allows you to easily modify charts, add custom analysis, and adjust formatting according to your needs.
+
 ## Tests
 
 ```bash
@@ -181,5 +200,5 @@ The structured export currently uses these columns:
 
 ## Next steps
 
-- [ ] Add category-level reporting summaries
-- [ ] Add optional chart/export modules
+- [x] Add category-level reporting summaries
+- [x] Add optional chart/export modules
