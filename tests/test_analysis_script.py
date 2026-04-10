@@ -2,16 +2,19 @@
 """Test category analysis script."""
 import sys
 import os
+import tempfile
 from pathlib import Path
 
 # Add root directory to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 import pandas as pd
+from openpyxl import load_workbook
 from analyze_by_category import (
     load_categorized_csv,
     analyze_by_category,
-    analyze_by_subcategory
+    analyze_by_subcategory,
+    create_excel_report
 )
 
 
@@ -97,3 +100,47 @@ def test_numerical_calculations():
         expected_net = row['Credit in CHF'] - row['Debit in CHF']
         assert abs(row['Net in CHF'] - expected_net) < 0.01, \
             f"Net should equal Credit - Debit for {row['Category']}"
+
+
+def test_excel_report_creation():
+    """Integration test for Excel report generation."""
+    csv_path = 'data/reference/output/export.202503.categorized.csv'
+    df = load_categorized_csv(csv_path)
+
+    category_stats = analyze_by_category(df)
+    subcategory_stats = analyze_by_subcategory(df)
+
+    # Create temporary directory and file
+    with tempfile.TemporaryDirectory() as tmpdir:
+        output_path = Path(tmpdir) / 'subdir' / 'test_analysis.xlsx'
+
+        # Test that directory creation works
+        create_excel_report(
+            category_stats,
+            subcategory_stats,
+            str(output_path),
+            'test.csv'
+        )
+
+        # Verify file was created
+        assert output_path.exists(), "Excel file should be created"
+
+        # Load and verify workbook structure
+        wb = load_workbook(output_path)
+
+        # Check expected sheets exist
+        assert 'Overview' in wb.sheetnames, "Should have Overview sheet"
+        assert 'Category Analysis' in wb.sheetnames, "Should have Category Analysis sheet"
+        assert 'Subcategory Analysis' in wb.sheetnames, "Should have Subcategory Analysis sheet"
+
+        # Verify Overview sheet has expected headers
+        ws_overview = wb['Overview']
+        assert ws_overview['A1'].value == 'Budget Analysis by Category', "Should have title"
+        assert ws_overview['A11'].value == 'Category Breakdown', "Should have category breakdown section"
+
+        # Verify Category Analysis sheet has data
+        ws_category = wb['Category Analysis']
+        assert ws_category['A1'].value == 'Category Analysis', "Should have title"
+        assert ws_category['A3'].value == 'Category', "Should have Category header"
+
+        wb.close()

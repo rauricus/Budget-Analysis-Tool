@@ -17,6 +17,7 @@ Example:
 
 import sys
 from pathlib import Path
+import numbers
 import pandas as pd
 from openpyxl import Workbook
 from openpyxl.chart import PieChart, Reference
@@ -134,9 +135,13 @@ def create_excel_report(category_stats: pd.DataFrame, subcategory_stats: pd.Data
         ws_subcategory = wb.create_sheet("Subcategory Analysis", 2)
         _create_subcategory_sheet(ws_subcategory, subcategory_stats)
 
+    # Ensure output directory exists before saving
+    output_file = Path(output_path)
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+
     # Save workbook
-    wb.save(output_path)
-    print(f"✓ Excel report saved to: {output_path}")
+    wb.save(output_file)
+    print(f"✓ Excel report saved to: {output_file}")
 
 
 def _create_overview_sheet(ws, category_stats: pd.DataFrame, original_filename: str):
@@ -183,11 +188,11 @@ def _create_overview_sheet(ws, category_stats: pd.DataFrame, original_filename: 
         cell.font = Font(color='FFFFFF', bold=True)
 
     # Add data rows
-    for idx, row in enumerate(category_stats.itertuples(index=False), start=14):
-        ws.cell(row=idx, column=1, value=row.Category)
-        ws.cell(row=idx, column=2, value=row._1).number_format = '#,##0.00'
-        ws.cell(row=idx, column=3, value=row._2).number_format = '#,##0.00'
-        ws.cell(row=idx, column=4, value=row._3).number_format = '#,##0.00'
+    for idx, (_, row) in enumerate(category_stats.iterrows(), start=14):
+        ws.cell(row=idx, column=1, value=row['Category'])
+        ws.cell(row=idx, column=2, value=row['Credit in CHF']).number_format = '#,##0.00'
+        ws.cell(row=idx, column=3, value=row['Debit in CHF']).number_format = '#,##0.00'
+        ws.cell(row=idx, column=4, value=row['Net in CHF']).number_format = '#,##0.00'
 
     # Add pie chart for expenses
     _add_expense_pie_chart(ws, category_stats, start_row=13)
@@ -248,7 +253,7 @@ def _create_category_sheet(ws, category_stats: pd.DataFrame):
                 cell.alignment = Alignment(horizontal='center')
 
             # Format numbers
-            elif col_idx > 1 and isinstance(value, (int, float)):
+            elif col_idx > 1 and isinstance(value, numbers.Number):
                 cell.number_format = '#,##0.00'
 
     # Adjust column widths
@@ -276,7 +281,7 @@ def _create_subcategory_sheet(ws, subcategory_stats: pd.DataFrame):
                 cell.alignment = Alignment(horizontal='center')
 
             # Format numbers
-            elif col_idx > 2 and isinstance(value, (int, float)):
+            elif col_idx > 2 and isinstance(value, numbers.Number):
                 cell.number_format = '#,##0.00'
 
     # Adjust column widths
