@@ -54,8 +54,8 @@ def test_multiple_rules_per_transaction():
     assert matched_count > 0, "Should find transactions that match rules"
 
 
-def test_uncategorized_allowed_without_service_match():
-    """Without a service match, categorize may return None."""
+def test_reference_dataset_has_uncategorized_matches():
+    """Reference dataset should contain at least one unmatched transaction."""
     engine = RuleEngine('data/reference/rules.json')
 
     txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
@@ -66,5 +66,5 @@ def test_uncategorized_allowed_without_service_match():
 if __name__ == '__main__':
     test_rule_matching_highest_priority()
     test_multiple_rules_per_transaction()
-    test_uncategorized_allowed_without_service_match()
+    test_reference_dataset_has_uncategorized_matches()
     print("✓ All rule matching tests passed")

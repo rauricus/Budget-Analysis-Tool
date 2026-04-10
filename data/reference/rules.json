@@ -408,6 +408,112 @@
         "include_keywords": [],
         "exclude_keywords": []
       }
+    },
+    {
+      "id": 27,
+      "name": "City Tankstelle",
+      "category": "Einkaufen",
+      "subcategory": "Detail-Lebensmittel",
+      "priority": 45,
+      "transaction_types": ["Buchung"],
+      "services": ["Karteneinkauf"],
+      "providers": ["Apple Pay"],
+      "triggers": {
+        "merchants": ["CITY TANKSTELLE"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 28,
+      "name": "Bankpaketpreis",
+      "category": "Finanzen",
+      "subcategory": "Gebühren",
+      "priority": 85,
+      "transaction_types": ["Buchung"],
+      "services": ["Gebühren"],
+      "triggers": {
+        "merchants": [],
+        "locations": [],
+        "include_keywords": ["BANKPAKET SMART"],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 29,
+      "name": "Yooji's Restaurant (ohne Provider)",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
+      "priority": 58,
+      "transaction_types": ["Buchung"],
+      "services": ["Karteneinkauf"],
+      "triggers": {
+        "merchants": ["YOOJI'S"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 30,
+      "name": "Twint Kebab/Imbiss",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
+      "priority": 56,
+      "transaction_types": ["Buchung"],
+      "services": ["Twint"],
+      "triggers": {
+        "merchants": ["KEBAB", "IMBISS"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 31,
+      "name": "Familienkasse Dauerauftrag",
+      "category": "Leben",
+      "subcategory": "Familie",
+      "priority": 72,
+      "transaction_types": ["Buchung"],
+      "services": ["Lastschrift"],
+      "triggers": {
+        "merchants": ["FAMILIENKASSE"],
+        "locations": [],
+        "include_keywords": ["FAMILIENZULAGE"],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 32,
+      "name": "Gehalt Alpenwerk",
+      "category": "Einkommen",
+      "subcategory": "Lohn",
+      "priority": 80,
+      "transaction_types": ["Buchung"],
+      "services": ["Gutschrift"],
+      "triggers": {
+        "merchants": ["ALPENWERK"],
+        "locations": [],
+        "include_keywords": ["SALAER"],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 33,
+      "name": "Medicura Plus Gutschrift",
+      "category": "Überträge",
+      "subcategory": "",
+      "priority": 75,
+      "transaction_types": ["Buchung"],
+      "services": ["Gutschrift"],
+      "triggers": {
+        "merchants": ["MEDICURA PLUS"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
     }
   ],
   "comments": {

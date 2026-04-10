@@ -35,8 +35,8 @@ def test_categorization():
                 f"Transaction {idx} should be categorized as {top_priority_rule.category}"
 
 
-def test_not_all_transactions_need_category_without_parser_match():
-    """Unparsed services may remain uncategorized without fallback."""
+def test_reference_dataset_contains_uncategorized_cases():
+    """Reference dataset should keep at least one intentionally uncategorized case."""
     txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
     engine = RuleEngine('data/reference/rules.json')
 
@@ -45,11 +45,11 @@ def test_not_all_transactions_need_category_without_parser_match():
     uncategorized_count = sum(1 for c in categories if not c)
 
     assert categorized_count > 0, "There should be categorized transactions"
-    assert uncategorized_count > 0, "There should be uncategorized transactions without parser match"
+    assert uncategorized_count > 0, "Reference dataset should contain uncategorized transactions"
 
 
 if __name__ == '__main__':
     test_categorization()
-    test_not_all_transactions_need_category_without_parser_match()
+    test_reference_dataset_contains_uncategorized_cases()
     print("✓ All categorization tests passed")
 
