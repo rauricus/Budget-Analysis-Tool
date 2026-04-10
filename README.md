@@ -50,7 +50,7 @@ python analyze_by_category.py data/reference/output/export.202503.categorized.cs
 ```
 
 The generated Excel file includes:
-- **Overview sheet**: Summary statistics and pie chart of expenses by category
+- **Overview sheet**: Summary statistics with pie charts for expenses and income by category
 - **Category Analysis sheet**: Detailed breakdown by main category
 - **Subcategory Analysis sheet**: Detailed breakdown by category and subcategory
 

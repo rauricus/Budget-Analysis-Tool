@@ -199,8 +199,9 @@ def _create_overview_sheet(ws, category_stats: pd.DataFrame, original_filename: 
         ws.cell(row=idx, column=3, value=row['Debit in CHF']).number_format = '#,##0.00'
         ws.cell(row=idx, column=4, value=row['Net in CHF']).number_format = '#,##0.00'
 
-    # Add pie chart for expenses
+    # Add pie charts for expenses and income
     _add_expense_pie_chart(ws, category_stats, start_row=13)
+    _add_income_pie_chart(ws, category_stats, start_row=13)
 
     # Adjust column widths
     ws.column_dimensions['A'].width = 20
@@ -238,6 +239,37 @@ def _add_expense_pie_chart(ws, category_stats: pd.DataFrame, start_row: int):
 
     # Position chart
     ws.add_chart(chart, "F11")
+
+
+def _add_income_pie_chart(ws, category_stats: pd.DataFrame, start_row: int):
+    """Add a pie chart for income by category."""
+    # Filter out categories with zero income
+    income_data = category_stats[category_stats['Credit in CHF'] > 0].copy()
+
+    if income_data.empty:
+        return
+
+    # Create pie chart
+    chart = PieChart()
+    chart.title = "Income by Category"
+    chart.style = 10
+    chart.height = 12
+    chart.width = 16
+
+    # Calculate chart data range
+    data_rows = len(income_data)
+
+    # Categories (labels)
+    labels = Reference(ws, min_col=1, min_row=start_row + 1, max_row=start_row + data_rows)
+
+    # Data (income - column 2)
+    data = Reference(ws, min_col=2, min_row=start_row, max_row=start_row + data_rows)
+
+    chart.add_data(data, titles_from_data=True)
+    chart.set_categories(labels)
+
+    # Position chart to the right of the expense chart
+    ws.add_chart(chart, "M11")
 
 
 def _create_category_sheet(ws, category_stats: pd.DataFrame):
