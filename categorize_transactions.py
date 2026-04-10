@@ -38,10 +38,10 @@ def main(argv: Optional[Sequence[str]] = None):
     """Main pipeline.
 
     Usage:
-        python main.py <run_dir> [--debug] [--use-input-category-fallback]
+        python categorize_transactions.py <run_dir> [--debug] [--use-input-category-fallback]
 
     Example:
-        python main.py reference --debug
+        python categorize_transactions.py reference --debug
     """
     argv = argv if argv is not None else sys.argv[1:]
     debug = False
@@ -54,8 +54,8 @@ def main(argv: Optional[Sequence[str]] = None):
         argv = [arg for arg in argv if arg != "--use-input-category-fallback"]
 
     if len(argv) != 1:
-        print("Usage: python main.py <run_dir> [--debug] [--use-input-category-fallback]")
-        print("Example: python main.py reference --debug")
+        print("Usage: python categorize_transactions.py <run_dir> [--debug] [--use-input-category-fallback]")
+        print("Example: python categorize_transactions.py reference --debug")
         return 2
 
     try:
