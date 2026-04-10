@@ -228,8 +228,8 @@ def _add_income_table_and_chart(ws, income_data: pd.DataFrame, start_row: int):
     chart = PieChart()
     chart.title = "Income by Category"
     chart.style = 10
-    chart.height = 12
-    chart.width = 16
+    chart.height = 10  # Reduced height to prevent overlap
+    chart.width = 14   # Reduced width to prevent overlap
 
     # Reference the table data for the chart
     data_rows = len(income_data)
@@ -267,8 +267,8 @@ def _add_expense_table_and_chart(ws, expense_data: pd.DataFrame, start_row: int)
     chart = PieChart()
     chart.title = "Expenses by Category"
     chart.style = 10
-    chart.height = 12
-    chart.width = 16
+    chart.height = 10  # Reduced height to prevent overlap
+    chart.width = 14   # Reduced width to prevent overlap
 
     # Reference the table data for the chart
     data_rows = len(expense_data)

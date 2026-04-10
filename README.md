@@ -201,4 +201,4 @@ The structured export currently uses these columns:
 ## Next steps
 
 - [x] Add category-level reporting summaries
-- [ ] Add optional chart/export modules
+- [x] Add optional chart/export modules
