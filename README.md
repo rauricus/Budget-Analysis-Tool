@@ -209,7 +209,34 @@ The structured export currently uses these columns:
 5. Add/refine matching rules in `data/reference/rules.json` (base) and/or optional personal overrides in `data/private/rules.json`.
 6. Repeat until categorization quality is acceptable.
 
-## Next steps
+### Private override rules with version control
 
-- [x] Add category-level reporting summaries
-- [x] Add optional chart/export modules
+If you keep personal data and overrides in `data/private`, there are two practical ways to version them without storing them in the public repository.
+
+Approach A (recommended): nested private Git repository in `data/private`
+
+- Initialize a second, private Git repository in `data/private` for personal files (`rules.json`, `transaction_id_registry.json`, optional private input snapshots).
+- Commit and push private changes from `data/private` separately.
+
+Example:
+
+```bash
+cd data/private
+git init
+git remote add origin <private-remote-url>
+git add rules.json transaction_id_registry.json input output
+git commit -m "Initial private dataset"
+git push -u origin main
+```
+
+Approach B (alternative): separate private repository outside this project
+
+- Keep the private repository elsewhere on disk.
+- Link `data/private/rules.json` (or the whole `data/private` directory) to that private location.
+- Use this when you prefer strict repository separation instead of a nested repository.
+
+Both approaches work with the current overlay mechanism:
+
+- Base rules are always loaded from `data/reference/rules.json`.
+- Optional overlay rules are loaded from `{run_dir}/rules.json` (for example `data/private/rules.json`).
+- Same rule ID overrides base; new rule ID adds a new rule.
