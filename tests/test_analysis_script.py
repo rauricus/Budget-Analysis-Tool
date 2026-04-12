@@ -11,6 +11,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from openpyxl import load_workbook
 from analyze_by_category import (
     load_categorized_csv,
+    load_dataset_categorized_csvs,
     analyze_by_category,
     analyze_by_subcategory,
     create_excel_report
@@ -164,3 +165,29 @@ def test_excel_report_creation():
         assert ws_category['A3'].value == 'Category', "Should have Category header"
 
         wb.close()
+
+
+def test_load_dataset_categorized_csvs_merges_all_files_and_adds_source():
+    """Should merge all categorized CSV files from dataset output and add Source File column."""
+    run_dir = Path('data/reference')
+
+    df, file_count = load_dataset_categorized_csvs(run_dir)
+
+    assert file_count >= 1, "Should discover at least one categorized file"
+    assert len(df) > 0, "Merged dataframe should contain transactions"
+    assert 'Source File' in df.columns, "Merged dataframe should contain Source File column"
+    assert df['Source File'].nunique() == file_count, "Each discovered file should be represented"
+
+
+def test_load_dataset_categorized_csvs_raises_when_no_files():
+    """Should raise if output directory has no categorized CSV files."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        run_dir = Path(tmpdir) / 'dataset'
+        output_dir = run_dir / 'output'
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        try:
+            load_dataset_categorized_csvs(run_dir)
+            assert False, "Expected FileNotFoundError when no categorized files exist"
+        except FileNotFoundError as exc:
+            assert 'No categorized CSV files found' in str(exc)

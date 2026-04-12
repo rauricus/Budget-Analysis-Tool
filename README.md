@@ -40,14 +40,15 @@ python categorize_transactions.py reference --use-input-category-fallback
 
 ## Analysis
 
-After categorizing transactions, you can generate an Excel report with category analysis:
+After categorizing transactions, you can generate an Excel report with category analysis.
+The analysis script discovers all `*.categorized.csv` files in the dataset output folder and aggregates them into one report.
 
 ```bash
-# Generate analysis for a categorized CSV file
-python analyze_by_category.py data/reference/output/export.202503.categorized.csv
+# Generate aggregated analysis for all categorized CSV files in a dataset
+python analyze_by_category.py reference
 
 # Specify a custom output file
-python analyze_by_category.py data/reference/output/export.202503.categorized.csv my_analysis.xlsx
+python analyze_by_category.py private my_analysis.xlsx
 ```
 
 The generated Excel file includes:

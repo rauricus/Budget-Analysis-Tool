@@ -8,21 +8,50 @@ Analyzes categorized CSV files and generates an Excel report with:
 - Flexibility for users to modify and customize
 
 Usage:
-    python analyze_by_category.py <categorized_csv_file> [output_excel_file]
+    python analyze_by_category.py <run_dir> [output_excel_file]
 
 Example:
-    python analyze_by_category.py data/reference/output/export.202503.categorized.csv
-    python analyze_by_category.py data/reference/output/export.202503.categorized.csv analysis.xlsx
+    python analyze_by_category.py reference
+    python analyze_by_category.py data/reference
+    python analyze_by_category.py private my_analysis.xlsx
 """
 
 import sys
 from pathlib import Path
 import numbers
+from typing import Optional, Sequence, Tuple
 import pandas as pd
 from openpyxl import Workbook
 from openpyxl.chart import PieChart, Reference
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils.dataframe import dataframe_to_rows
+
+
+REQUIRED_COLUMNS = {
+    'Category',
+    'Subcategory',
+    'Credit in CHF',
+    'Debit in CHF',
+}
+
+
+def _resolve_run_directory(arg: str) -> Path:
+    """Resolve run directory from CLI argument.
+
+    Supports either a direct path (for example data/reference) or shorthand
+    folder names under data/ (for example reference -> data/reference).
+    """
+    direct = Path(arg)
+    if direct.exists() and direct.is_dir():
+        return direct
+
+    under_data = Path('data') / arg
+    if under_data.exists() and under_data.is_dir():
+        return under_data
+
+    raise FileNotFoundError(
+        f"Run directory not found: '{arg}' (also checked '{under_data}')"
+    )
 
 
 def load_categorized_csv(csv_path: str) -> pd.DataFrame:
@@ -45,6 +74,49 @@ def load_categorized_csv(csv_path: str) -> pd.DataFrame:
     df['Subcategory'] = df['Subcategory'].fillna('')
 
     return df
+
+
+def load_dataset_categorized_csvs(run_dir: Path) -> Tuple[pd.DataFrame, int]:
+    """Load and merge all categorized CSV files from a run directory.
+
+    Args:
+        run_dir: Dataset run directory (for example data/reference)
+
+    Returns:
+        A tuple of merged DataFrame and number of loaded files
+
+    Raises:
+        FileNotFoundError: If output directory or categorized files are missing
+        ValueError: If a file is missing required columns
+        RuntimeError: If a categorized CSV cannot be loaded
+    """
+    output_dir = run_dir / 'output'
+    if not output_dir.exists() or not output_dir.is_dir():
+        raise FileNotFoundError(f"Output directory not found: {output_dir}")
+
+    categorized_files = sorted(output_dir.glob('*.categorized.csv'))
+    if not categorized_files:
+        raise FileNotFoundError(f"No categorized CSV files found in: {output_dir}")
+
+    dataframes = []
+    for csv_file in categorized_files:
+        try:
+            df = load_categorized_csv(str(csv_file))
+        except Exception as e:
+            raise RuntimeError(f"Failed to load '{csv_file.name}': {e}") from e
+
+        missing_columns = REQUIRED_COLUMNS.difference(df.columns)
+        if missing_columns:
+            missing_list = ', '.join(sorted(missing_columns))
+            raise ValueError(
+                f"File '{csv_file.name}' is missing required columns: {missing_list}"
+            )
+
+        df['Source File'] = csv_file.name
+        dataframes.append(df)
+
+    merged = pd.concat(dataframes, ignore_index=True)
+    return merged, len(categorized_files)
 
 
 def analyze_by_category(df: pd.DataFrame) -> pd.DataFrame:
@@ -108,14 +180,14 @@ def analyze_by_subcategory(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def create_excel_report(category_stats: pd.DataFrame, subcategory_stats: pd.DataFrame,
-                        output_path: str, original_filename: str):
+                        output_path: str, source_label: str):
     """Create an Excel report with tables and charts.
 
     Args:
         category_stats: DataFrame with category aggregations
         subcategory_stats: DataFrame with subcategory aggregations
         output_path: Path to save the Excel file
-        original_filename: Name of the original CSV file for reference
+        source_label: Human-readable source label for report header
     """
     wb = Workbook()
 
@@ -124,7 +196,7 @@ def create_excel_report(category_stats: pd.DataFrame, subcategory_stats: pd.Data
 
     # Create Overview sheet
     ws_overview = wb.create_sheet("Overview", 0)
-    _create_overview_sheet(ws_overview, category_stats, original_filename)
+    _create_overview_sheet(ws_overview, category_stats, source_label)
 
     # Create Category Analysis sheet
     ws_category = wb.create_sheet("Category Analysis", 1)
@@ -149,13 +221,13 @@ def create_excel_report(category_stats: pd.DataFrame, subcategory_stats: pd.Data
     print(f"✓ Excel report saved to: {output_file}")
 
 
-def _create_overview_sheet(ws, category_stats: pd.DataFrame, original_filename: str):
+def _create_overview_sheet(ws, category_stats: pd.DataFrame, source_label: str):
     """Create the overview sheet with summary and pie charts."""
     # Title
     ws['A1'] = 'Budget Analysis by Category'
     ws['A1'].font = Font(size=16, bold=True)
 
-    ws['A2'] = f'Source: {original_filename}'
+    ws['A2'] = f'Source: {source_label}'
     ws['A2'].font = Font(size=10, italic=True)
 
     # Overall summary
@@ -338,45 +410,44 @@ def _create_subcategory_sheet(ws, subcategory_stats: pd.DataFrame):
     ws.column_dimensions['E'].width = 15
 
 
-def main(argv=None):
+def main(argv: Optional[Sequence[str]] = None):
     """Main entry point."""
     argv = argv if argv is not None else sys.argv[1:]
 
     if len(argv) < 1 or len(argv) > 2:
-        print("Usage: python analyze_by_category.py <categorized_csv_file> [output_excel_file]")
+        print("Usage: python analyze_by_category.py <run_dir> [output_excel_file]")
         print("\nExample:")
-        print("  python analyze_by_category.py data/reference/output/export.202503.categorized.csv")
-        print("  python analyze_by_category.py data/reference/output/export.202503.categorized.csv analysis.xlsx")
+        print("  python analyze_by_category.py reference")
+        print("  python analyze_by_category.py data/reference")
+        print("  python analyze_by_category.py private my_analysis.xlsx")
         return 2
 
-    csv_path = argv[0]
-
-    # Validate input file
-    if not Path(csv_path).exists():
-        print(f"❌ File not found: {csv_path}")
+    try:
+        run_dir = _resolve_run_directory(argv[0])
+    except FileNotFoundError as e:
+        print(f"❌ {e}")
         return 1
 
     # Determine output path
     if len(argv) == 2:
         output_path = argv[1]
     else:
-        # Default: same directory as input, with .xlsx extension
-        csv_file = Path(csv_path)
-        output_path = str(csv_file.parent / f"{csv_file.stem}.analysis.xlsx")
+        # Default: in dataset output directory
+        output_path = str(run_dir / 'output' / 'dataset.analysis.xlsx')
 
     print("=" * 60)
     print("  Budget Analysis - Category Report Generator")
     print("=" * 60)
-    print(f"\nInput:  {csv_path}")
+    print(f"\nInput dataset:  {run_dir}")
     print(f"Output: {output_path}")
 
-    # Load and analyze
-    print("\n1. Loading categorized CSV...")
+    # Discover and load all categorized files in dataset output
+    print("\n1. Discovering and loading categorized CSV files...")
     try:
-        df = load_categorized_csv(csv_path)
-        print(f"   Loaded {len(df)} transactions")
+        df, file_count = load_dataset_categorized_csvs(run_dir)
+        print(f"   Loaded {len(df)} transactions from {file_count} file(s)")
     except Exception as e:
-        print(f"❌ Error loading CSV: {e}")
+        print(f"❌ Error loading categorized files: {e}")
         return 1
 
     print("\n2. Analyzing by category...")
@@ -389,11 +460,12 @@ def main(argv=None):
 
     print("\n4. Generating Excel report...")
     try:
+        source_label = f"{run_dir} ({file_count} categorized file(s))"
         create_excel_report(
             category_stats,
             subcategory_stats,
             output_path,
-            Path(csv_path).name
+            source_label
         )
     except Exception as e:
         print(f"❌ Error creating Excel report: {e}")
