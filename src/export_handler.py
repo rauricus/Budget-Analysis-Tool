@@ -13,6 +13,7 @@ class ExportHandler:
 
     # Standard export columns
     EXPORT_COLUMNS = [
+        "Transaction ID",
         "Date",
         "Transaction Type",
         "Transaction Type Detail",
@@ -141,6 +142,7 @@ class ExportHandler:
             debit = txn.debit if txn.debit > 0 else math.nan
             
             rows.append({
+                "Transaction ID": txn.transaction_id,
                 "Date": txn.date.strftime("%d.%m.%Y"),
                 "Transaction Type": txn.transaction_type,
                 "Transaction Type Detail": txn.transaction_type_detail,

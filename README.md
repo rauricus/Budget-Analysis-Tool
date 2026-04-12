@@ -7,6 +7,7 @@ Automatic categorization of bank transactions using configurable JSON rules.
 - CSV import (PostFinance format)
 - Service-specific parser registry (card purchases incl. provider, cash withdrawals, credit transfers, Twint, Lastschrift variants, bank fees)
 - Rule engine with priority-based matching
+- Stable transaction IDs via persistent fingerprint registry
 - Service/provider-scoped rule selection (`services` + optional `providers` in rules)
 - Merchant, location, include/exclude keyword matching
 - Structured CSV export with parsed service fields
@@ -75,10 +76,12 @@ micromamba run -n bat pytest tests/test_rule_matching.py
 data/
 ├── reference/                     # Base rules + stable sample dataset
 │ ├── rules.json                   # Base rule definitions (service-scoped matching)
+│ ├── transaction_id_registry.json # Persistent transaction fingerprint -> ID mapping
 │ ├── input/                       # Stable sample input CSV files
 │ └── output/                      # Expected/known categorized outputs
 └── private/                       # Example for local-only data + optional rule overrides (gitignored)
   ├── rules.json                   # Overlay rules (same id overrides base, new id adds)
+  ├── transaction_id_registry.json # Local persistent transaction fingerprint -> ID mapping
   ├── input/                       # Your own local input CSV files
   └── output/                      # Generated local categorized CSV outputs
 
@@ -89,6 +92,7 @@ src/
 │ ├── transaction.py               # Transaction dataclass
 │ └── rule.py                      # Rule dataclass + matching logic
 ├── rule_engine.py                 # Rule loading + service/provider-filtered categorization
+├── transaction_id_registry.py     # Stable transaction ID assignment + registry persistence
 ├── transaction_parser.py          # Row-to-Transaction conversion
 └── notification/
   ├── base.py                    # Parser interface + parse result model
@@ -115,9 +119,14 @@ data/{reference|private}/input/*.csv
    -> ImportHandler.load_csv
    -> TransactionParser.parse_row
    -> NotificationTextParser.parse (via parser registry)
+  -> TransactionIdRegistry.assign_batch
    -> RuleEngine.categorize_batch
    -> ExportHandler.export_csv
   -> data/{reference|private}/output/*.categorized.csv
+
+During the categorize run, transaction IDs are assigned and persisted in
+`data/{reference|private}/transaction_id_registry.json`.
+IDs remain stable across reruns as long as the normalized transaction content (date, type, notification text, credit/debit) and duplicate occurrence order remain unchanged.
 ```
 
 ## Rules
@@ -172,6 +181,7 @@ For export compatibility only, `categorize_transactions.py` can optionally reuse
 
 The structured export currently uses these columns:
 
+- Transaction ID
 - Date
 - Transaction Type
 - Transaction Type Detail

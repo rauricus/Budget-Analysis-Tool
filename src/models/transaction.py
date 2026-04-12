@@ -14,6 +14,7 @@ class Transaction:
     debit: float
     label: str
     category: str  # Original category from CSV
+    transaction_id: str = ""
     auto_category: Optional[str] = None  # Automatically assigned category
     auto_subcategory: Optional[str] = None  # Automatically assigned subcategory
     service_type: str = ""  # e.g. Karteneinkauf, Twint, Lastschrift

@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(__file__).parent / "src"))
 from import_handler import ImportHandler
 from rule_engine import RuleEngine
 from export_handler import ExportHandler
+from transaction_id_registry import TransactionIdRegistry
 
 
 def _resolve_run_directory(arg: str) -> Path:
@@ -66,6 +67,7 @@ def main(argv: Optional[Sequence[str]] = None):
 
     input_dir = run_dir / "input"
     output_dir = run_dir / "output"
+    registry_path = run_dir / "transaction_id_registry.json"
 
     # Base rules are always data/reference/rules.json
     base_rules = Path("data/reference/rules.json")
@@ -104,6 +106,7 @@ def main(argv: Optional[Sequence[str]] = None):
 
     total_txns = 0
     total_categorized = 0
+    id_registry = TransactionIdRegistry(registry_path)
 
     # 3/4. Process each input file
     print("\n3. Processing Files...")
@@ -117,6 +120,8 @@ def main(argv: Optional[Sequence[str]] = None):
         except FileNotFoundError as e:
             print(f"❌ {e}")
             return 1
+
+        id_registry.assign_batch(transactions)
 
         transactions, matching_rules_map = engine.categorize_batch(transactions)
 
@@ -136,6 +141,8 @@ def main(argv: Optional[Sequence[str]] = None):
 
         total_txns += len(transactions)
         total_categorized += categorized_count
+
+    id_registry.save()
     
     # Summary
     print("\n" + "=" * 60)
