@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Tests for transaction ID registry behavior."""
+import copy
 import sys
 import os
 import tempfile
@@ -42,7 +43,7 @@ def test_duplicate_transactions_get_distinct_ids():
         registry = TransactionIdRegistry(registry_path)
 
         duplicate_a = txns[0]
-        duplicate_b = txns[0]
+        duplicate_b = copy.copy(txns[0])
         registry.assign_batch([duplicate_a, duplicate_b])
 
         assert duplicate_a.transaction_id != duplicate_b.transaction_id
