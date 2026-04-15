@@ -15,7 +15,7 @@ def _is_na(x):
     return s == "" or s.lower() == "nan" or s == "<NA>"
 
 from models import Transaction
-from notification.facade import NotificationTextParser
+from notification.facade import NotificationTextParser, NoNotificationParserFoundError
 
 
 def _parse_amount(val) -> float:
@@ -39,6 +39,14 @@ def _parse_amount(val) -> float:
     return float(normalized or 0)
 
 
+class TransactionParserError(Exception):
+    """Base exception for transaction parsing errors."""
+
+    def __init__(self, message: str, transaction: Optional[Transaction] = None):
+        super().__init__(message)
+        self.transaction = transaction
+
+
 class TransactionParser:
     """Parser for converting single CSV rows into Transaction objects."""
 
@@ -60,9 +68,8 @@ class TransactionParser:
 
         notification_text_raw = row.get("Avisierungstext", "")
         notification_text = "" if _is_na(notification_text_raw) else str(notification_text_raw).strip()
-        parsed = NotificationTextParser.parse(notification_text)
-
-        return Transaction(
+        
+        txn = Transaction(
             date=date,
             transaction_type=str(row["Bewegungstyp"]).strip(),
             notification_text=notification_text,
@@ -70,16 +77,26 @@ class TransactionParser:
             debit=debit,
             label=TransactionParser._clean_value(row.get("Label", "")),
             category=TransactionParser._clean_value(row.get("Kategorie", "")),
-            service_type=parsed["service_type"],
-            provider=parsed["provider"],
-            card_number=parsed["card_number"],
-            parsed_merchant=parsed["merchant"],
-            parsed_location=parsed["location"],
-            counterparty=parsed["counterparty"],
-            counterparty_iban=parsed["counterparty_iban"],
-            reference=parsed["reference"],
-            transaction_type_detail=parsed["transaction_type_detail"],
         )
+
+        try:
+            parsed = NotificationTextParser.parse(notification_text)
+            
+            txn.service_type = parsed["service_type"]
+            txn.provider = parsed["provider"]
+            txn.card_number = parsed["card_number"]
+            txn.parsed_merchant = parsed["merchant"]
+            txn.parsed_location = parsed["location"]
+            txn.counterparty = parsed["counterparty"]
+            txn.counterparty_iban = parsed["counterparty_iban"]
+            txn.reference = parsed["reference"]
+            txn.transaction_type_detail = parsed["transaction_type_detail"]
+        
+        except NoNotificationParserFoundError as e:
+            raise TransactionParserError("Notification text could not be parsed. "+str(e), transaction=txn) from e
+
+        return txn
+
 
     @staticmethod
     def _clean_value(val) -> str:

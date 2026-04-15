@@ -3,14 +3,61 @@
 Keeps a stable, simple API for callers while delegating to the
 service parser registry.
 """
+from typing import Optional
 
-from notification.registry import NotificationParserRegistry
+from notification.base import NotificationParseResult, AbstractServiceParser
+
+from notification.parsers.bank_package_fee_parser import BankPackageFeeParser
+from notification.parsers.cash_withdrawal_parser import CashWithdrawalParser
+from notification.parsers.card_purchase_parser import CardPurchaseParser
+from notification.parsers.credit_transfer_parser import CreditTransferParser
+from notification.parsers.standing_order_parser import StandingOrderParser
+from notification.parsers.debit_direct_parser import DebitDirectParser
+from notification.parsers.twint_send_parser import TwintSendParser
+from notification.parsers.payment_parser import PaymentParser
+
+
+
+class NoNotificationParserFoundError(Exception):
+    """Raised by the parser registry when no service parser recognises a notification text.
+    """
+
+    def __init__(self, notification_text: str) -> None:
+        super().__init__(f"No parser found for: {notification_text!r}")
+        self.notification_text = notification_text
+        
+
+class _NotificationParserRegistry:
+    """Registry for service-specific notification text parsers."""
+
+    def __init__(self, parsers: Optional[list[AbstractServiceParser]] = None):
+        self.parsers = parsers or [
+            CardPurchaseParser(),
+            CashWithdrawalParser(),
+            CreditTransferParser(),
+            BankPackageFeeParser(),
+            TwintSendParser(),
+            DebitDirectParser(),
+            StandingOrderParser(),
+            PaymentParser(),
+        ]
+
+    def parse(self, avisierungstext: str) -> NotificationParseResult:
+        text = (avisierungstext or "").strip()
+        if not text:
+            return NotificationParseResult()
+
+        for parser in self.parsers:
+            if parser.supports(text):
+                return parser.parse(text)
+
+        raise NoNotificationParserFoundError(text)
 
 
 class NotificationTextParser:
     """Public adapter for service-based notification text parsing."""
 
-    _registry = NotificationParserRegistry()
+    _registry = _NotificationParserRegistry()
 
     @staticmethod
     def parse(avisierungstext: str) -> dict[str, str]:

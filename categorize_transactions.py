@@ -118,7 +118,7 @@ def main(argv: Optional[Sequence[str]] = None):
         print(f"\n   -> {input_csv.name}")
 
         try:
-            transactions = ImportHandler.load_csv(str(input_csv))
+            transactions = ImportHandler.load_csv(str(input_csv), debug=debug)
         except FileNotFoundError as e:
             print(f"❌ {e}")
             return 1

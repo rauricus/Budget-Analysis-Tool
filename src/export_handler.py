@@ -165,5 +165,7 @@ class ExportHandler:
         # Replace NaN with empty string for cleaner CSV
         df = df.fillna("")
         df.to_csv(output_path, sep=";", index=False, encoding="utf-8")
+        
+        print()
         print(f"   Exported {len(transactions)} transactions: {output_path}")
         return df

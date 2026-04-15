@@ -5,12 +5,11 @@ Service-specific parser strategies live under notification.parsers.
 """
 
 from notification.base import NotificationParseResult, AbstractServiceParser
-from notification.facade import NotificationTextParser
-from notification.registry import NotificationParserRegistry
+from notification.facade import NotificationTextParser, NoNotificationParserFoundError
 
 __all__ = [
     "AbstractServiceParser",
+    "NoNotificationParserFoundError",
     "NotificationParseResult",
-    "NotificationParserRegistry",
     "NotificationTextParser",
 ]
