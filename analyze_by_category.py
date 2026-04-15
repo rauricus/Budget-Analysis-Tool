@@ -139,9 +139,9 @@ def load_months_metadata(run_dir: Path) -> list[str]:
         Sorted list of month strings in 'YYYY-MM' format
 
     Raises:
-        FileNotFoundError: If dataset.months.json does not exist
+        FileNotFoundError: If months.json does not exist
     """
-    months_path = run_dir / 'output' / 'dataset.months.json'
+    months_path = run_dir / 'metadata' / 'months.json'
     if not months_path.exists():
         raise FileNotFoundError(
             f"Months metadata not found: {months_path}. "

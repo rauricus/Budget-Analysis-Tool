@@ -68,7 +68,8 @@ def main(argv: Optional[Sequence[str]] = None):
 
     input_dir = run_dir / "input"
     output_dir = run_dir / "output"
-    registry_path = run_dir / "transaction_id_registry.json"
+    metadata_dir = run_dir / "metadata"
+    registry_path = metadata_dir / "transaction_id_registry.json"
 
     # Base rules are always data/reference/rules.json
     base_rules = Path("data/reference/rules.json")
@@ -151,7 +152,8 @@ def main(argv: Optional[Sequence[str]] = None):
 
     # Write months metadata
     output_dir.mkdir(parents=True, exist_ok=True)
-    months_path = output_dir / "dataset.months.json"
+    metadata_dir.mkdir(parents=True, exist_ok=True)
+    months_path = metadata_dir / "months.json"
     sorted_months = sorted(all_months)
     with open(months_path, "w", encoding="utf-8") as f:
         json.dump(sorted_months, f, indent=2)

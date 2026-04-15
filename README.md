@@ -77,12 +77,16 @@ micromamba run -n bat pytest tests/test_rule_matching.py
 data/
 ├── reference/                     # Base rules + stable sample dataset
 │ ├── rules.json                   # Base rule definitions (service-scoped matching)
-│ ├── transaction_id_registry.json # Persistent transaction fingerprint -> ID mapping
+│ ├── metadata/                    # Persistent metadata (transaction registry + months)
+│ │ ├── transaction_id_registry.json # Persistent transaction fingerprint -> ID mapping
+│ │ └── months.json                # Processed month periods
 │ ├── input/                       # Stable sample input CSV files
 │ └── output/                      # Expected/known categorized outputs
 └── private/                       # Example for local-only data + optional rule overrides (gitignored)
   ├── rules.json                   # Overlay rules (same id overrides base, new id adds)
-  ├── transaction_id_registry.json # Local persistent transaction fingerprint -> ID mapping
+  ├── metadata/                    # Persistent metadata (transaction registry + months)
+  │ ├── transaction_id_registry.json # Local persistent transaction fingerprint -> ID mapping
+  │ └── months.json                # Processed month periods
   ├── input/                       # Your own local input CSV files
   └── output/                      # Generated local categorized CSV outputs
 
@@ -126,7 +130,8 @@ data/{reference|private}/input/*.csv
   -> data/{reference|private}/output/*.categorized.csv
 
 During the categorize run, transaction IDs are assigned and persisted in
-`data/{reference|private}/transaction_id_registry.json`.
+`data/{reference|private}/metadata/transaction_id_registry.json`.
+Months metadata is written to `data/{reference|private}/metadata/months.json`.
 IDs remain stable across reruns as long as the normalized transaction content (date, type, notification text, credit/debit) and duplicate occurrence order remain unchanged.
 ```
 
@@ -215,7 +220,7 @@ If you keep personal data and overrides in `data/private`, there are two practic
 
 Approach A (recommended): nested private Git repository in `data/private`
 
-- Initialize a second, private Git repository in `data/private` for personal files (`rules.json`, `transaction_id_registry.json`, optional private input snapshots).
+- Initialize a second, private Git repository in `data/private` for personal files (`rules.json`, `metadata/`, optional private input snapshots).
 - Commit and push private changes from `data/private` separately.
 
 Example:
@@ -224,7 +229,7 @@ Example:
 cd data/private
 git init
 git remote add origin <private-remote-url>
-git add rules.json transaction_id_registry.json input output
+git add rules.json metadata input output
 git commit -m "Initial private dataset"
 git push -u origin main
 ```
