@@ -50,4 +50,5 @@ TX-000047;24.03.2025;Buchung;Zahlung;Lastschrift;;;MEDICURA / SYMPANY;;MEDICURA 
 TX-000048;23.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;BÄCKEREI HUG;OLTEN;;;;;17.3;;Einkaufen;Detail-Lebensmittel
 TX-000049;23.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;MANOR AG - 771 (CENTRA);BERN;;;;;23.95;;Überträge;
 TX-000050;23.03.2025;Buchung;Geld senden;Twint;;;+41796666222 KEBAB, IMBISS;;;;;;13.5;;Freizeit;Gastronomie
+TX-000054;22.03.2025;Buchung;Geld senden;Twint;;;+41790000000 MAX MUSTER MITTEILUNGEN: ESSEN GESTERN ABEND;;;;;;20.0;;Freizeit;Gastronomie
 TX-000051;22.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;UNMATCHED TEST STORE;ZURICH;;;;;12.4;TEST-INTENTIONAL-UNMATCHED;?;

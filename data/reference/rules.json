@@ -529,6 +529,21 @@
         "include_keywords": [],
         "exclude_keywords": []
       }
+    },
+    {
+      "id": 35,
+      "name": "Twint Geld senden: Essensanteil",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
+      "priority": 60,
+      "transaction_types": ["Buchung"],
+      "services": ["Twint"],
+      "triggers": {
+        "merchants": [],
+        "locations": [],
+        "include_keywords": ["ESSEN"],
+        "exclude_keywords": []
+      }
     }
   ],
   "comments": {

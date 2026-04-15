@@ -140,6 +140,39 @@ def test_twint_send_parser_parse():
     assert "+41796666222 KEBAB, IMBISS" in result.merchant
 
 
+def test_twint_send_parser_direct_supports():
+    """TwintSendParser should detect direct TWINT send texts (without sender phone)"""
+    parser = TwintSendParser()
+    text = "TWINT GELD SENDEN VOM 22.03.2025 AN TELEFON-NR. +41790000000 , MAX MUSTER MITTEILUNGEN: ESSEN GESTERN ABEND"
+
+    assert parser.supports(text), "TWINT parser should support direct send format"
+
+
+def test_twint_send_parser_direct_parse():
+    """TwintSendParser should parse direct send format (without sender phone)"""
+    parser = TwintSendParser()
+    text = "TWINT GELD SENDEN VOM 22.03.2025 AN TELEFON-NR. +41790000000 , MAX MUSTER MITTEILUNGEN: ESSEN GESTERN ABEND"
+
+    result = parser.parse(text)
+    assert result.service_type == "Twint"
+    assert result.transaction_type_detail == "Geld senden"
+    assert "+41790000000" in result.merchant
+    assert "MAX MUSTER" in result.merchant
+    assert "ESSEN GESTERN ABEND" in result.merchant
+
+
+def test_twint_send_parser_direct_parse_without_mitteilungen():
+    """TwintSendParser should parse direct send format with only name, no message"""
+    parser = TwintSendParser()
+    text = "TWINT GELD SENDEN VOM 22.03.2025 AN TELEFON-NR. +41790000000 , MAX MUSTER"
+
+    result = parser.parse(text)
+    assert result.service_type == "Twint"
+    assert result.transaction_type_detail == "Geld senden"
+    assert "+41790000000" in result.merchant
+    assert "MAX MUSTER" in result.merchant
+
+
 def test_debit_direct_parser():
     """DebitDirectParser should parse Debit Direct format"""
     parser = DebitDirectParser()
@@ -193,6 +226,9 @@ if __name__ == '__main__':
     test_bank_package_fee_parser()
     test_twint_send_parser_supports()
     test_twint_send_parser_parse()
+    test_twint_send_parser_direct_supports()
+    test_twint_send_parser_direct_parse()
+    test_twint_send_parser_direct_parse_without_mitteilungen()
     test_debit_direct_parser()
     test_payment_parser()
     test_standing_order_parser()
