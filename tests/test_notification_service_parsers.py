@@ -48,6 +48,22 @@ def test_card_purchase_parser_for_online_shopping():
     assert result.location == "CORK"
 
 
+def test_card_purchase_parser_for_foreign_currency():
+    """CardPurchaseParser should parse card purchases with foreign currency conversion block."""
+    parser = CardPurchaseParser()
+    text = "APPLE PAY KAUF/ONLINE-SHOPPING VOM 25.03.2025 USD 19.99 ZUM KURS VON 0.9200 BETRAG IN KONTOWÄHRUNG 18.39 1.5% BEARBEITUNGSZUSCHLAG 0.28 KARTEN NR. XXXX4821 CLOUDSERVICE INC SAN JOSE"
+
+    assert parser.supports(text), "Card purchase parser should support foreign currency format"
+
+    result = parser.parse(text)
+    assert result.service_type == "Karteneinkauf"
+    assert result.provider == "Apple Pay"
+    assert result.transaction_type_detail == "Kauf/Online-Shopping"
+    assert result.card_number == "XXXX4821"
+    assert result.merchant == "CLOUDSERVICE INC SAN"
+    assert result.location == "JOSE"
+
+
 def test_cash_withdrawal_parser():
     """CashWithdrawalParser should parse cash withdrawal transactions."""
     parser = CashWithdrawalParser()
@@ -170,6 +186,7 @@ def test_standing_order_parser():
 if __name__ == '__main__':
     test_card_purchase_parser_for_generic_card_purchase()
     test_card_purchase_parser_for_online_shopping()
+    test_card_purchase_parser_for_foreign_currency()
     test_cash_withdrawal_parser()
     test_credit_transfer_parser_salary_credit()
     test_credit_transfer_parser_sender_credit_with_iban()

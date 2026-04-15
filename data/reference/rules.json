@@ -514,6 +514,21 @@
         "include_keywords": [],
         "exclude_keywords": []
       }
+    },
+    {
+      "id": 34,
+      "name": "Cloud Services (Subscription)",
+      "category": "Wohnen",
+      "subcategory": "Kommunikation",
+      "priority": 60,
+      "transaction_types": ["Buchung"],
+      "services": ["Karteneinkauf"],
+      "triggers": {
+        "merchants": ["CLOUDSERVICE"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
     }
   ],
   "comments": {

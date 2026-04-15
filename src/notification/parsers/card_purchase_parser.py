@@ -5,8 +5,11 @@ from notification.base import NotificationParseResult, AbstractServiceParser
 
 class CardPurchaseParser(AbstractServiceParser):
     # Optional provider prefix (e.g. "APPLE PAY") before KAUF/<detail>.
+    # Any content between date and KARTEN NR. is skipped (e.g. foreign-currency conversion).
     PATTERN = re.compile(
-        r"^(?:(?P<provider>.+?)\s+)?KAUF/(?P<detail>DIENSTLEISTUNG|ONLINE-SHOPPING)\s+VOM\s+\d{2}\.\d{2}\.\d{4}\s+KARTEN NR\.\s+(?P<card>XXXX\d{4})\s+(?P<rest>.+)$",
+        r"^(?:(?P<provider>.+?)\s+)?KAUF/(?P<detail>DIENSTLEISTUNG|ONLINE-SHOPPING)\s+VOM\s+\d{2}\.\d{2}\.\d{4}\s+"
+        r"(?:[\w.,/%\s]+?\s+)?"
+        r"KARTEN NR\.\s+(?P<card>XXXX\d{4})\s+(?P<rest>.+)$",
         re.IGNORECASE,
     )
 
