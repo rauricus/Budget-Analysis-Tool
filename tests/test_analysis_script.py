@@ -14,7 +14,8 @@ from analyze_by_category import (
     load_dataset_categorized_csvs,
     analyze_by_category,
     analyze_by_subcategory,
-    create_excel_report
+    create_excel_report,
+    load_months_metadata,
 )
 
 
@@ -108,18 +109,19 @@ def test_excel_report_creation():
     df = load_categorized_csv(csv_path)
 
     category_stats = analyze_by_category(df)
-    subcategory_stats = analyze_by_subcategory(df)
 
-    # Create temporary directory and file
+        # Create temporary directory and file
     with tempfile.TemporaryDirectory() as tmpdir:
         output_path = Path(tmpdir) / 'subdir' / 'test_analysis.xlsx'
+        months = sorted(df['Date'].dt.strftime("%Y-%m").dropna().unique().tolist())
 
         # Test that directory creation works
         create_excel_report(
+            df,
             category_stats,
-            subcategory_stats,
             str(output_path),
-            'test.csv'
+            'test.csv',
+            months,
         )
 
         # Verify file was created
@@ -162,7 +164,8 @@ def test_excel_report_creation():
         # Verify Category Analysis sheet has data
         ws_category = wb['Category Analysis']
         assert ws_category['A1'].value == 'Category Analysis', "Should have title"
-        assert ws_category['A3'].value == 'Category', "Should have Category header"
+        # A3 is the month label, A5 is the table header row
+        assert ws_category['A5'].value == 'Category', "Should have Category header"
 
         wb.close()
 

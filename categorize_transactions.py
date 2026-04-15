@@ -4,6 +4,7 @@ Budget-Tool Pipeline
 Load CSV → categorize → save output
 """
 
+import json
 import sys
 from pathlib import Path
 from typing import Optional, Sequence
@@ -106,6 +107,7 @@ def main(argv: Optional[Sequence[str]] = None):
 
     total_txns = 0
     total_categorized = 0
+    all_months: set[str] = set()
     id_registry = TransactionIdRegistry(registry_path)
 
     # 3/4. Process each input file
@@ -125,6 +127,9 @@ def main(argv: Optional[Sequence[str]] = None):
 
         transactions, matching_rules_map = engine.categorize_batch(transactions)
 
+        for t in transactions:
+            all_months.add(t.date.strftime("%Y-%m"))
+
         categorized_count = sum(1 for t in transactions if t.auto_category)
         uncategorized_count = sum(1 for t in transactions if not t.auto_category)
 
@@ -143,7 +148,15 @@ def main(argv: Optional[Sequence[str]] = None):
         total_categorized += categorized_count
 
     id_registry.save()
-    
+
+    # Write months metadata
+    output_dir.mkdir(parents=True, exist_ok=True)
+    months_path = output_dir / "dataset.months.json"
+    sorted_months = sorted(all_months)
+    with open(months_path, "w", encoding="utf-8") as f:
+        json.dump(sorted_months, f, indent=2)
+    print(f"\n4. Months metadata saved: {months_path.name} ({len(sorted_months)} month(s))")
+
     # Summary
     print("\n" + "=" * 60)
     print("Pipeline completed successfully!")

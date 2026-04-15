@@ -16,6 +16,8 @@ Example:
     python analyze_by_category.py private my_analysis.xlsx
 """
 
+import calendar
+import json
 import sys
 from pathlib import Path
 import numbers
@@ -33,6 +35,11 @@ REQUIRED_COLUMNS = {
     'Credit in CHF',
     'Debit in CHF',
 }
+
+def _month_label(month_str: str) -> str:
+    """Convert 'YYYY-MM' string to English month name, e.g. '2024-01' -> 'January 2024'."""
+    year, month = map(int, month_str.split("-"))
+    return f"{calendar.month_name[month]} {year}"
 
 
 def _resolve_run_directory(arg: str) -> Path:
@@ -64,6 +71,9 @@ def load_categorized_csv(csv_path: str) -> pd.DataFrame:
         DataFrame with transaction data
     """
     df = pd.read_csv(csv_path, sep=';', decimal=',', encoding='utf-8')
+
+    # Parse date column
+    df['Date'] = pd.to_datetime(df['Date'], format='%d.%m.%Y', errors='coerce')
 
     # Convert amount columns to numeric
     df['Credit in CHF'] = pd.to_numeric(df['Credit in CHF'], errors='coerce').fillna(0)
@@ -117,6 +127,28 @@ def load_dataset_categorized_csvs(run_dir: Path) -> Tuple[pd.DataFrame, int]:
 
     merged = pd.concat(dataframes, ignore_index=True)
     return merged, len(categorized_files)
+
+
+def load_months_metadata(run_dir: Path) -> list[str]:
+    """Load the months metadata written by categorize_transactions.py.
+
+    Args:
+        run_dir: Dataset run directory (e.g. data/reference)
+
+    Returns:
+        Sorted list of month strings in 'YYYY-MM' format
+
+    Raises:
+        FileNotFoundError: If dataset.months.json does not exist
+    """
+    months_path = run_dir / 'output' / 'dataset.months.json'
+    if not months_path.exists():
+        raise FileNotFoundError(
+            f"Months metadata not found: {months_path}. "
+            "Run categorize_transactions.py first to generate it."
+        )
+    with open(months_path, encoding='utf-8') as f:
+        return json.load(f)
 
 
 def analyze_by_category(df: pd.DataFrame) -> pd.DataFrame:
@@ -179,15 +211,16 @@ def analyze_by_subcategory(df: pd.DataFrame) -> pd.DataFrame:
     return subcategory_stats
 
 
-def create_excel_report(category_stats: pd.DataFrame, subcategory_stats: pd.DataFrame,
-                        output_path: str, source_label: str):
+def create_excel_report(df: pd.DataFrame, category_stats: pd.DataFrame,
+                        output_path: str, source_label: str, months: list[str]):
     """Create an Excel report with tables and charts.
 
     Args:
-        category_stats: DataFrame with category aggregations
-        subcategory_stats: DataFrame with subcategory aggregations
+        df: Full transaction DataFrame with parsed Date column
+        category_stats: DataFrame with overall category aggregations (for Overview sheet)
         output_path: Path to save the Excel file
         source_label: Human-readable source label for report header
+        months: Sorted list of 'YYYY-MM' strings for per-month breakdown
     """
     wb = Workbook()
 
@@ -198,19 +231,13 @@ def create_excel_report(category_stats: pd.DataFrame, subcategory_stats: pd.Data
     ws_overview = wb.create_sheet("Overview", 0)
     _create_overview_sheet(ws_overview, category_stats, source_label)
 
-    # Create Category Analysis sheet
+    # Create Category Analysis sheet (one table per month)
     ws_category = wb.create_sheet("Category Analysis", 1)
-    _create_category_sheet(ws_category, category_stats)
+    _create_category_sheet(ws_category, df, months)
 
-    # Always create Subcategory Analysis sheet for a consistent workbook layout
+    # Create Subcategory Analysis sheet (one table per month)
     ws_subcategory = wb.create_sheet("Subcategory Analysis", 2)
-    if not subcategory_stats.empty:
-        _create_subcategory_sheet(ws_subcategory, subcategory_stats)
-    else:
-        ws_subcategory['A1'] = "Subcategory Analysis"
-        ws_subcategory['A1'].font = Font(bold=True, size=14)
-        ws_subcategory['A3'] = "No subcategory data available."
-        ws_subcategory['A3'].font = Font(italic=True)
+    _create_subcategory_sheet(ws_subcategory, df, months)
 
     # Ensure output directory exists before saving
     output_file = Path(output_path)
@@ -355,25 +382,34 @@ def _add_expense_table_and_chart(ws, expense_data: pd.DataFrame, start_row: int)
     ws.add_chart(chart, chart_cell)
 
 
-def _create_category_sheet(ws, category_stats: pd.DataFrame):
-    """Create detailed category analysis sheet."""
+def _create_category_sheet(ws, df: pd.DataFrame, months: list[str]):
+    """Create category analysis sheet with one table per month."""
     ws['A1'] = 'Category Analysis'
     ws['A1'].font = Font(size=14, bold=True)
 
-    # Add table with data
-    for row_idx, row in enumerate(dataframe_to_rows(category_stats, index=False, header=True), start=3):
-        for col_idx, value in enumerate(row, start=1):
-            cell = ws.cell(row=row_idx, column=col_idx, value=value)
+    current_row = 3
+    for month_str in months:
+        year, month = map(int, month_str.split("-"))
+        mask = (df['Date'].dt.year == year) & (df['Date'].dt.month == month)
+        month_stats = analyze_by_category(df[mask])
 
-            # Format header
-            if row_idx == 3:
-                cell.font = Font(color='FFFFFF', bold=True)
-                cell.fill = PatternFill(start_color='366092', end_color='366092', fill_type='solid')
-                cell.alignment = Alignment(horizontal='center')
+        # Month header
+        ws.cell(row=current_row, column=1, value=_month_label(month_str)).font = Font(size=12, bold=True)
+        current_row += 2
 
-            # Format numbers
-            elif col_idx > 1 and isinstance(value, numbers.Number):
-                cell.number_format = '#,##0.00'
+        # Table header + data rows
+        for i, row in enumerate(dataframe_to_rows(month_stats, index=False, header=True)):
+            for col_idx, value in enumerate(row, start=1):
+                cell = ws.cell(row=current_row, column=col_idx, value=value)
+                if i == 0:  # header row
+                    cell.font = Font(color='FFFFFF', bold=True)
+                    cell.fill = PatternFill(start_color='366092', end_color='366092', fill_type='solid')
+                    cell.alignment = Alignment(horizontal='center')
+                elif col_idx > 1 and isinstance(value, numbers.Number):
+                    cell.number_format = '#,##0.00'
+            current_row += 1
+
+        current_row += 2  # spacing between months
 
     # Adjust column widths
     ws.column_dimensions['A'].width = 20
@@ -382,25 +418,37 @@ def _create_category_sheet(ws, category_stats: pd.DataFrame):
     ws.column_dimensions['D'].width = 15
 
 
-def _create_subcategory_sheet(ws, subcategory_stats: pd.DataFrame):
-    """Create detailed subcategory analysis sheet."""
+def _create_subcategory_sheet(ws, df: pd.DataFrame, months: list[str]):
+    """Create subcategory analysis sheet with one table per month."""
     ws['A1'] = 'Subcategory Analysis'
     ws['A1'].font = Font(size=14, bold=True)
 
-    # Add table with data
-    for row_idx, row in enumerate(dataframe_to_rows(subcategory_stats, index=False, header=True), start=3):
-        for col_idx, value in enumerate(row, start=1):
-            cell = ws.cell(row=row_idx, column=col_idx, value=value)
+    current_row = 3
+    for month_str in months:
+        year, month = map(int, month_str.split("-"))
+        mask = (df['Date'].dt.year == year) & (df['Date'].dt.month == month)
+        month_stats = analyze_by_subcategory(df[mask])
 
-            # Format header
-            if row_idx == 3:
-                cell.font = Font(color='FFFFFF', bold=True)
-                cell.fill = PatternFill(start_color='366092', end_color='366092', fill_type='solid')
-                cell.alignment = Alignment(horizontal='center')
+        if month_stats.empty:
+            continue
 
-            # Format numbers
-            elif col_idx > 2 and isinstance(value, numbers.Number):
-                cell.number_format = '#,##0.00'
+        # Month header
+        ws.cell(row=current_row, column=1, value=_month_label(month_str)).font = Font(size=12, bold=True)
+        current_row += 2
+
+        # Table header + data rows
+        for i, row in enumerate(dataframe_to_rows(month_stats, index=False, header=True)):
+            for col_idx, value in enumerate(row, start=1):
+                cell = ws.cell(row=current_row, column=col_idx, value=value)
+                if i == 0:  # header row
+                    cell.font = Font(color='FFFFFF', bold=True)
+                    cell.fill = PatternFill(start_color='366092', end_color='366092', fill_type='solid')
+                    cell.alignment = Alignment(horizontal='center')
+                elif col_idx > 2 and isinstance(value, numbers.Number):
+                    cell.number_format = '#,##0.00'
+            current_row += 1
+
+        current_row += 2  # spacing between months
 
     # Adjust column widths
     ws.column_dimensions['A'].width = 20
@@ -454,18 +502,23 @@ def main(argv: Optional[Sequence[str]] = None):
     category_stats = analyze_by_category(df)
     print(f"   Found {len(category_stats)} categories")
 
-    print("\n3. Analyzing by subcategory...")
-    subcategory_stats = analyze_by_subcategory(df)
-    print(f"   Found {len(subcategory_stats)} subcategories")
+    print("\n3. Loading month metadata...")
+    try:
+        months = load_months_metadata(run_dir)
+        print(f"   Found {len(months)} month(s): {', '.join(_month_label(m) for m in months)}")
+    except FileNotFoundError as e:
+        print(f"\u274c {e}")
+        return 1
 
     print("\n4. Generating Excel report...")
     try:
         source_label = f"{run_dir} ({file_count} categorized file(s))"
         create_excel_report(
+            df,
             category_stats,
-            subcategory_stats,
             output_path,
-            source_label
+            source_label,
+            months,
         )
     except Exception as e:
         print(f"❌ Error creating Excel report: {e}")
