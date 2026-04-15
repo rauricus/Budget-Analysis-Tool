@@ -48,21 +48,22 @@ class ImportHandler:
 
         header_idx, delimiter = _find_header_line(raw_lines)
 
-        # header_idx is 0-based; CSV row numbers are 1-based.
-        # First data row in the original file = header_idx + 2.
-        data_row_offset = header_idx + 2
-
         kept_lines = [raw_lines[header_idx]]
-        for line in raw_lines[header_idx + 1:]:
+        # Track the 1-based file line number for each data row so that
+        # warnings point to the correct line in the original CSV, even when
+        # empty or sparse lines are skipped.
+        data_row_file_lines = []
+        for file_idx, line in enumerate(raw_lines[header_idx + 1:], start=header_idx + 1):
             if line.count(delimiter) >= _MIN_DELIMITER_COUNT:
                 kept_lines.append(line)
+                data_row_file_lines.append(file_idx + 1)  # 1-based
 
         df = pd.read_csv(io.StringIO("\n".join(kept_lines)), sep=delimiter)
 
         firstError = True
         transactions = []
         for pandas_index, row in df.iterrows():
-            csv_row = pandas_index + data_row_offset
+            csv_row = data_row_file_lines[pandas_index]
             try:
                 txn = TransactionParser.parse_row(row)
             except TransactionParserError as e:
