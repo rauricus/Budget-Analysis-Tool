@@ -104,6 +104,18 @@ def test_facade_parses_bank_package_fee():
     assert result["reference"] == "PREIS FÜR BANKPAKET SMART 02.2025"
 
 
+def test_facade_parses_lastschrift_with_bank_route_details():
+    """Facade should parse LASTSCHRIFT texts containing intermediary bank details."""
+    text = "LASTSCHRIFT MUSTERBANK AG MUSTERSTRASSE 12 6002 LUZERN CH5600000000000000000 MOBILITY MUSTER GENOSSENSCHAFT 6343 ROTKREUZ"
+
+    result = NotificationTextParser.parse(text)
+    assert result["service_type"] == "Lastschrift"
+    assert result["transaction_type_detail"] == "Zahlung"
+    assert result["counterparty_iban"] == "CH5600000000000000000"
+    assert result["counterparty"] == "MOBILITY MUSTER GENOSSENSCHAFT 6343 ROTKREUZ"
+    assert result["reference"] == "MUSTERBANK AG MUSTERSTRASSE 12 6002 LUZERN"
+
+
 def test_notification_text_parser_facade_api_contract():
     """Facade API should return dict and delegate through the registry."""
     text = "APPLE PAY KAUF/DIENSTLEISTUNG VOM 31.03.2025 KARTEN NR. XXXX4821 KKIOSK 45810 BERN SCHWEIZ"
@@ -134,6 +146,7 @@ if __name__ == '__main__':
     test_facade_parses_credit_transfer()
     test_facade_parses_credit_transfer_sender_with_iban()
     test_facade_parses_bank_package_fee()
+    test_facade_parses_lastschrift_with_bank_route_details()
     test_notification_text_parser_facade_api_contract()
     test_facade_raises_no_parser_found_error_for_unknown_text()
     print("✓ All parser facade tests passed")

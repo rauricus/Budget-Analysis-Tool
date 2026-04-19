@@ -245,17 +245,26 @@ def test_debit_direct_parser():
 
 
 def test_payment_parser():
-    """PaymentParser should parse Zahlung (payment) format"""
+    """PaymentParser should parse standard and bank-route payment formats."""
     parser = PaymentParser()
     text = "LASTSCHRIFT CH6330000011998877665 SUNRISE GMBH POSTFACH 8050 ZURICH"
+    bank_route_text = "LASTSCHRIFT MUSTERBANK AG MUSTERSTRASSE 12 6002 LUZERN CH5600000000000000000 MOBILITY MUSTER GENOSSENSCHAFT 6343 ROTKREUZ"
 
     assert parser.supports(text), "Should support Zahlung format"
+    assert parser.supports(bank_route_text), "Should support Zahlung format with bank route details"
 
     result = parser.parse(text)
     assert result.service_type == "Lastschrift"
     assert result.transaction_type_detail == "Zahlung"
     assert result.counterparty_iban == "CH6330000011998877665"
     assert "SUNRISE GMBH POSTFACH 8050 ZURICH" in result.counterparty
+
+    bank_route_result = parser.parse(bank_route_text)
+    assert bank_route_result.service_type == "Lastschrift"
+    assert bank_route_result.transaction_type_detail == "Zahlung"
+    assert bank_route_result.counterparty_iban == "CH5600000000000000000"
+    assert bank_route_result.counterparty == "MOBILITY MUSTER GENOSSENSCHAFT 6343 ROTKREUZ"
+    assert bank_route_result.reference == "MUSTERBANK AG MUSTERSTRASSE 12 6002 LUZERN"
 
 
 def test_standing_order_parser():

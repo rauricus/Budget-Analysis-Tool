@@ -624,6 +624,27 @@
       }
     },
     {
+      "id": 5002,
+      "name": "Mobility",
+      "transaction_category": "expense",
+      "category": "Mobilität",
+      "subcategory": "Privater Verkehr",
+      "priority": 72,
+      "transaction_type": "debit",
+      "services": [
+        "Lastschrift"
+      ],
+      "providers": null,
+      "triggers": {
+        "merchants": [
+          "MOBILITY"
+        ],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
       "id": 6001,
       "name": "Bargeldbezug",
       "transaction_category": "expense",

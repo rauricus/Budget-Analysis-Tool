@@ -4,11 +4,11 @@ from notification.base import NotificationParseResult, AbstractServiceParser
 
 
 class PaymentParser(AbstractServiceParser):
-    """Parser for direct debit payment format (LASTSCHRIFT ... CH<iban> ...)."""
+    """Parser for direct debit payment formats (LASTSCHRIFT ... CH<iban> ...)."""
 
-    # Pattern: LASTSCHRIFT CH<iban> <merchant> (but not DAUERAUFTRAG)
+    # Pattern: LASTSCHRIFT [optional bank route] CH<iban> <counterparty>
     PATTERN = re.compile(
-        r"^LASTSCHRIFT\s+(CH\S+)\s+(.+)$",
+        r"^LASTSCHRIFT\s+(?:(.+?)\s+)?(CH\S+)\s+(.+)$",
         re.IGNORECASE,
     )
 
@@ -28,12 +28,14 @@ class PaymentParser(AbstractServiceParser):
         if not match:
             return NotificationParseResult()
 
-        counterparty_iban = match.group(1).strip()
-        counterparty = match.group(2).strip()
+        bank_route = (match.group(1) or "").strip()
+        counterparty_iban = match.group(2).strip()
+        counterparty = match.group(3).strip()
 
         return NotificationParseResult(
             service_type="Lastschrift",
             transaction_type_detail="Zahlung",
             counterparty=counterparty,
             counterparty_iban=counterparty_iban,
+            reference=bank_route,
         )
