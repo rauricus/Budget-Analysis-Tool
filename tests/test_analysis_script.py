@@ -4,6 +4,7 @@ import sys
 import os
 import tempfile
 from pathlib import Path
+import pandas as pd
 
 # Add root directory to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
@@ -176,8 +177,62 @@ def test_excel_report_creation():
         # Verify Category Analysis sheet has data
         ws_category = wb['Category Analysis']
         assert ws_category['A1'].value == 'Category Analysis', "Should have title"
+        assert ws_category['A2'].value == "Note: Transactions with Transaction Category 'transfer' are excluded.", \
+            "Should show transfer exclusion note on category sheet"
         # A3 is the month label, A5 is the table header row
         assert ws_category['A5'].value == 'Category', "Should have Category header"
+
+        ws_subcategory = wb['Subcategory Analysis']
+        assert ws_subcategory['A2'].value == "Note: Transactions with Transaction Category 'transfer' are excluded.", \
+            "Should show transfer exclusion note on subcategory sheet"
+
+        wb.close()
+
+
+def test_analysis_sheets_exclude_transfer_transactions():
+    """Category and subcategory sheets should omit rows tagged as transfer."""
+    df = pd.DataFrame([
+        {
+            'Date': pd.Timestamp('2025-03-01'),
+            'Category': 'Food',
+            'Subcategory': 'Groceries',
+            'Credit in CHF': 0.0,
+            'Debit in CHF': 100.0,
+            'Transaction Category': 'expense',
+        },
+        {
+            'Date': pd.Timestamp('2025-03-02'),
+            'Category': 'Transfers',
+            'Subcategory': 'Account move',
+            'Credit in CHF': 500.0,
+            'Debit in CHF': 0.0,
+            'Transaction Category': 'transfer',
+        },
+    ])
+    category_stats = analyze_by_category(df)
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        output_path = Path(tmpdir) / 'test_transfer_exclusion.xlsx'
+        create_excel_report(df, category_stats, str(output_path), 'test', ['2025-03'])
+
+        wb = load_workbook(output_path)
+        ws_category = wb['Category Analysis']
+        ws_subcategory = wb['Subcategory Analysis']
+
+        category_values = [
+            ws_category[f'A{row}'].value
+            for row in range(1, 40)
+            if ws_category[f'A{row}'].value is not None
+        ]
+        subcategory_values = [
+            ws_subcategory[f'A{row}'].value
+            for row in range(1, 40)
+            if ws_subcategory[f'A{row}'].value is not None
+        ]
+
+        assert 'Transfers' not in category_values, "Transfer category should be excluded from category sheet"
+        assert 'Transfers' not in subcategory_values, "Transfer category should be excluded from subcategory sheet"
+        assert 'Food' in category_values, "Non-transfer category should remain in category sheet"
 
         wb.close()
 

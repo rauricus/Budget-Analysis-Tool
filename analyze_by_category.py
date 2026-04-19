@@ -507,16 +507,29 @@ def _build_transaction_category_overview(
     return grouped[['Category', amount_column]]
 
 
+def _exclude_transfer_transactions(df: pd.DataFrame) -> pd.DataFrame:
+    """Return dataframe without rows classified as transaction category 'transfer'."""
+    if 'Transaction Category' not in df.columns:
+        return df
+    mask = df['Transaction Category'].fillna('').astype(str).str.lower() != 'transfer'
+    return df[mask].copy()
+
+
 def _create_category_sheet(ws, df: pd.DataFrame, months: list[str]):
     """Create category analysis sheet with one table per month."""
     ws['A1'] = 'Category Analysis'
     ws['A1'].font = Font(size=14, bold=True)
 
+    ws['A2'] = "Note: Transactions with Transaction Category 'transfer' are excluded."
+    ws['A2'].font = Font(size=10, italic=True)
+
+    analysis_df = _exclude_transfer_transactions(df)
+
     current_row = 3
     for month_str in months:
         year, month = map(int, month_str.split("-"))
-        mask = (df['Date'].dt.year == year) & (df['Date'].dt.month == month)
-        month_stats = analyze_by_category(df[mask])
+        mask = (analysis_df['Date'].dt.year == year) & (analysis_df['Date'].dt.month == month)
+        month_stats = analyze_by_category(analysis_df[mask])
 
         # Month header
         ws.cell(row=current_row, column=1, value=_month_label(month_str)).font = Font(size=12, bold=True)
@@ -548,11 +561,16 @@ def _create_subcategory_sheet(ws, df: pd.DataFrame, months: list[str]):
     ws['A1'] = 'Subcategory Analysis'
     ws['A1'].font = Font(size=14, bold=True)
 
+    ws['A2'] = "Note: Transactions with Transaction Category 'transfer' are excluded."
+    ws['A2'].font = Font(size=10, italic=True)
+
+    analysis_df = _exclude_transfer_transactions(df)
+
     current_row = 3
     for month_str in months:
         year, month = map(int, month_str.split("-"))
-        mask = (df['Date'].dt.year == year) & (df['Date'].dt.month == month)
-        month_stats = analyze_by_subcategory(df[mask])
+        mask = (analysis_df['Date'].dt.year == year) & (analysis_df['Date'].dt.month == month)
+        month_stats = analyze_by_subcategory(analysis_df[mask])
 
         if month_stats.empty:
             continue
