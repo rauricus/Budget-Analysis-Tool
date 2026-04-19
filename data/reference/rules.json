@@ -707,6 +707,29 @@
         "include_keywords": [],
         "exclude_keywords": []
       }
+    },
+    {
+      "id": 13001,
+      "name": "Kontoübertrag: Eigenes Sparkonto",
+      "transaction_category": "transfer",
+      "category": "Überträge",
+      "subcategory": "Kontoübertrag",
+      "priority": 95,
+      "transaction_type": "credit",
+      "services": [
+        "Gutschrift"
+      ],
+      "providers": null,
+      "triggers": {
+        "merchants": [
+          "EIGENES SPARKONTO"
+        ],
+        "locations": [],
+        "include_keywords": [
+          "KONTOUEBERTRAG"
+        ],
+        "exclude_keywords": []
+      }
     }
   ],
   "comments": {

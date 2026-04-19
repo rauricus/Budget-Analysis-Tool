@@ -48,8 +48,20 @@ def test_reference_dataset_contains_uncategorized_cases():
     assert uncategorized_count > 0, "Reference dataset should contain uncategorized transactions"
 
 
+def test_reference_dataset_contains_transfer_case():
+    """Reference dataset should contain at least one transaction categorized as transfer."""
+    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
+    engine = RuleEngine('data/reference/rules.json')
+
+    categorized, _ = engine.categorize_batch(txns)
+    transfer_count = sum(1 for txn in categorized if txn.auto_transaction_category == 'transfer')
+
+    assert transfer_count > 0, "Expected at least one transfer transaction in reference dataset"
+
+
 if __name__ == '__main__':
     test_categorization()
     test_reference_dataset_contains_uncategorized_cases()
+    test_reference_dataset_contains_transfer_case()
     print("✓ All categorization tests passed")
 
