@@ -156,6 +156,7 @@ Example:
     {
       "id": 1,
       "name": "Migros Take-Away",
+      "transaction_category": "expense",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 100,
@@ -176,7 +177,9 @@ Example:
 ### Matching behavior
 
 - Rules are sorted by descending `priority`.
+- `transaction_category` is required and must be one of: `income`, `expense`, `refund`, `transfer`.
 - Category assignment uses two levels: `category` and `subcategory`.
+- `category`/`subcategory` mapping is optional per rule (empty values are allowed).
 - `transaction_type` filters on money direction: `credit` or `debit`.
 - Rules can filter by parsed `service_type` (`services`) and optional `provider` (`providers`).
 - A rule matches only if all configured conditions match.
@@ -211,6 +214,7 @@ The structured export currently uses these columns:
 - Credit in CHF
 - Debit in CHF
 - Label
+- Transaction Category
 - Category
 - Subcategory
 

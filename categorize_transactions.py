@@ -131,8 +131,8 @@ def main(argv: Optional[Sequence[str]] = None):
         for t in transactions:
             all_months.add(t.date.strftime("%Y-%m"))
 
-        categorized_count = sum(1 for t in transactions if t.auto_category)
-        uncategorized_count = sum(1 for t in transactions if not t.auto_category)
+        categorized_count = sum(1 for t in transactions if t.auto_transaction_category)
+        uncategorized_count = sum(1 for t in transactions if not t.auto_transaction_category)
 
         print(f"      Categorized: {categorized_count}/{len(transactions)}")
         print(f"      Uncategorized: {uncategorized_count}/{len(transactions)}")

@@ -7,6 +7,8 @@ from models import Rule, Transaction
 
 logger = logging.getLogger(__name__)
 
+VALID_TRANSACTION_CATEGORIES = {"income", "expense", "refund", "transfer"}
+
 
 class RuleEngine:
     """Loads rules from JSON and matches them against transactions."""
@@ -28,10 +30,19 @@ class RuleEngine:
         """Parse a rules JSON dict into a {id: Rule} mapping."""
         result = {}
         for rule_data in data.get("rules", []):
+            transaction_category = str(rule_data.get("transaction_category", "")).strip().lower()
+            if transaction_category not in VALID_TRANSACTION_CATEGORIES:
+                raise ValueError(
+                    "Invalid or missing 'transaction_category' for rule "
+                    f"#{rule_data.get('id', '?')} ('{rule_data.get('name', '')}') in {source}: "
+                    f"'{transaction_category}'. Allowed: {sorted(VALID_TRANSACTION_CATEGORIES)}"
+                )
+
             rule = Rule(
                 id=rule_data["id"],
                 name=rule_data["name"],
-                category=rule_data["category"],
+                transaction_category=transaction_category,
+                category=rule_data.get("category", ""),
                 subcategory=rule_data.get("subcategory", ""),
                 priority=rule_data["priority"],
                 transaction_type=rule_data.get("transaction_type", ""),
@@ -123,7 +134,7 @@ class RuleEngine:
 
         for rule in candidate_rules:
             if rule.matches(transaction):
-                return rule.category
+                return rule.category or None
 
         return None
     
@@ -146,8 +157,9 @@ class RuleEngine:
 
             # Categorize
             best_match = matching[0] if matching else None
-            txn.auto_category = best_match.category if best_match else None
-            txn.auto_subcategory = best_match.subcategory if best_match else None
+            txn.auto_transaction_category = best_match.transaction_category if best_match else None
+            txn.auto_category = (best_match.category or None) if best_match else None
+            txn.auto_subcategory = (best_match.subcategory or None) if best_match else None
 
             if best_match and self.debug:
                 category_label = (

@@ -1,3 +1,3 @@
-Transaction ID;Date;Transaction Type;Transaction Type Detail;Service;Provider;Card Number;Merchant;Location;Counterparty;Counterparty IBAN;Reference;Credit in CHF;Debit in CHF;Label;Category;Subcategory
-TX-000001;25.01.2025;credit;Geld empfangen;Twint;;;+41790000000 MAX MUSTER MITTEILUNGEN: TEST;;;;;1.0;;;Rückerstattungen;
-TX-000002;19.01.2025;debit;Kauf/Online-Shopping;Karteneinkauf;;;ONLINE HAUSHALT AG;;;;PAYMENT ID 250119000000000000 BESTELLNUMMER DP-P-00000000;;13.9;;Wohnen;Haushalt
+Transaction ID;Date;Transaction Type;Transaction Type Detail;Service;Provider;Card Number;Merchant;Location;Counterparty;Counterparty IBAN;Reference;Credit in CHF;Debit in CHF;Label;Transaction Category;Category;Subcategory
+TX-000001;25.01.2025;credit;Geld empfangen;Twint;;;+41790000000 MAX MUSTER MITTEILUNGEN: TEST;;;;;1.0;;;refund;Rückerstattungen;
+TX-000002;19.01.2025;debit;Kauf/Online-Shopping;Karteneinkauf;;;ONLINE HAUSHALT AG;;;;PAYMENT ID 250119000000000000 BESTELLNUMMER DP-P-00000000;;13.9;;expense;Wohnen;Haushalt

@@ -28,6 +28,7 @@ class ExportHandler:
         "Credit in CHF",
         "Debit in CHF",
         "Label",
+        "Transaction Category",
         "Category",
         "Subcategory",
     ]
@@ -157,6 +158,7 @@ class ExportHandler:
                 "Credit in CHF": credit,
                 "Debit in CHF": debit,
                 "Label": txn.label,
+                "Transaction Category": txn.auto_transaction_category or "",
                 "Category": category,
                 "Subcategory": subcategory,
             })

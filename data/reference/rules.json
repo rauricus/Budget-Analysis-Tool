@@ -3,28 +3,43 @@
     {
       "id": 1001,
       "name": "Supermarkt: Migros/Coop",
+      "transaction_category": "expense",
       "category": "Einkaufen",
       "subcategory": "Supermärkte",
       "priority": 50,
       "transaction_type": "debit",
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
+      "services": [
+        "Karteneinkauf"
+      ],
+      "providers": [
+        "Apple Pay"
+      ],
       "triggers": {
-        "merchants": ["MIGROS", "COOP"],
+        "merchants": [
+          "MIGROS",
+          "COOP"
+        ],
         "locations": [],
         "include_keywords": [],
-        "exclude_keywords": ["TAKE AWAY"]
+        "exclude_keywords": [
+          "TAKE AWAY"
+        ]
       }
     },
     {
       "id": 1002,
       "name": "Detailhandel: Bäckereien",
+      "transaction_category": "expense",
       "category": "Einkaufen",
       "subcategory": "Detail-Lebensmittel",
       "priority": 40,
       "transaction_type": "debit",
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
+      "services": [
+        "Karteneinkauf"
+      ],
+      "providers": [
+        "Apple Pay"
+      ],
       "triggers": {
         "merchants": [
           "BÄCKEREI",
@@ -41,12 +56,17 @@
     {
       "id": 1003,
       "name": "Detailhandel: Lebensmittel",
+      "transaction_category": "expense",
       "category": "Einkaufen",
       "subcategory": "Detail-Lebensmittel",
       "priority": 40,
       "transaction_type": "debit",
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
+      "services": [
+        "Karteneinkauf"
+      ],
+      "providers": [
+        "Apple Pay"
+      ],
       "triggers": {
         "merchants": [
           "YUMIHANA",
@@ -61,14 +81,21 @@
     {
       "id": 1004,
       "name": "Kiosk: Sonstiges Einkaufen",
+      "transaction_category": "expense",
       "category": "Einkaufen",
       "subcategory": "Sonstiges Einkaufen",
       "priority": 30,
       "transaction_type": "debit",
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
+      "services": [
+        "Karteneinkauf"
+      ],
+      "providers": [
+        "Apple Pay"
+      ],
       "triggers": {
-        "merchants": ["KKIOSK"],
+        "merchants": [
+          "KKIOSK"
+        ],
         "locations": [],
         "include_keywords": [],
         "exclude_keywords": []
@@ -77,30 +104,49 @@
     {
       "id": 1005,
       "name": "Bahnhof-Kiosk: Sonstiges Einkaufen",
+      "transaction_category": "expense",
       "category": "Einkaufen",
       "subcategory": "Sonstiges Einkaufen",
       "priority": 30,
       "transaction_type": "debit",
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
+      "services": [
+        "Karteneinkauf"
+      ],
+      "providers": [
+        "Apple Pay"
+      ],
       "triggers": {
-        "merchants": ["BAHNHOF"],
+        "merchants": [
+          "BAHNHOF"
+        ],
         "locations": [],
-        "include_keywords": ["BAHNHOF", "KIOSK"],
-        "exclude_keywords": ["APOTHEKE"]
+        "include_keywords": [
+          "BAHNHOF",
+          "KIOSK"
+        ],
+        "exclude_keywords": [
+          "APOTHEKE"
+        ]
       }
     },
     {
       "id": 1006,
       "name": "Einkauf Tankstellen-Shop",
+      "transaction_category": "expense",
       "category": "Einkaufen",
       "subcategory": "Detail-Lebensmittel",
       "priority": 45,
       "transaction_type": "debit",
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
+      "services": [
+        "Karteneinkauf"
+      ],
+      "providers": [
+        "Apple Pay"
+      ],
       "triggers": {
-        "merchants": ["CITY TANKSTELLE"],
+        "merchants": [
+          "CITY TANKSTELLE"
+        ],
         "locations": [],
         "include_keywords": [],
         "exclude_keywords": []
@@ -109,29 +155,46 @@
     {
       "id": 2001,
       "name": "Take Away: Gastronomie",
+      "transaction_category": "expense",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 100,
       "transaction_type": "debit",
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
+      "services": [
+        "Karteneinkauf"
+      ],
+      "providers": [
+        "Apple Pay"
+      ],
       "triggers": {
-        "merchants": ["MIGROS", "COOP"],
+        "merchants": [
+          "MIGROS",
+          "COOP"
+        ],
         "locations": [],
-        "include_keywords": ["TAKE AWAY"],
+        "include_keywords": [
+          "TAKE AWAY"
+        ],
         "exclude_keywords": []
       }
     },
     {
       "id": 2002,
       "name": "Restaurant: Gastronomie",
+      "transaction_category": "expense",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 60,
       "transaction_type": "debit",
-      "services": ["Karteneinkauf"],
+      "services": [
+        "Karteneinkauf"
+      ],
+      "providers": null,
       "triggers": {
-        "merchants": ["YOOJI'S", "SIGNOR ROSSI"],
+        "merchants": [
+          "YOOJI'S",
+          "SIGNOR ROSSI"
+        ],
         "locations": [],
         "include_keywords": [],
         "exclude_keywords": []
@@ -140,13 +203,19 @@
     {
       "id": 2003,
       "name": "Cafés: Gastronomie",
+      "transaction_category": "expense",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 60,
       "transaction_type": "debit",
-      "services": ["Karteneinkauf"],
+      "services": [
+        "Karteneinkauf"
+      ],
+      "providers": null,
       "triggers": {
-        "merchants": ["COFFEE AND PLANTS"],
+        "merchants": [
+          "COFFEE AND PLANTS"
+        ],
         "locations": [],
         "include_keywords": [],
         "exclude_keywords": []
@@ -155,13 +224,19 @@
     {
       "id": 2004,
       "name": "Twint: Gastronomie",
+      "transaction_category": "expense",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 55,
       "transaction_type": "debit",
-      "services": ["Twint"],
+      "services": [
+        "Twint"
+      ],
+      "providers": null,
       "triggers": {
-        "merchants": ["TWINT"],
+        "merchants": [
+          "TWINT"
+        ],
         "locations": [],
         "include_keywords": [],
         "exclude_keywords": []
@@ -170,13 +245,20 @@
     {
       "id": 2005,
       "name": "Twint Kebab/Imbiss: Gastronomie",
+      "transaction_category": "expense",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 56,
       "transaction_type": "debit",
-      "services": ["Twint"],
+      "services": [
+        "Twint"
+      ],
+      "providers": null,
       "triggers": {
-        "merchants": ["KEBAB", "IMBISS"],
+        "merchants": [
+          "KEBAB",
+          "IMBISS"
+        ],
         "locations": [],
         "include_keywords": [],
         "exclude_keywords": []
@@ -185,29 +267,42 @@
     {
       "id": 2006,
       "name": "Twint senden: Essensanteil",
+      "transaction_category": "expense",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 60,
       "transaction_type": "debit",
-      "services": ["Twint"],
+      "services": [
+        "Twint"
+      ],
+      "providers": null,
       "triggers": {
         "merchants": [],
         "locations": [],
-        "include_keywords": ["ESSEN"],
+        "include_keywords": [
+          "ESSEN"
+        ],
         "exclude_keywords": []
       }
     },
     {
       "id": 3001,
       "name": "Einkauf Apotheke",
+      "transaction_category": "expense",
       "category": "Leben",
       "subcategory": "Gesundheit",
       "priority": 45,
       "transaction_type": "debit",
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
+      "services": [
+        "Karteneinkauf"
+      ],
+      "providers": [
+        "Apple Pay"
+      ],
       "triggers": {
-        "merchants": ["APOTHEKE"],
+        "merchants": [
+          "APOTHEKE"
+        ],
         "locations": [],
         "include_keywords": [],
         "exclude_keywords": []
@@ -216,14 +311,21 @@
     {
       "id": 3002,
       "name": "Einkauf Styling/Wellness",
+      "transaction_category": "expense",
       "category": "Leben",
       "subcategory": "Styling und Wellness",
       "priority": 45,
       "transaction_type": "debit",
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
+      "services": [
+        "Karteneinkauf"
+      ],
+      "providers": [
+        "Apple Pay"
+      ],
       "triggers": {
-        "merchants": ["THE BODY SHOP"],
+        "merchants": [
+          "THE BODY SHOP"
+        ],
         "locations": [],
         "include_keywords": [],
         "exclude_keywords": []
@@ -232,29 +334,46 @@
     {
       "id": 3003,
       "name": "Coiffeur",
+      "transaction_category": "expense",
       "category": "Leben",
       "subcategory": "Styling und Wellness",
       "priority": 45,
       "transaction_type": "debit",
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
+      "services": [
+        "Karteneinkauf"
+      ],
+      "providers": [
+        "Apple Pay"
+      ],
       "triggers": {
-        "merchants": ["SUMUP", "DELIAS HAIRSTY"],
+        "merchants": [
+          "SUMUP",
+          "DELIAS HAIRSTY"
+        ],
         "locations": [],
-        "include_keywords": ["HAIRSTY"],
+        "include_keywords": [
+          "HAIRSTY"
+        ],
         "exclude_keywords": []
       }
     },
     {
       "id": 3004,
       "name": "Krankenkasse",
+      "transaction_category": "expense",
       "category": "Leben",
       "subcategory": "Gesundheit",
       "priority": 70,
       "transaction_type": "debit",
-      "services": ["Lastschrift"],
+      "services": [
+        "Lastschrift"
+      ],
+      "providers": null,
       "triggers": {
-        "merchants": ["MEDICURA", "SYMPANY"],
+        "merchants": [
+          "MEDICURA",
+          "SYMPANY"
+        ],
         "locations": [],
         "include_keywords": [],
         "exclude_keywords": []
@@ -263,14 +382,21 @@
     {
       "id": 3005,
       "name": "Co-Working",
+      "transaction_category": "expense",
       "category": "Leben",
       "subcategory": "Sonstiges Leben",
       "priority": 35,
       "transaction_type": "debit",
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
+      "services": [
+        "Karteneinkauf"
+      ],
+      "providers": [
+        "Apple Pay"
+      ],
       "triggers": {
-        "merchants": ["BYRO"],
+        "merchants": [
+          "BYRO"
+        ],
         "locations": [],
         "include_keywords": [],
         "exclude_keywords": []
@@ -279,29 +405,44 @@
     {
       "id": 3006,
       "name": "Dauerauftrag: Familienkasse",
+      "transaction_category": "expense",
       "category": "Leben",
       "subcategory": "Familie",
       "priority": 72,
       "transaction_type": "debit",
-      "services": ["Lastschrift"],
+      "services": [
+        "Lastschrift"
+      ],
+      "providers": null,
       "triggers": {
-        "merchants": ["FAMILIENKASSE"],
+        "merchants": [
+          "FAMILIENKASSE"
+        ],
         "locations": [],
-        "include_keywords": ["FAMILIENZULAGE"],
+        "include_keywords": [
+          "FAMILIENZULAGE"
+        ],
         "exclude_keywords": []
       }
     },
     {
       "id": 4001,
       "name": "Einkauf Handwerk/Garten: Jumbo",
+      "transaction_category": "expense",
       "category": "Wohnen",
       "subcategory": "Handwerk und Garten",
       "priority": 50,
       "transaction_type": "debit",
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
+      "services": [
+        "Karteneinkauf"
+      ],
+      "providers": [
+        "Apple Pay"
+      ],
       "triggers": {
-        "merchants": ["JUMBO"],
+        "merchants": [
+          "JUMBO"
+        ],
         "locations": [],
         "include_keywords": [],
         "exclude_keywords": []
@@ -310,13 +451,19 @@
     {
       "id": 4002,
       "name": "Kommunikation: Sunrise",
+      "transaction_category": "expense",
       "category": "Wohnen",
       "subcategory": "Kommunikation",
       "priority": 70,
       "transaction_type": "debit",
-      "services": ["Lastschrift"],
+      "services": [
+        "Lastschrift"
+      ],
+      "providers": null,
       "triggers": {
-        "merchants": ["SUNRISE"],
+        "merchants": [
+          "SUNRISE"
+        ],
         "locations": [],
         "include_keywords": [],
         "exclude_keywords": []
@@ -325,13 +472,19 @@
     {
       "id": 4003,
       "name": "Kommunikation: Apple Services",
+      "transaction_category": "expense",
       "category": "Wohnen",
       "subcategory": "Kommunikation",
       "priority": 60,
       "transaction_type": "debit",
-      "services": ["Karteneinkauf"],
+      "services": [
+        "Karteneinkauf"
+      ],
+      "providers": null,
       "triggers": {
-        "merchants": ["APPLE.COM"],
+        "merchants": [
+          "APPLE.COM"
+        ],
         "locations": [],
         "include_keywords": [],
         "exclude_keywords": []
@@ -340,29 +493,42 @@
     {
       "id": 4004,
       "name": "Wohnen: Miete und Hypothek",
+      "transaction_category": "expense",
       "category": "Wohnen",
       "subcategory": "Miete und Hypothek",
       "priority": 60,
       "transaction_type": "debit",
-      "services": ["Lastschrift"],
+      "services": [
+        "Lastschrift"
+      ],
+      "providers": null,
       "triggers": {
         "merchants": [],
         "locations": [],
-        "include_keywords": ["FINANZVERWALTUNG STADT SOLOTHURN"],
+        "include_keywords": [
+          "FINANZVERWALTUNG STADT SOLOTHURN"
+        ],
         "exclude_keywords": []
       }
     },
     {
       "id": 4005,
       "name": "Einkauf Haushalt: Manor",
+      "transaction_category": "expense",
       "category": "Wohnen",
       "subcategory": "Haushalt",
       "priority": 50,
       "transaction_type": "debit",
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
+      "services": [
+        "Karteneinkauf"
+      ],
+      "providers": [
+        "Apple Pay"
+      ],
       "triggers": {
-        "merchants": ["MANOR"],
+        "merchants": [
+          "MANOR"
+        ],
         "locations": [],
         "include_keywords": [],
         "exclude_keywords": []
@@ -371,13 +537,19 @@
     {
       "id": 4006,
       "name": "Subscription: Cloud Services",
+      "transaction_category": "expense",
       "category": "Wohnen",
       "subcategory": "Kommunikation",
       "priority": 60,
       "transaction_type": "debit",
-      "services": ["Karteneinkauf"],
+      "services": [
+        "Karteneinkauf"
+      ],
+      "providers": null,
       "triggers": {
-        "merchants": ["CLOUDSERVICE"],
+        "merchants": [
+          "CLOUDSERVICE"
+        ],
         "locations": [],
         "include_keywords": [],
         "exclude_keywords": []
@@ -386,28 +558,44 @@
     {
       "id": 4007,
       "name": "Einkauf Haushalt: Online Haushalt AG",
+      "transaction_category": "expense",
       "category": "Wohnen",
       "subcategory": "Haushalt",
       "priority": 75,
       "transaction_type": "debit",
-      "services": ["Karteneinkauf"],
+      "services": [
+        "Karteneinkauf"
+      ],
+      "providers": null,
       "triggers": {
-        "merchants": ["ONLINE HAUSHALT AG"],
+        "merchants": [
+          "ONLINE HAUSHALT AG"
+        ],
         "locations": [],
-        "include_keywords": ["PAYMENT ID", "BESTELLNUMMER"],
+        "include_keywords": [
+          "PAYMENT ID",
+          "BESTELLNUMMER"
+        ],
         "exclude_keywords": []
       }
     },
     {
       "id": 5001,
       "name": "Öffentlicher Verkehr",
+      "transaction_category": "expense",
       "category": "Mobilität",
       "subcategory": "Öffentlicher Verkehr",
       "priority": 70,
       "transaction_type": "debit",
-      "services": ["Karteneinkauf"],
+      "services": [
+        "Karteneinkauf"
+      ],
+      "providers": null,
       "triggers": {
-        "merchants": ["TRANSPORTS PUBLICS", "FAIRTIQ"],
+        "merchants": [
+          "TRANSPORTS PUBLICS",
+          "FAIRTIQ"
+        ],
         "locations": [],
         "include_keywords": [],
         "exclude_keywords": []
@@ -416,73 +604,105 @@
     {
       "id": 6001,
       "name": "Bargeldbezug",
+      "transaction_category": "expense",
       "category": "Finanzen",
       "subcategory": "Bargeldbezug",
       "priority": 80,
       "transaction_type": "debit",
-      "services": ["Bargeldbezug"],
+      "services": [
+        "Bargeldbezug"
+      ],
+      "providers": null,
       "triggers": {
         "merchants": [],
         "locations": [],
-        "include_keywords": ["BARGELDBEZUG"],
+        "include_keywords": [
+          "BARGELDBEZUG"
+        ],
         "exclude_keywords": []
       }
     },
     {
       "id": 6002,
       "name": "Bankgebühren: Paketpreis",
+      "transaction_category": "expense",
       "category": "Finanzen",
       "subcategory": "Gebühren",
       "priority": 85,
       "transaction_type": "debit",
-      "services": ["Gebühren"],
+      "services": [
+        "Gebühren"
+      ],
+      "providers": null,
       "triggers": {
         "merchants": [],
         "locations": [],
-        "include_keywords": ["BANKPAKET SMART"],
+        "include_keywords": [
+          "BANKPAKET SMART"
+        ],
         "exclude_keywords": []
       }
     },
     {
       "id": 9001,
       "name": "Lohn: Alpenwerk",
+      "transaction_category": "income",
       "category": "Einkommen",
       "subcategory": "Lohn",
       "priority": 80,
       "transaction_type": "credit",
-      "services": ["Gutschrift"],
+      "services": [
+        "Gutschrift"
+      ],
+      "providers": null,
       "triggers": {
-        "merchants": ["ALPENWERK"],
+        "merchants": [
+          "ALPENWERK"
+        ],
         "locations": [],
-        "include_keywords": ["SALAER"],
+        "include_keywords": [
+          "SALAER"
+        ],
         "exclude_keywords": []
       }
     },
     {
       "id": 11001,
       "name": "Twint empfangen: Rückerstattung",
+      "transaction_category": "refund",
       "category": "Rückerstattungen",
       "subcategory": "",
       "priority": 50,
       "transaction_type": "credit",
-      "services": ["Twint"],
+      "services": [
+        "Twint"
+      ],
+      "providers": null,
       "triggers": {
         "merchants": [],
         "locations": [],
-        "include_keywords": ["GELD EMPFANGEN"],
+        "include_keywords": [
+          "GELD EMPFANGEN"
+        ],
         "exclude_keywords": []
       }
     },
     {
       "id": 11002,
       "name": "Gutschrift: Medicura Plus",
+      "transaction_category": "refund",
       "category": "Rückerstattungen",
       "subcategory": "",
       "priority": 75,
       "transaction_type": "credit",
-      "services": ["Gutschrift"],
+      "services": [
+        "Gutschrift"
+      ],
+      "providers": null,
       "triggers": {
-        "merchants": ["MEDICURA PLUS"],
+        "merchants": [
+          "MEDICURA PLUS"
+        ],
         "locations": [],
         "include_keywords": [],
         "exclude_keywords": []
@@ -490,7 +710,7 @@
     }
   ],
   "comments": {
-    "required_fields": "Rule fields that should always be set: id, name, category, subcategory, priority, transaction_type.",
+    "required_fields": "Rule fields that should always be set: id, name, transaction_category, priority, transaction_type.",
     "optional_fields": "Optional rule filters: services, providers, merchants, locations, include_keywords, exclude_keywords. Empty list means 'do not filter by this field'.",
     "transaction_type": "Required filter by money direction: 'credit' or 'debit'.",
     "services": "Optional filter on parsed generic service type (e.g. Karteneinkauf, Twint, Lastschrift).",
@@ -501,7 +721,9 @@
     "exclude_keywords": "Optional keywords that must NOT be present. NONE may be present.",
     "matching": "A rule matches only if all active (non-empty) filters are satisfied. Highest priority wins.",
     "fallback": "No fallback category. If no rule matches, transaction stays uncategorized.",
-    "subcategory": "Subcategory for fine-grained classification (e.g. 'Gastronomie' within 'Freizeit'). Empty string if not applicable.",
+    "subcategory": "Optional subcategory for fine-grained classification (e.g. 'Gastronomie' within 'Freizeit'). Empty string if not applicable.",
+    "category": "Optional high-level category mapping. Empty string if not applicable.",
+    "transaction_category": "Required classification bucket: one of income, expense, refund, transfer.",
     "foreseen_id_ranges": [
       { "category": "Einkaufen", "range": [1000, 1999] },
       { "category": "Freizeit", "range": [2000, 2999] },

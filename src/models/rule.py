@@ -9,6 +9,7 @@ class Rule:
 
     id: int
     name: str
+    transaction_category: str  # One of: income, expense, refund, transfer
     category: str
     subcategory: str
     priority: int

@@ -24,6 +24,7 @@ def test_migros_supermarket_rule():
     # Verify rule properties
     assert rule.merchants == ['MIGROS', 'COOP']
     assert rule.exclude_keywords == ['TAKE AWAY']
+    assert rule.transaction_category == 'expense'
     
     # Verify transaction direction matches
     assert rule.transaction_type == txn.transaction_type

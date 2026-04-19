@@ -19,6 +19,7 @@ def _rule(id, category="Kategorie A", subcategory="", priority=50, merchant="TES
         "name": name or f"Regel {id}",
         "category": category,
         "subcategory": subcategory,
+        "transaction_category": "expense",
         "priority": priority,
         "transaction_type": "debit",
         "services": ["Karteneinkauf"],
@@ -217,3 +218,31 @@ class TestOverlay:
 
         priorities = [r.priority for r in engine.rules]
         assert priorities == sorted(priorities, reverse=True)
+
+    def test_invalid_transaction_category_raises(self, tmp_path):
+        base = tmp_path / "base.json"
+        _write(base, [{**_rule(1), "transaction_category": "invalid"}])
+
+        with pytest.raises(ValueError):
+            RuleEngine(str(base))
+
+    def test_sets_auto_transaction_category_on_match(self, tmp_path):
+        base = tmp_path / "base.json"
+        _write(base, [_rule(1, category="Kategorie Test")])
+        engine = RuleEngine(str(base))
+
+        transaction = Transaction(
+            date=datetime(2025, 3, 21),
+            notification_text="Apple Pay TESTLADEN Aarau",
+            credit=0.0,
+            debit=9.5,
+            label="",
+            category="",
+            service_type="Karteneinkauf",
+            provider="Apple Pay",
+            parsed_merchant="TESTLADEN",
+            parsed_location="Aarau",
+        )
+
+        categorized, _ = engine.categorize_batch([transaction])
+        assert categorized[0].auto_transaction_category == "expense"

@@ -78,11 +78,13 @@ def test_export_includes_service_fields():
         assert "Service" in df.columns, "Service column should exist"
         assert "Provider" in df.columns, "Provider column should exist"
         assert "Card Number" in df.columns, "Card Number column should exist"
+        assert "Transaction Category" in df.columns, "Transaction Category column should exist"
 
         first_row = df.iloc[0]
         assert first_row["Service"] == "Karteneinkauf", "First row service should be Karteneinkauf"
         assert first_row["Provider"] == "Apple Pay", "First row provider should be Apple Pay"
         assert first_row["Card Number"] == "XXXX4821", "First row card number should be parsed"
+        assert first_row["Transaction Category"] == "expense", "First row transaction category should be expense"
 
 
 def test_export_preserves_amounts():
