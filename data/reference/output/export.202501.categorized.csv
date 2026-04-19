@@ -1,2 +1,3 @@
 Transaction ID;Date;Transaction Type;Transaction Type Detail;Service;Provider;Card Number;Merchant;Location;Counterparty;Counterparty IBAN;Reference;Credit in CHF;Debit in CHF;Label;Category;Subcategory
 TX-000055;25.01.2025;Buchung;Geld empfangen;Twint;;;+41790000000 MAX MUSTER MITTEILUNGEN: TEST;;;;;1.0;;;Rückerstattungen;
+TX-000056;19.01.2025;Buchung;Kauf/Online-Shopping;Karteneinkauf;;;ONLINE HAUSHALT AG;;;;PAYMENT ID 250119000000000000 BESTELLNUMMER DP-P-00000000;;13.9;;Wohnen;Haushalt

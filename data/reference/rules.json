@@ -559,6 +559,21 @@
         "include_keywords": ["GELD EMPFANGEN"],
         "exclude_keywords": []
       }
+    },
+    {
+      "id": 37,
+      "name": "eFinance Kauf: Online Haushalt AG",
+      "category": "Wohnen",
+      "subcategory": "Haushalt",
+      "priority": 75,
+      "transaction_types": ["Buchung"],
+      "services": ["Karteneinkauf"],
+      "triggers": {
+        "merchants": ["ONLINE HAUSHALT AG"],
+        "locations": [],
+        "include_keywords": ["PAYMENT ID", "BESTELLNUMMER"],
+        "exclude_keywords": []
+      }
     }
   ],
   "comments": {

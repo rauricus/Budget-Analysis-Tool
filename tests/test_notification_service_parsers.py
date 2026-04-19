@@ -10,6 +10,7 @@ from notification.parsers.twint_send_parser import TwintSendParser
 from notification.parsers.bank_package_fee_parser import BankPackageFeeParser
 from notification.parsers.cash_withdrawal_parser import CashWithdrawalParser
 from notification.parsers.card_purchase_parser import CardPurchaseParser
+from notification.parsers.efinance_purchase_parser import EFinancePurchaseParser
 from notification.parsers.credit_transfer_parser import CreditTransferParser
 from notification.parsers.debit_direct_parser import DebitDirectParser
 from notification.parsers.payment_parser import PaymentParser
@@ -63,6 +64,23 @@ def test_card_purchase_parser_for_foreign_currency():
     assert result.card_number == "XXXX4821"
     assert result.merchant == "CLOUDSERVICE INC SAN"
     assert result.location == "JOSE"
+
+
+def test_efinance_purchase_parser_without_card_number():
+    """EFinancePurchaseParser should parse online shopping notifications with payment ID/order reference."""
+    parser = EFinancePurchaseParser()
+    text = "KAUF/ONLINE-SHOPPING VOM 19.01.2025 ONLINE HAUSHALT AG N/A PAYMENT ID 250119000000000000 BESTELLNUMMER DP-P-00000000"
+
+    assert parser.supports(text), "Online shopping parser should support payment ID format"
+
+    result = parser.parse(text)
+    assert result.service_type == "Karteneinkauf"
+    assert result.provider == ""
+    assert result.transaction_type_detail == "Kauf/Online-Shopping"
+    assert result.card_number == ""
+    assert result.merchant == "ONLINE HAUSHALT AG"
+    assert result.location == ""
+    assert result.reference == "PAYMENT ID 250119000000000000 BESTELLNUMMER DP-P-00000000"
 
 
 def test_cash_withdrawal_parser():
@@ -242,6 +260,7 @@ if __name__ == '__main__':
     test_card_purchase_parser_for_generic_card_purchase()
     test_card_purchase_parser_for_online_shopping()
     test_card_purchase_parser_for_foreign_currency()
+    test_efinance_purchase_parser_without_card_number()
     test_cash_withdrawal_parser()
     test_credit_transfer_parser_salary_credit()
     test_credit_transfer_parser_sender_credit_with_iban()
