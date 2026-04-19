@@ -1,0 +1,9 @@
+Datum von:;="01.04.2025"
+Datum bis:;="30.04.2025"
+Kategorie:;="Alle"
+Konto:;="CH56 0000 0000 0000 0000 0"
+Währung:;="CHF"
+
+Datum;Bewegungstyp;Avisierungstext;Gutschrift in CHF;Lastschrift in CHF;Label;Kategorie
+
+04.04.2025;Buchung;"GUTSCHRIFT POSTFINANCE CARD VOM 04.04.2025 KARTEN NR. XXXX1384 UEFA WOMEN'S EURO 2025 NYON (CH)";100;;;Rückerstattungen

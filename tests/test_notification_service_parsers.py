@@ -18,6 +18,7 @@ from notification.parsers.payment_parser import PaymentParser
 from notification.parsers.standing_order_parser import StandingOrderParser
 from notification.parsers.twint_receive_parser import TwintReceiveParser
 from notification.parsers.twint_purchase_parser import TwintPurchaseParser
+from notification.parsers.postfinance_card_refund_parser import PostFinanceCardRefundParser
 
 
 def test_card_purchase_parser_for_generic_card_purchase():
@@ -301,6 +302,21 @@ def test_standing_order_parser():
     assert result.reference == "90-33445566"
 
 
+def test_postfinance_card_refund_parser():
+    """PostFinanceCardRefundParser should parse PostFinance Card refund format"""
+    parser = PostFinanceCardRefundParser()
+    text = "GUTSCHRIFT POSTFINANCE CARD VOM 04.04.2025 KARTEN NR. XXXX1384 UEFA WOMEN'S EURO 2025 NYON (CH)"
+
+    assert parser.supports(text), "Should support PostFinance Card refund format"
+
+    result = parser.parse(text)
+    assert result.service_type == "PostFinance Card Refund"
+    assert result.transaction_type_detail == "Refund"
+    assert result.card_number == "XXXX1384"
+    assert result.merchant == "UEFA WOMEN'S EURO 2025 NYON"
+    assert result.location == "CH"
+
+
 if __name__ == '__main__':
     test_card_purchase_parser_for_generic_card_purchase()
     test_card_purchase_parser_for_online_shopping()
@@ -322,4 +338,5 @@ if __name__ == '__main__':
     test_debit_direct_parser()
     test_payment_parser()
     test_standing_order_parser()
+    test_postfinance_card_refund_parser()
     print("✓ All notification service parser tests passed")
