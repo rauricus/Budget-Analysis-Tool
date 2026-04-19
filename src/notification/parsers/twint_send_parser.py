@@ -31,6 +31,7 @@ class TwintSendParser(AbstractServiceParser):
                 merchant = f"{recipient_phone} {rest}".strip()
             return NotificationParseResult(
                 service_type="Twint",
+                provider="Twint",
                 transaction_type_detail="Geld senden",
                 merchant=merchant,
             )
@@ -52,6 +53,7 @@ class TwintSendParser(AbstractServiceParser):
                 merchant_parts = [p for p in [recipient_phone, rest] if p]
             return NotificationParseResult(
                 service_type="Twint",
+                provider="Twint",
                 transaction_type_detail="Geld senden",
                 merchant=" ".join(merchant_parts),
             )

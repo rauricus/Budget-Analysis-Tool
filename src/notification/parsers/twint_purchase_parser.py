@@ -28,6 +28,7 @@ class TwintPurchaseParser(AbstractServiceParser):
 
         return NotificationParseResult(
             service_type="Twint",
+            provider="Twint",
             transaction_type_detail=detail_map.get(detail, ""),
             merchant=merchant,
             location=location,

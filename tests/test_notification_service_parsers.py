@@ -172,6 +172,7 @@ def test_twint_send_parser_parse():
 
     result = parser.parse(text)
     assert result.service_type == "Twint"
+    assert result.provider == "Twint"
     assert result.transaction_type_detail == "Geld senden"
     assert "+41796666222 KEBAB, IMBISS" in result.merchant
 
@@ -191,6 +192,7 @@ def test_twint_send_parser_direct_parse():
 
     result = parser.parse(text)
     assert result.service_type == "Twint"
+    assert result.provider == "Twint"
     assert result.transaction_type_detail == "Geld senden"
     assert "+41790000000" in result.merchant
     assert "MAX MUSTER" in result.merchant
@@ -204,6 +206,7 @@ def test_twint_send_parser_direct_parse_without_mitteilungen():
 
     result = parser.parse(text)
     assert result.service_type == "Twint"
+    assert result.provider == "Twint"
     assert result.transaction_type_detail == "Geld senden"
     assert "+41790000000" in result.merchant
     assert "MAX MUSTER" in result.merchant
@@ -224,6 +227,7 @@ def test_twint_receive_parser_parse():
 
     result = parser.parse(text)
     assert result.service_type == "Twint"
+    assert result.provider == "Twint"
     assert result.transaction_type_detail == "Geld empfangen"
     assert "+41790000000" in result.merchant
     assert "MAX MUSTER" in result.merchant
@@ -239,6 +243,7 @@ def test_twint_purchase_parser_parse():
 
     result = parser.parse(text)
     assert result.service_type == "Twint"
+    assert result.provider == "Twint"
     assert result.transaction_type_detail == "Kauf/Dienstleistung"
     assert result.merchant == "MUSTER CAFE"
     assert result.location == "YVERDON-LES-BAINS"

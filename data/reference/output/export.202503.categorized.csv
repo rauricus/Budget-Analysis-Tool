@@ -33,7 +33,7 @@ TX-000033;27.03.2025;debit;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;
 TX-000034;27.03.2025;debit;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;COOP - 7811 QUAI WEST;BERN;;;;;7.75;;expense;Einkaufen;Supermärkte
 TX-000035;26.03.2025;debit;Kauf/Online-Shopping;Karteneinkauf;;XXXX4821;TRANSPORTS PUBLICS FRIBOURGEOIS (FAIRTIQ) N/A PAYMENT ID 250326064915818975ZX BESTELLNUMMER;ZUNCTYVS45RXNGTQIH;;;;;62.6;;expense;Mobilität;Öffentlicher Verkehr
 TX-000036;26.03.2025;debit;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;JUMBO-7782 INDUSTRIEPARK;WINTERTHUR;;;;;10.9;;expense;Wohnen;Handwerk und Garten
-TX-000037;26.03.2025;debit;Geld senden;Twint;;;+41796666222 KEBAB, IMBISS MITTEILUNGEN: KEBAB;;;;;;14.0;;expense;Freizeit;Gastronomie
+TX-000037;26.03.2025;debit;Geld senden;Twint;Twint;;+41796666222 KEBAB, IMBISS MITTEILUNGEN: KEBAB;;;;;;14.0;;expense;Freizeit;Gastronomie
 TX-000038;26.03.2025;debit;Dauerauftrag;Lastschrift;;;FAMILIENKASSE;;FAMILIENKASSE MUSTERHAUSEN SENDER REFERENZ: FAMILIENZULAGE;CH3409000000802999554;90-33445566;;200.0;;expense;Leben;Familie
 TX-000039;25.03.2025;debit;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;BÄCKEREI HUG;OLTEN;;;;;6.1;;expense;Einkaufen;Detail-Lebensmittel
 TX-000040;25.03.2025;debit;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;BRANKOVIC BREZELSTUBE;THUN;;;;;4.3;;expense;Einkaufen;Detail-Lebensmittel
@@ -50,6 +50,6 @@ TX-000049;24.03.2025;debit;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;
 TX-000050;24.03.2025;debit;Zahlung;Lastschrift;;;MEDICURA / SYMPANY;;MEDICURA PLUS AG GESUNDHEITSWEG 8 4052 BASEL;CH1830000001400099001;;;77.45;;expense;Leben;Gesundheit
 TX-000051;23.03.2025;debit;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;BÄCKEREI HUG;OLTEN;;;;;17.3;;expense;Einkaufen;Detail-Lebensmittel
 TX-000052;23.03.2025;debit;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;MANOR AG - 771 (CENTRA);BERN;;;;;23.95;;expense;Wohnen;Haushalt
-TX-000053;23.03.2025;debit;Geld senden;Twint;;;+41796666222 KEBAB, IMBISS;;;;;;13.5;;expense;Freizeit;Gastronomie
-TX-000054;22.03.2025;debit;Geld senden;Twint;;;+41790000000 MAX MUSTER MITTEILUNGEN: ESSEN GESTERN ABEND;;;;;;20.0;;expense;Freizeit;Gastronomie
+TX-000053;23.03.2025;debit;Geld senden;Twint;Twint;;+41796666222 KEBAB, IMBISS;;;;;;13.5;;expense;Freizeit;Gastronomie
+TX-000054;22.03.2025;debit;Geld senden;Twint;Twint;;+41790000000 MAX MUSTER MITTEILUNGEN: ESSEN GESTERN ABEND;;;;;;20.0;;expense;Freizeit;Gastronomie
 TX-000055;22.03.2025;debit;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;UNMATCHED TEST STORE;ZURICH;;;;;12.4;TEST-INTENTIONAL-UNMATCHED;;?;
