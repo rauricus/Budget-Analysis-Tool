@@ -25,6 +25,7 @@ def test_parse_row_apple_pay():
     assert txn.parsed_merchant == 'CITY TANKSTELLE', "Merchant should be parsed"
     assert txn.parsed_location == 'OLTEN', "Location should be parsed"
     assert txn.debit > 0, "Lastschrift should be stored as positive"
+    assert txn.transaction_type == 'debit', "Transaction type should be normalized to debit"
 
 
 def test_parse_row_skips_empty_date():
@@ -41,6 +42,18 @@ def test_parse_row_skips_empty_date():
 
     txn = TransactionParser.parse_row(row)
     assert txn is None, "Rows without date should be skipped"
+
+
+def test_parse_row_credit_transaction_type():
+    """Credit rows should be normalized to transaction_type='credit'."""
+    df = pd.read_csv('data/reference/input/export.202503.csv', sep=';', skiprows=5, encoding='utf-8')
+    credit_rows = df[pd.to_numeric(df['Gutschrift in CHF'], errors='coerce').fillna(0) > 0]
+    assert not credit_rows.empty, "Reference dataset should contain at least one credit transaction"
+    row = credit_rows.iloc[0]
+
+    txn = TransactionParser.parse_row(row)
+    assert txn is not None
+    assert txn.transaction_type == 'credit'
 
 
 if __name__ == '__main__':

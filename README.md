@@ -159,7 +159,7 @@ Example:
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 100,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Karteneinkauf"],
       "providers": ["Apple Pay"],
       "triggers": {
@@ -177,6 +177,7 @@ Example:
 
 - Rules are sorted by descending `priority`.
 - Category assignment uses two levels: `category` and `subcategory`.
+- `transaction_type` filters on money direction: `credit` or `debit`.
 - Rules can filter by parsed `service_type` (`services`) and optional `provider` (`providers`).
 - A rule matches only if all configured conditions match.
 - `merchants`: OR logic (at least one must match).

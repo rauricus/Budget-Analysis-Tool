@@ -20,7 +20,7 @@ def _rule(id, category="Kategorie A", subcategory="", priority=50, merchant="TES
         "category": category,
         "subcategory": subcategory,
         "priority": priority,
-        "transaction_types": ["Buchung"],
+        "transaction_type": "debit",
         "services": ["Karteneinkauf"],
         "providers": ["Apple Pay"],
         "triggers": {
@@ -145,7 +145,6 @@ class TestOverlay:
 
         transaction = Transaction(
             date=datetime(2025, 3, 21),
-            transaction_type="Buchung",
             notification_text="Apple Pay MATCHSHOP Aarau",
             credit=0.0,
             debit=12.5,
@@ -174,7 +173,6 @@ class TestOverlay:
 
         transaction = Transaction(
             date=datetime(2025, 3, 21),
-            transaction_type="Buchung",
             notification_text="Apple Pay MATCHSHOP Aarau",
             credit=0.0,
             debit=12.5,

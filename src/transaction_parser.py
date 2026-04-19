@@ -71,7 +71,6 @@ class TransactionParser:
         
         txn = Transaction(
             date=date,
-            transaction_type=str(row["Bewegungstyp"]).strip(),
             notification_text=notification_text,
             credit=credit,
             debit=debit,

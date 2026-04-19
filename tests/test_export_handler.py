@@ -118,7 +118,6 @@ def test_export_splits_legacy_category_into_subcategory():
     """Legacy CSV categories should only be reused when fallback is enabled."""
     txn = Transaction(
         date=datetime(2025, 3, 31),
-        transaction_type="Buchung",
         notification_text="Legacy category transaction",
         credit=0.0,
         debit=10.0,

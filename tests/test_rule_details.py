@@ -25,8 +25,8 @@ def test_migros_supermarket_rule():
     assert rule.merchants == ['MIGROS', 'COOP']
     assert rule.exclude_keywords == ['TAKE AWAY']
     
-    # Verify transaction type matches
-    assert txn.transaction_type in rule.transaction_types
+    # Verify transaction direction matches
+    assert rule.transaction_type == txn.transaction_type
     
     # Verify the rule matches this transaction
     assert rule.matches(txn), f"Rule '{rule.id}' should match transaction 4"

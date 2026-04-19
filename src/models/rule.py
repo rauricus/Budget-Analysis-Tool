@@ -12,7 +12,7 @@ class Rule:
     category: str
     subcategory: str
     priority: int
-    transaction_types: list[str]  # e.g. ["APPLE PAY KAUF/DIENSTLEISTUNG"]
+    transaction_type: str = ""  # Optional filter: "credit" or "debit"
     services: list[str] = field(default_factory=list)  # Optional filter, e.g. ["Karteneinkauf", "Twint"]
     merchants: list[str] = field(default_factory=list)  # Optional filter, e.g. ["MIGROS", "COOP"]
     locations: list[str] = field(default_factory=list)  # Optional filter, e.g. ["AARAU", "ZURICH"]
@@ -40,8 +40,8 @@ class Rule:
             if part
         )
 
-        # 1. Match transaction type
-        if transaction.transaction_type not in self.transaction_types:
+        # 1. Match credit/debit direction (optional)
+        if self.transaction_type and transaction.transaction_type.lower() != self.transaction_type.lower():
             return False
 
         # 1b. Match service type (optional)

@@ -8,7 +8,6 @@ class Transaction:
     """Single bank transaction parsed from CSV."""
 
     date: datetime
-    transaction_type: str
     notification_text: str
     credit: float
     debit: float
@@ -28,14 +27,14 @@ class Transaction:
     transaction_type_detail: str = ""  # For direct debit (Lastschrift): detail type
 
     @property
+    def transaction_type(self) -> str:
+        """Normalized transaction direction: 'credit' or 'debit'."""
+        return "credit" if self.credit > self.debit else "debit"
+
+    @property
     def amount(self) -> float:
         """Amount (positive for income, negative for expenses)."""
         return self.credit - self.debit
-
-    @property
-    def is_income(self) -> bool:
-        """Is income?"""
-        return self.amount > 0
 
     @property
     def notification_text_upper(self) -> str:

@@ -6,7 +6,7 @@
       "category": "Einkaufen",
       "subcategory": "Supermärkte",
       "priority": 50,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Karteneinkauf"],
       "providers": ["Apple Pay"],
       "triggers": {
@@ -22,7 +22,7 @@
       "category": "Einkaufen",
       "subcategory": "Detail-Lebensmittel",
       "priority": 40,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Karteneinkauf"],
       "providers": ["Apple Pay"],
       "triggers": {
@@ -44,7 +44,7 @@
       "category": "Einkaufen",
       "subcategory": "Detail-Lebensmittel",
       "priority": 40,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Karteneinkauf"],
       "providers": ["Apple Pay"],
       "triggers": {
@@ -64,7 +64,7 @@
       "category": "Einkaufen",
       "subcategory": "Sonstiges Einkaufen",
       "priority": 30,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Karteneinkauf"],
       "providers": ["Apple Pay"],
       "triggers": {
@@ -80,7 +80,7 @@
       "category": "Einkaufen",
       "subcategory": "Sonstiges Einkaufen",
       "priority": 30,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Karteneinkauf"],
       "providers": ["Apple Pay"],
       "triggers": {
@@ -96,7 +96,7 @@
       "category": "Einkaufen",
       "subcategory": "Detail-Lebensmittel",
       "priority": 45,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Karteneinkauf"],
       "providers": ["Apple Pay"],
       "triggers": {
@@ -112,7 +112,7 @@
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 100,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Karteneinkauf"],
       "providers": ["Apple Pay"],
       "triggers": {
@@ -128,7 +128,7 @@
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 60,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Karteneinkauf"],
       "triggers": {
         "merchants": ["YOOJI'S", "SIGNOR ROSSI"],
@@ -143,7 +143,7 @@
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 60,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Karteneinkauf"],
       "triggers": {
         "merchants": ["COFFEE AND PLANTS"],
@@ -158,7 +158,7 @@
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 55,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Twint"],
       "triggers": {
         "merchants": ["TWINT"],
@@ -173,7 +173,7 @@
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 56,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Twint"],
       "triggers": {
         "merchants": ["KEBAB", "IMBISS"],
@@ -188,7 +188,7 @@
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 60,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Twint"],
       "triggers": {
         "merchants": [],
@@ -203,7 +203,7 @@
       "category": "Leben",
       "subcategory": "Gesundheit",
       "priority": 45,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Karteneinkauf"],
       "providers": ["Apple Pay"],
       "triggers": {
@@ -219,7 +219,7 @@
       "category": "Leben",
       "subcategory": "Styling und Wellness",
       "priority": 45,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Karteneinkauf"],
       "providers": ["Apple Pay"],
       "triggers": {
@@ -235,7 +235,7 @@
       "category": "Leben",
       "subcategory": "Styling und Wellness",
       "priority": 45,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Karteneinkauf"],
       "providers": ["Apple Pay"],
       "triggers": {
@@ -251,7 +251,7 @@
       "category": "Leben",
       "subcategory": "Gesundheit",
       "priority": 70,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Lastschrift"],
       "triggers": {
         "merchants": ["MEDICURA", "SYMPANY"],
@@ -266,7 +266,7 @@
       "category": "Leben",
       "subcategory": "Sonstiges Leben",
       "priority": 35,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Karteneinkauf"],
       "providers": ["Apple Pay"],
       "triggers": {
@@ -282,7 +282,7 @@
       "category": "Leben",
       "subcategory": "Familie",
       "priority": 72,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Lastschrift"],
       "triggers": {
         "merchants": ["FAMILIENKASSE"],
@@ -297,7 +297,7 @@
       "category": "Wohnen",
       "subcategory": "Handwerk und Garten",
       "priority": 50,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Karteneinkauf"],
       "providers": ["Apple Pay"],
       "triggers": {
@@ -313,7 +313,7 @@
       "category": "Wohnen",
       "subcategory": "Kommunikation",
       "priority": 70,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Lastschrift"],
       "triggers": {
         "merchants": ["SUNRISE"],
@@ -328,7 +328,7 @@
       "category": "Wohnen",
       "subcategory": "Kommunikation",
       "priority": 60,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Karteneinkauf"],
       "triggers": {
         "merchants": ["APPLE.COM"],
@@ -343,7 +343,7 @@
       "category": "Wohnen",
       "subcategory": "Miete und Hypothek",
       "priority": 60,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Lastschrift"],
       "triggers": {
         "merchants": [],
@@ -358,7 +358,7 @@
       "category": "Wohnen",
       "subcategory": "Haushalt",
       "priority": 50,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Karteneinkauf"],
       "providers": ["Apple Pay"],
       "triggers": {
@@ -374,7 +374,7 @@
       "category": "Wohnen",
       "subcategory": "Kommunikation",
       "priority": 60,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Karteneinkauf"],
       "triggers": {
         "merchants": ["CLOUDSERVICE"],
@@ -389,7 +389,7 @@
       "category": "Wohnen",
       "subcategory": "Haushalt",
       "priority": 75,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Karteneinkauf"],
       "triggers": {
         "merchants": ["ONLINE HAUSHALT AG"],
@@ -404,7 +404,7 @@
       "category": "Mobilität",
       "subcategory": "Öffentlicher Verkehr",
       "priority": 70,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Karteneinkauf"],
       "triggers": {
         "merchants": ["TRANSPORTS PUBLICS", "FAIRTIQ"],
@@ -419,7 +419,7 @@
       "category": "Finanzen",
       "subcategory": "Bargeldbezug",
       "priority": 80,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Bargeldbezug"],
       "triggers": {
         "merchants": [],
@@ -434,7 +434,7 @@
       "category": "Finanzen",
       "subcategory": "Gebühren",
       "priority": 85,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "debit",
       "services": ["Gebühren"],
       "triggers": {
         "merchants": [],
@@ -449,7 +449,7 @@
       "category": "Einkommen",
       "subcategory": "Lohn",
       "priority": 80,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "credit",
       "services": ["Gutschrift"],
       "triggers": {
         "merchants": ["ALPENWERK"],
@@ -464,7 +464,7 @@
       "category": "Rückerstattungen",
       "subcategory": "",
       "priority": 50,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "credit",
       "services": ["Twint"],
       "triggers": {
         "merchants": [],
@@ -479,7 +479,7 @@
       "category": "Rückerstattungen",
       "subcategory": "",
       "priority": 75,
-      "transaction_types": ["Buchung"],
+      "transaction_type": "credit",
       "services": ["Gutschrift"],
       "triggers": {
         "merchants": ["MEDICURA PLUS"],
@@ -490,9 +490,9 @@
     }
   ],
   "comments": {
-    "required_fields": "Rule fields that should always be set: id, name, category, subcategory, priority, transaction_types.",
+    "required_fields": "Rule fields that should always be set: id, name, category, subcategory, priority, transaction_type.",
     "optional_fields": "Optional rule filters: services, providers, merchants, locations, include_keywords, exclude_keywords. Empty list means 'do not filter by this field'.",
-    "transaction_types": "Required filter by transaction type from CSV (currently usually 'Buchung').",
+    "transaction_type": "Required filter by money direction: 'credit' or 'debit'.",
     "services": "Optional filter on parsed generic service type (e.g. Karteneinkauf, Twint, Lastschrift).",
     "providers": "Optional filter on payment provider (e.g. Apple Pay). Provider must NOT be encoded in services.",
     "merchants": "Optional merchant filter (case-insensitive). OR logic (at least one must match).",
