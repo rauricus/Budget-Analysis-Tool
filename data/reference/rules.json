@@ -711,10 +711,10 @@
     },
     {
       "id": 11002,
-      "name": "Gutschrift: Medicura Plus",
+      "name": "Rückerstattung Krankenkasse: Medicura Plus",
       "transaction_category": "refund",
-      "category": "Rückerstattungen",
-      "subcategory": "",
+      "category": "Leben",
+      "subcategory": "Gesundheit",
       "priority": 75,
       "transaction_type": "credit",
       "services": [
