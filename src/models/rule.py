@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from typing import Optional
 
 from models.transaction import Transaction
 
@@ -14,6 +15,7 @@ class Rule:
     subcategory: str
     priority: int
     transaction_type: str = ""  # Optional filter: "credit" or "debit"
+    transaction_type_detail: Optional[str] = None  # Optional filter: e.g. "Geld senden" or "Kauf/Dienstleistung"
     services: list[str] = field(default_factory=list)  # Optional filter, e.g. ["Karteneinkauf", "Twint"]
     merchants: list[str] = field(default_factory=list)  # Optional filter, e.g. ["MIGROS", "COOP"]
     locations: list[str] = field(default_factory=list)  # Optional filter, e.g. ["AARAU", "ZURICH"]
@@ -43,6 +45,11 @@ class Rule:
 
         # 1. Match credit/debit direction (optional)
         if self.transaction_type and transaction.transaction_type.lower() != self.transaction_type.lower():
+            return False
+
+        # 1a. Match transaction detail (optional)
+        detail_filter = (self.transaction_type_detail or "").upper()
+        if detail_filter and detail_text != detail_filter:
             return False
 
         # 1b. Match service type (optional)

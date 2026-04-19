@@ -46,6 +46,7 @@ class RuleEngine:
                 subcategory=rule_data.get("subcategory", ""),
                 priority=rule_data["priority"],
                 transaction_type=rule_data.get("transaction_type", ""),
+                transaction_type_detail=rule_data.get("transaction_type_detail") or None,
                 services=rule_data.get("services", []),
                 providers=rule_data.get("providers", []),
                 merchants=rule_data["triggers"].get("merchants", []),

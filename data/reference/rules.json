@@ -8,6 +8,7 @@
       "subcategory": "Supermärkte",
       "priority": 50,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Karteneinkauf"
       ],
@@ -34,6 +35,7 @@
       "subcategory": "Detail-Lebensmittel",
       "priority": 40,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Karteneinkauf"
       ],
@@ -61,6 +63,7 @@
       "subcategory": "Detail-Lebensmittel",
       "priority": 40,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Karteneinkauf"
       ],
@@ -86,6 +89,7 @@
       "subcategory": "Sonstiges Einkaufen",
       "priority": 30,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Karteneinkauf"
       ],
@@ -109,6 +113,7 @@
       "subcategory": "Sonstiges Einkaufen",
       "priority": 30,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Karteneinkauf"
       ],
@@ -137,6 +142,7 @@
       "subcategory": "Detail-Lebensmittel",
       "priority": 45,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Karteneinkauf"
       ],
@@ -160,6 +166,7 @@
       "subcategory": "Gastronomie",
       "priority": 100,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Karteneinkauf"
       ],
@@ -186,6 +193,7 @@
       "subcategory": "Gastronomie",
       "priority": 60,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Karteneinkauf"
       ],
@@ -208,6 +216,7 @@
       "subcategory": "Gastronomie",
       "priority": 60,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Karteneinkauf"
       ],
@@ -229,6 +238,7 @@
       "subcategory": "Gastronomie",
       "priority": 56,
       "transaction_type": "debit",
+      "transaction_type_detail": "Geld senden",
       "services": [
         "Twint"
       ],
@@ -251,6 +261,7 @@
       "subcategory": "Gastronomie",
       "priority": 60,
       "transaction_type": "debit",
+      "transaction_type_detail": "Geld senden",
       "services": [
         "Twint"
       ],
@@ -272,6 +283,7 @@
       "subcategory": "Gastronomie",
       "priority": 60,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Twint"
       ],
@@ -293,6 +305,7 @@
       "subcategory": "Gesundheit",
       "priority": 45,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Karteneinkauf"
       ],
@@ -316,6 +329,7 @@
       "subcategory": "Styling und Wellness",
       "priority": 45,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Karteneinkauf"
       ],
@@ -339,6 +353,7 @@
       "subcategory": "Styling und Wellness",
       "priority": 45,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Karteneinkauf"
       ],
@@ -365,6 +380,7 @@
       "subcategory": "Gesundheit",
       "priority": 70,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Lastschrift"
       ],
@@ -387,6 +403,7 @@
       "subcategory": "Sonstiges Leben",
       "priority": 35,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Karteneinkauf"
       ],
@@ -410,6 +427,7 @@
       "subcategory": "Familie",
       "priority": 72,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Lastschrift"
       ],
@@ -433,6 +451,7 @@
       "subcategory": "Familie",
       "priority": 73,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Kontoübertrag"
       ],
@@ -455,6 +474,7 @@
       "subcategory": "Handwerk und Garten",
       "priority": 50,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Karteneinkauf"
       ],
@@ -478,6 +498,7 @@
       "subcategory": "Kommunikation",
       "priority": 70,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Lastschrift"
       ],
@@ -499,6 +520,7 @@
       "subcategory": "Kommunikation",
       "priority": 60,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Karteneinkauf"
       ],
@@ -520,6 +542,7 @@
       "subcategory": "Miete und Hypothek",
       "priority": 60,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Lastschrift"
       ],
@@ -541,6 +564,7 @@
       "subcategory": "Haushalt",
       "priority": 50,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Karteneinkauf"
       ],
@@ -564,6 +588,7 @@
       "subcategory": "Kommunikation",
       "priority": 60,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Karteneinkauf"
       ],
@@ -585,6 +610,7 @@
       "subcategory": "Haushalt",
       "priority": 75,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Karteneinkauf"
       ],
@@ -609,6 +635,7 @@
       "subcategory": "Öffentlicher Verkehr",
       "priority": 70,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Karteneinkauf"
       ],
@@ -631,6 +658,7 @@
       "subcategory": "Privater Verkehr",
       "priority": 72,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Lastschrift"
       ],
@@ -652,6 +680,7 @@
       "subcategory": "Bargeldbezug",
       "priority": 80,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Bargeldbezug"
       ],
@@ -673,6 +702,7 @@
       "subcategory": "Gebühren",
       "priority": 85,
       "transaction_type": "debit",
+      "transaction_type_detail": null,
       "services": [
         "Gebühren"
       ],
@@ -694,6 +724,7 @@
       "subcategory": "Lohn",
       "priority": 80,
       "transaction_type": "credit",
+      "transaction_type_detail": null,
       "services": [
         "Gutschrift"
       ],
@@ -717,6 +748,7 @@
       "subcategory": "",
       "priority": 50,
       "transaction_type": "credit",
+      "transaction_type_detail": null,
       "services": [
         "Twint"
       ],
@@ -738,6 +770,7 @@
       "subcategory": "Gesundheit",
       "priority": 75,
       "transaction_type": "credit",
+      "transaction_type_detail": null,
       "services": [
         "Gutschrift"
       ],
@@ -759,6 +792,7 @@
       "subcategory": "Kontoübertrag",
       "priority": 95,
       "transaction_type": "credit",
+      "transaction_type_detail": null,
       "services": [
         "Kontoübertrag"
       ],
@@ -779,6 +813,7 @@
     "required_fields": "Rule fields that should always be set: id, name, transaction_category, priority, transaction_type.",
     "optional_fields": "Optional rule filters: services, providers, merchants, locations, include_keywords, exclude_keywords. Empty list means 'do not filter by this field'.",
     "transaction_type": "Required filter by money direction: 'credit' or 'debit'.",
+    "transaction_type_detail": null,
     "services": "Optional filter on parsed generic service type (e.g. Karteneinkauf, Twint, Lastschrift).",
     "providers": "Optional filter on payment provider (e.g. Apple Pay). Provider must NOT be encoded in services.",
     "merchants": "Optional merchant filter (case-insensitive). OR logic (at least one must match).",

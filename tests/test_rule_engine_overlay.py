@@ -22,6 +22,7 @@ def _rule(id, category="Kategorie A", subcategory="", priority=50, merchant="TES
         "transaction_category": "expense",
         "priority": priority,
         "transaction_type": "debit",
+        "transaction_type_detail": None,
         "services": ["Karteneinkauf"],
         "providers": ["Apple Pay"],
         "triggers": {
@@ -62,6 +63,24 @@ class TestBaseRulesOnly:
 
 
 class TestOverlay:
+    def test_loads_optional_transaction_type_detail(self, tmp_path):
+        base = tmp_path / "base.json"
+        _write(base, [{**_rule(1), "transaction_type_detail": "Geld senden"}])
+
+        engine = RuleEngine(str(base))
+
+        rule = next(r for r in engine.rules if r.id == 1)
+        assert rule.transaction_type_detail == "Geld senden"
+
+    def test_null_transaction_type_detail_is_supported(self, tmp_path):
+        base = tmp_path / "base.json"
+        _write(base, [{**_rule(1), "transaction_type_detail": None}])
+
+        engine = RuleEngine(str(base))
+
+        rule = next(r for r in engine.rules if r.id == 1)
+        assert rule.transaction_type_detail is None
+
     def test_overlay_adds_new_rule(self, tmp_path):
         base = tmp_path / "base.json"
         overlay = tmp_path / "overlay.json"

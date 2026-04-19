@@ -93,8 +93,31 @@ def test_rule_without_service_filter_can_match():
     assert rule.matches(txn), "Rule without service/provider filters should still match by merchant criteria"
 
 
+def test_rule_transaction_type_detail_filtering_for_twint_send():
+    """Rule should optionally filter by transaction_type_detail."""
+    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
+    engine = RuleEngine('data/reference/rules.json')
+
+    txn = next(
+        t for t in txns
+        if t.service_type == 'Twint'
+        and t.transaction_type_detail == 'Geld senden'
+        and 'ESSEN' in (t.parsed_merchant or '').upper()
+    )
+    rule = [r for r in engine.rules if r.id == 2005][0]
+
+    assert rule.matches(txn), "Essensanteil rule should match Twint send detail"
+
+    rule.transaction_type_detail = 'Geld empfangen'
+    assert not rule.matches(txn), "Rule should not match when transaction_type_detail differs"
+
+    rule.transaction_type_detail = ''
+    assert rule.matches(txn), "Rule should match again when transaction_type_detail filter is disabled"
+
+
 if __name__ == '__main__':
     test_migros_supermarket_rule()
     test_rule_matching_order()
     test_rule_service_filtering()
+    test_rule_transaction_type_detail_filtering_for_twint_send()
     print("✓ All tests passed")
