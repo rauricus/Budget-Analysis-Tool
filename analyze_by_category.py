@@ -36,6 +36,8 @@ REQUIRED_COLUMNS = {
     'Debit in CHF',
 }
 
+OVERVIEW_TABLE_HEADER_GAP = 22
+
 def _month_label(month_str: str) -> str:
     """Convert 'YYYY-MM' string to English month name, e.g. '2024-01' -> 'January 2024'."""
     year, month = map(int, month_str.split("-"))
@@ -227,9 +229,9 @@ def create_excel_report(df: pd.DataFrame, category_stats: pd.DataFrame,
     # Remove default sheet
     wb.remove(wb.active)
 
-    # Create Overview sheet
-    ws_overview = wb.create_sheet("Overview", 0)
-    _create_overview_sheet(ws_overview, category_stats, source_label)
+    # Create first overview sheet
+    ws_overview = wb.create_sheet("Overviews by category", 0)
+    _create_overview_sheet(ws_overview, df, category_stats, source_label)
 
     # Create Category Analysis sheet (one table per month)
     ws_category = wb.create_sheet("Category Analysis", 1)
@@ -248,7 +250,7 @@ def create_excel_report(df: pd.DataFrame, category_stats: pd.DataFrame,
     print(f"✓ Excel report saved to: {output_file}")
 
 
-def _create_overview_sheet(ws, category_stats: pd.DataFrame, source_label: str):
+def _create_overview_sheet(ws, df: pd.DataFrame, category_stats: pd.DataFrame, source_label: str):
     """Create the overview sheet with summary and pie charts."""
     # Title
     ws['A1'] = 'Budget Analysis by Category'
@@ -278,9 +280,25 @@ def _create_overview_sheet(ws, category_stats: pd.DataFrame, source_label: str):
     ws['B8'].number_format = '#,##0.00'
     ws['B8'].font = Font(bold=True)
 
-    # Filter income and expense categories
-    income_data = category_stats[category_stats['Credit in CHF'] > 0].copy()
-    expense_data = category_stats[category_stats['Debit in CHF'] > 0].copy()
+    # Build all three overview blocks with the same aggregation approach.
+    income_data = _build_transaction_category_overview(
+        df,
+        transaction_category='income',
+        amount_column='Income in CHF',
+        amount_formula='credit_minus_debit',
+    )
+    expense_data = _build_transaction_category_overview(
+        df,
+        transaction_category='expense',
+        amount_column='Expense in CHF',
+        amount_formula='debit_minus_credit',
+    )
+    refund_data = _build_transaction_category_overview(
+        df,
+        transaction_category='refund',
+        amount_column='Refund in CHF',
+        amount_formula='credit_minus_debit',
+    )
 
     # Income section
     current_row = 11
@@ -288,29 +306,66 @@ def _create_overview_sheet(ws, category_stats: pd.DataFrame, source_label: str):
     ws[f'A{current_row}'].font = Font(size=12, bold=True)
 
     current_row += 2
-    income_table_start = current_row
-    _add_income_table_and_chart(ws, income_data, start_row=current_row)
+    _add_table_and_chart(
+        ws,
+        income_data,
+        start_row=current_row,
+        amount_column='Income in CHF',
+        chart_title='Income by Category',
+        empty_message='No income data available.',
+    )
+    income_header_row = current_row
 
-    # Expense section (positioned below income section)
-    current_row = income_table_start + len(income_data) + 5  # Add spacing
+    # Expense section (header is fixed OVERVIEW_TABLE_HEADER_GAP rows below prior table header)
+    expense_header_row = income_header_row + OVERVIEW_TABLE_HEADER_GAP
+    current_row = expense_header_row - 2
     ws[f'A{current_row}'] = 'Expenses by Category'
     ws[f'A{current_row}'].font = Font(size=12, bold=True)
 
     current_row += 2
-    _add_expense_table_and_chart(ws, expense_data, start_row=current_row)
+    _add_table_and_chart(
+        ws,
+        expense_data,
+        start_row=current_row,
+        amount_column='Expense in CHF',
+        chart_title='Expenses by Category',
+        empty_message='No expense data available.',
+    )
+    expense_header_row = current_row
+
+    # Refund section (header is fixed OVERVIEW_TABLE_HEADER_GAP rows below prior table header)
+    current_row = (expense_header_row + OVERVIEW_TABLE_HEADER_GAP) - 2
+    ws[f'A{current_row}'] = 'Refunds by Category'
+    ws[f'A{current_row}'].font = Font(size=12, bold=True)
+
+    current_row += 2
+    _add_table_and_chart(
+        ws,
+        refund_data,
+        start_row=current_row,
+        amount_column='Refund in CHF',
+        chart_title='Refunds by Category',
+        empty_message='No refund data available.',
+    )
 
     # Adjust column widths
     ws.column_dimensions['A'].width = 20
     ws.column_dimensions['B'].width = 15
 
 
-def _add_income_table_and_chart(ws, income_data: pd.DataFrame, start_row: int):
-    """Add income table with blue header and pie chart next to it."""
-    if income_data.empty:
-        ws.cell(row=start_row, column=1, value="No income data available.")
+def _add_table_and_chart(
+    ws,
+    data: pd.DataFrame,
+    start_row: int,
+    amount_column: str,
+    chart_title: str,
+    empty_message: str,
+):
+    """Add category/amount table with blue header and pie chart next to it."""
+    if data.empty:
+        ws.cell(row=start_row, column=1, value=empty_message)
         return
 
-    # Add table headers (blue background, white text)
     headers = ['Category', 'Amount (CHF)']
     for col, header in enumerate(headers, start=1):
         cell = ws.cell(row=start_row, column=col)
@@ -318,68 +373,54 @@ def _add_income_table_and_chart(ws, income_data: pd.DataFrame, start_row: int):
         cell.font = Font(color='FFFFFF', bold=True)
         cell.fill = PatternFill(start_color='366092', end_color='366092', fill_type='solid')
 
-    # Add data rows
-    for idx, (_, row) in enumerate(income_data.iterrows(), start=1):
+    for idx, (_, row) in enumerate(data.iterrows(), start=1):
         ws.cell(row=start_row + idx, column=1, value=row['Category'])
-        ws.cell(row=start_row + idx, column=2, value=row['Credit in CHF']).number_format = '#,##0.00'
+        ws.cell(row=start_row + idx, column=2, value=row[amount_column]).number_format = '#,##0.00'
 
-    # Create pie chart
     chart = PieChart()
-    chart.title = "Income by Category"
+    chart.title = chart_title
     chart.style = 10
-    chart.height = 10  # Reduced height to prevent overlap
-    chart.width = 14   # Reduced width to prevent overlap
+    chart.height = 10
+    chart.width = 14
 
-    # Reference the table data for the chart
-    data_rows = len(income_data)
+    data_rows = len(data)
     labels = Reference(ws, min_col=1, min_row=start_row + 1, max_row=start_row + data_rows)
-    data = Reference(ws, min_col=2, min_row=start_row, max_row=start_row + data_rows)
+    chart_data = Reference(ws, min_col=2, min_row=start_row, max_row=start_row + data_rows)
 
-    chart.add_data(data, titles_from_data=True)
+    chart.add_data(chart_data, titles_from_data=True)
     chart.set_categories(labels)
 
-    # Position chart to the right of the table (column D)
     chart_cell = f"D{start_row}"
     ws.add_chart(chart, chart_cell)
 
 
-def _add_expense_table_and_chart(ws, expense_data: pd.DataFrame, start_row: int):
-    """Add expense table with blue header and pie chart next to it."""
-    if expense_data.empty:
-        ws.cell(row=start_row, column=1, value="No expense data available.")
-        return
+def _build_transaction_category_overview(
+    df: pd.DataFrame,
+    transaction_category: str,
+    amount_column: str,
+    amount_formula: str,
+) -> pd.DataFrame:
+    """Aggregate one transaction category per category for the overview sheet."""
+    if 'Transaction Category' not in df.columns:
+        return pd.DataFrame(columns=['Category', amount_column])
 
-    # Add table headers (blue background, white text)
-    headers = ['Category', 'Amount (CHF)']
-    for col, header in enumerate(headers, start=1):
-        cell = ws.cell(row=start_row, column=col)
-        cell.value = header
-        cell.font = Font(color='FFFFFF', bold=True)
-        cell.fill = PatternFill(start_color='366092', end_color='366092', fill_type='solid')
+    rows = df[df['Transaction Category'].fillna('').astype(str).str.lower() == transaction_category].copy()
+    if rows.empty:
+        return pd.DataFrame(columns=['Category', amount_column])
 
-    # Add data rows
-    for idx, (_, row) in enumerate(expense_data.iterrows(), start=1):
-        ws.cell(row=start_row + idx, column=1, value=row['Category'])
-        ws.cell(row=start_row + idx, column=2, value=row['Debit in CHF']).number_format = '#,##0.00'
+    grouped = rows.groupby('Category').agg({
+        'Credit in CHF': 'sum',
+        'Debit in CHF': 'sum',
+    }).reset_index()
 
-    # Create pie chart
-    chart = PieChart()
-    chart.title = "Expenses by Category"
-    chart.style = 10
-    chart.height = 10  # Reduced height to prevent overlap
-    chart.width = 14   # Reduced width to prevent overlap
+    if amount_formula == 'debit_minus_credit':
+        grouped[amount_column] = grouped['Debit in CHF'] - grouped['Credit in CHF']
+    else:
+        grouped[amount_column] = grouped['Credit in CHF'] - grouped['Debit in CHF']
 
-    # Reference the table data for the chart
-    data_rows = len(expense_data)
-    labels = Reference(ws, min_col=1, min_row=start_row + 1, max_row=start_row + data_rows)
-    data = Reference(ws, min_col=2, min_row=start_row, max_row=start_row + data_rows)
-
-    chart.add_data(data, titles_from_data=True)
-    chart.set_categories(labels)
-
-    # Position chart to the right of the table (column D)
-    chart_cell = f"D{start_row}"
-    ws.add_chart(chart, chart_cell)
+    grouped = grouped[grouped[amount_column] > 0].copy()
+    grouped = grouped.sort_values(amount_column, ascending=False)
+    return grouped[['Category', amount_column]]
 
 
 def _create_category_sheet(ws, df: pd.DataFrame, months: list[str]):

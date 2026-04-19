@@ -131,12 +131,12 @@ def test_excel_report_creation():
         wb = load_workbook(output_path)
 
         # Check expected sheets exist
-        assert 'Overview' in wb.sheetnames, "Should have Overview sheet"
+        assert 'Overviews by category' in wb.sheetnames, "Should have Overviews by category sheet"
         assert 'Category Analysis' in wb.sheetnames, "Should have Category Analysis sheet"
         assert 'Subcategory Analysis' in wb.sheetnames, "Should have Subcategory Analysis sheet"
 
-        # Verify Overview sheet has expected headers
-        ws_overview = wb['Overview']
+        # Verify first overview sheet has expected headers
+        ws_overview = wb['Overviews by category']
         assert ws_overview['A1'].value == 'Budget Analysis by Category', "Should have title"
         assert ws_overview['A11'].value == 'Income by Category', "Should have income section"
 
@@ -145,21 +145,18 @@ def test_excel_report_creation():
         assert ws_overview['A13'].value == 'Category', "Should have Category header for income table"
         assert ws_overview['B13'].value == 'Amount (CHF)', "Should have Amount header for income table"
 
-        # Find and verify expense section exists
-        # The expense section should be below income section
-        expense_section_found = False
-        for row in range(15, 30):  # Search in reasonable range
-            if ws_overview[f'A{row}'].value == 'Expenses by Category':
-                expense_section_found = True
-                # Verify expense table headers are 2 rows below
-                expense_header_row = row + 2
-                assert ws_overview[f'A{expense_header_row}'].value == 'Category', \
-                    "Should have Category header for expense table"
-                assert ws_overview[f'B{expense_header_row}'].value == 'Amount (CHF)', \
-                    "Should have Amount header for expense table"
-                break
+        # Verify fixed spacing: next table header is 20 rows below previous table header
+        assert ws_overview['A33'].value == 'Expenses by Category', "Should have Expenses section title at row 33"
+        assert ws_overview['A35'].value == 'Category', "Should have Category header for expense table"
+        assert ws_overview['B35'].value == 'Amount (CHF)', "Should have Amount header for expense table"
 
-        assert expense_section_found, "Should have Expenses by Category section"
+        # Verify fixed spacing: refund section title and header positions
+        assert ws_overview['A55'].value == 'Refunds by Category', "Should have Refunds section title at row 55"
+        if ws_overview['A57'].value == 'No refund data available.':
+            pass
+        else:
+            assert ws_overview['A57'].value == 'Category', "Should have Category header for refund table"
+            assert ws_overview['B57'].value == 'Amount (CHF)', "Should have Amount header for refund table"
 
         # Verify Category Analysis sheet has data
         ws_category = wb['Category Analysis']
