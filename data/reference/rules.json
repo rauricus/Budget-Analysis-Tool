@@ -223,28 +223,7 @@
     },
     {
       "id": 2004,
-      "name": "Twint: Gastronomie",
-      "transaction_category": "expense",
-      "category": "Freizeit",
-      "subcategory": "Gastronomie",
-      "priority": 55,
-      "transaction_type": "debit",
-      "services": [
-        "Twint"
-      ],
-      "providers": null,
-      "triggers": {
-        "merchants": [
-          "TWINT"
-        ],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 2005,
-      "name": "Twint Kebab/Imbiss: Gastronomie",
+      "name": "Twint: Fastfood",
       "transaction_category": "expense",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
@@ -265,7 +244,7 @@
       }
     },
     {
-      "id": 2006,
+      "id": 2005,
       "name": "Twint senden: Essensanteil",
       "transaction_category": "expense",
       "category": "Freizeit",
@@ -281,6 +260,27 @@
         "locations": [],
         "include_keywords": [
           "ESSEN"
+        ],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 2006,
+      "name": "Twint: Cafés",
+      "transaction_category": "expense",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
+      "priority": 60,
+      "transaction_type": "debit",
+      "services": [
+        "Twint"
+      ],
+      "providers": null,
+      "triggers": {
+        "merchants": [],
+        "locations": [],
+        "include_keywords": [
+          "CAFE"
         ],
         "exclude_keywords": []
       }

@@ -17,6 +17,7 @@ from notification.parsers.debit_direct_parser import DebitDirectParser
 from notification.parsers.payment_parser import PaymentParser
 from notification.parsers.standing_order_parser import StandingOrderParser
 from notification.parsers.twint_receive_parser import TwintReceiveParser
+from notification.parsers.twint_purchase_parser import TwintPurchaseParser
 
 
 def test_card_purchase_parser_for_generic_card_purchase():
@@ -229,6 +230,20 @@ def test_twint_receive_parser_parse():
     assert "MITTEILUNGEN: TEST" in result.merchant
 
 
+def test_twint_purchase_parser_parse():
+    """TwintPurchaseParser should parse TWINT merchant purchase notifications."""
+    parser = TwintPurchaseParser()
+    text = "TWINT KAUF/DIENSTLEISTUNG VOM 27.02.2025 MUSTER CAFE YVERDON-LES-BAINS (CH)"
+
+    assert parser.supports(text), "TWINT purchase parser should support merchant purchase format"
+
+    result = parser.parse(text)
+    assert result.service_type == "Twint"
+    assert result.transaction_type_detail == "Kauf/Dienstleistung"
+    assert result.merchant == "MUSTER CAFE"
+    assert result.location == "YVERDON-LES-BAINS"
+
+
 def test_debit_direct_parser():
     """DebitDirectParser should parse Debit Direct format"""
     parser = DebitDirectParser()
@@ -298,6 +313,7 @@ if __name__ == '__main__':
     test_twint_send_parser_direct_parse_without_mitteilungen()
     test_twint_receive_parser_supports()
     test_twint_receive_parser_parse()
+    test_twint_purchase_parser_parse()
     test_debit_direct_parser()
     test_payment_parser()
     test_standing_order_parser()

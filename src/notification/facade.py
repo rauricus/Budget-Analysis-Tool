@@ -17,6 +17,7 @@ from notification.parsers.standing_order_parser import StandingOrderParser
 from notification.parsers.debit_direct_parser import DebitDirectParser
 from notification.parsers.twint_send_parser import TwintSendParser
 from notification.parsers.twint_receive_parser import TwintReceiveParser
+from notification.parsers.twint_purchase_parser import TwintPurchaseParser
 from notification.parsers.payment_parser import PaymentParser
 
 
@@ -43,6 +44,7 @@ class _NotificationParserRegistry:
             BankPackageFeeParser(),
             TwintSendParser(),
             TwintReceiveParser(),
+            TwintPurchaseParser(),
             DebitDirectParser(),
             StandingOrderParser(),
             PaymentParser(),

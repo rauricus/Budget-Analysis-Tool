@@ -1,0 +1,9 @@
+Datum von:;="01.02.2025"
+Datum bis:;="28.02.2025"
+Kategorie:;="Alle"
+Konto:;="CH56 0000 0000 0000 0000 0"
+Währung:;="CHF"
+
+Datum;Bewegungstyp;Avisierungstext;Gutschrift in CHF;Lastschrift in CHF;Label;Kategorie
+
+27.02.2025;Buchung;"TWINT KAUF/DIENSTLEISTUNG VOM 27.02.2025 MUSTER CAFE YVERDON-LES-BAINS (CH)";;-3;;Freizeit // Gastronomie
