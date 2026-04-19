@@ -24,8 +24,8 @@ class KontoTransferParser(AbstractServiceParser):
         reference = (match.group("reference") or "").strip()
 
         return NotificationParseResult(
-            service_type="Kontoübertrag",
-            transaction_type_detail=f"Kontoübertrag {direction.title()}",
+            service_type="Account Transfer",
+            transaction_type_detail=f"Account Transfer {direction.title()}",
             merchant=reference,
             counterparty_iban=iban,
             reference=reference,

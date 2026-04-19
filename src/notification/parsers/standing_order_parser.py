@@ -31,8 +31,8 @@ class StandingOrderParser(AbstractServiceParser):
         counterparty = rest if rest else ""
 
         return NotificationParseResult(
-            service_type="Lastschrift",
-            transaction_type_detail="Dauerauftrag",
+            service_type="Direct Debit",
+            transaction_type_detail="Standing Order",
             counterparty=counterparty,
             counterparty_iban=counterparty_iban,
             reference=reference,

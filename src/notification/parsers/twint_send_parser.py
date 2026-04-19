@@ -32,7 +32,7 @@ class TwintSendParser(AbstractServiceParser):
             return NotificationParseResult(
                 service_type="Twint",
                 provider="Twint",
-                transaction_type_detail="Geld senden",
+                transaction_type_detail="Send Money",
                 merchant=merchant,
             )
 
@@ -54,7 +54,7 @@ class TwintSendParser(AbstractServiceParser):
             return NotificationParseResult(
                 service_type="Twint",
                 provider="Twint",
-                transaction_type_detail="Geld senden",
+                transaction_type_detail="Send Money",
                 merchant=" ".join(merchant_parts),
             )
 

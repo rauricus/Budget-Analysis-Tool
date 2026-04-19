@@ -24,12 +24,12 @@ class CardPurchaseParser(AbstractServiceParser):
         provider = (match.group("provider") or "").strip().title()
         detail = (match.group("detail") or "").strip().upper()
         detail_map = {
-            "DIENSTLEISTUNG": "Kauf/Dienstleistung",
-            "ONLINE-SHOPPING": "Kauf/Online-Shopping",
+            "DIENSTLEISTUNG": "Purchase/Service",
+            "ONLINE-SHOPPING": "Purchase/Online Shopping",
         }
         merchant, location = self._extract_merchant_location(match.group("rest").strip())
         return NotificationParseResult(
-            service_type="Karteneinkauf",
+            service_type="Card Purchase",
             provider=provider,
             transaction_type_detail=detail_map.get(detail, ""),
             card_number=match.group("card").strip(),

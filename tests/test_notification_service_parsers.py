@@ -28,9 +28,9 @@ def test_card_purchase_parser_for_generic_card_purchase():
     assert parser.supports(text), "Card purchase parser should support generic card purchase format"
 
     result = parser.parse(text)
-    assert result.service_type == "Karteneinkauf"
+    assert result.service_type == "Card Purchase"
     assert result.provider == ""
-    assert result.transaction_type_detail == "Kauf/Dienstleistung"
+    assert result.transaction_type_detail == "Purchase/Service"
     assert result.card_number == "XXXX4821"
     assert result.merchant == "YOOJI'S ROSENGARTEN"
     assert result.location == "BIEL"
@@ -44,9 +44,9 @@ def test_card_purchase_parser_for_online_shopping():
     assert parser.supports(text), "Card purchase parser should support online shopping format"
 
     result = parser.parse(text)
-    assert result.service_type == "Karteneinkauf"
+    assert result.service_type == "Card Purchase"
     assert result.provider == ""
-    assert result.transaction_type_detail == "Kauf/Online-Shopping"
+    assert result.transaction_type_detail == "Purchase/Online Shopping"
     assert result.card_number == "XXXX4821"
     assert result.merchant == "APPLE.COM/BILL"
     assert result.location == "CORK"
@@ -60,9 +60,9 @@ def test_card_purchase_parser_for_foreign_currency():
     assert parser.supports(text), "Card purchase parser should support foreign currency format"
 
     result = parser.parse(text)
-    assert result.service_type == "Karteneinkauf"
+    assert result.service_type == "Card Purchase"
     assert result.provider == "Apple Pay"
-    assert result.transaction_type_detail == "Kauf/Online-Shopping"
+    assert result.transaction_type_detail == "Purchase/Online Shopping"
     assert result.card_number == "XXXX4821"
     assert result.merchant == "CLOUDSERVICE INC SAN"
     assert result.location == "JOSE"
@@ -76,9 +76,9 @@ def test_efinance_purchase_parser_without_card_number():
     assert parser.supports(text), "Online shopping parser should support payment ID format"
 
     result = parser.parse(text)
-    assert result.service_type == "Karteneinkauf"
+    assert result.service_type == "Card Purchase"
     assert result.provider == ""
-    assert result.transaction_type_detail == "Kauf/Online-Shopping"
+    assert result.transaction_type_detail == "Purchase/Online Shopping"
     assert result.card_number == ""
     assert result.merchant == "ONLINE HAUSHALT AG"
     assert result.location == ""
@@ -93,8 +93,8 @@ def test_cash_withdrawal_parser():
     assert parser.supports(text), "Cash withdrawal parser should support valid cash withdrawal format"
 
     result = parser.parse(text)
-    assert result.service_type == "Bargeldbezug"
-    assert result.transaction_type_detail == "Bargeldbezug"
+    assert result.service_type == "Cash Withdrawal"
+    assert result.transaction_type_detail == "Cash Withdrawal"
     assert result.card_number == "XXXX4821"
     assert result.merchant == "EINKAUFSZENTRUM METROPOLE"
     assert result.location == "BIEL"
@@ -108,8 +108,8 @@ def test_credit_transfer_parser_salary_credit():
     assert parser.supports(text), "Credit transfer parser should support salary credit format"
 
     result = parser.parse(text)
-    assert result.service_type == "Gutschrift"
-    assert result.transaction_type_detail == "Gutschrift"
+    assert result.service_type == "Credit"
+    assert result.transaction_type_detail == "Credit"
     assert result.counterparty == "ALPENWERK AG INDUSTRIESTRASSE 12 CH-5430 WETTINGEN AG"
     assert "SALAER MAERZ 2025" in result.reference
 
@@ -122,8 +122,8 @@ def test_credit_transfer_parser_sender_credit_with_iban():
     assert parser.supports(text), "Credit transfer parser should support ABSENDER format"
 
     result = parser.parse(text)
-    assert result.service_type == "Gutschrift"
-    assert result.transaction_type_detail == "Gutschrift"
+    assert result.service_type == "Credit"
+    assert result.transaction_type_detail == "Credit"
     assert result.counterparty_iban == "CH6709000000400025000"
     assert result.counterparty == "VIVAO SYMPANY AG PETER MERIAN-WEG 4 4052 BASEL"
     assert "RECHNUNG NR." in result.reference
@@ -137,8 +137,8 @@ def test_konto_transfer_parser_for_debit_transfer_to_iban():
     assert parser.supports(text), "Konto transfer parser should support AUF format"
 
     result = parser.parse(text)
-    assert result.service_type == "Kontoübertrag"
-    assert result.transaction_type_detail == "Kontoübertrag Auf"
+    assert result.service_type == "Account Transfer"
+    assert result.transaction_type_detail == "Account Transfer Auf"
     assert result.merchant == "ZMITTAG 13.1."
     assert result.counterparty_iban == "CH5600000000000000000"
     assert result.reference == "ZMITTAG 13.1."
@@ -152,8 +152,8 @@ def test_bank_package_fee_parser():
     assert parser.supports(text), "Bank package fee parser should support fee format"
 
     result = parser.parse(text)
-    assert result.service_type == "Gebühren"
-    assert result.transaction_type_detail == "Bankpaketpreis"
+    assert result.service_type == "Fees"
+    assert result.transaction_type_detail == "Bank Package Fee"
     assert result.reference == "PREIS FÜR BANKPAKET SMART 02.2025"
 
 
@@ -173,7 +173,7 @@ def test_twint_send_parser_parse():
     result = parser.parse(text)
     assert result.service_type == "Twint"
     assert result.provider == "Twint"
-    assert result.transaction_type_detail == "Geld senden"
+    assert result.transaction_type_detail == "Send Money"
     assert "+41796666222 KEBAB, IMBISS" in result.merchant
 
 
@@ -193,7 +193,7 @@ def test_twint_send_parser_direct_parse():
     result = parser.parse(text)
     assert result.service_type == "Twint"
     assert result.provider == "Twint"
-    assert result.transaction_type_detail == "Geld senden"
+    assert result.transaction_type_detail == "Send Money"
     assert "+41790000000" in result.merchant
     assert "MAX MUSTER" in result.merchant
     assert "ESSEN GESTERN ABEND" in result.merchant
@@ -207,7 +207,7 @@ def test_twint_send_parser_direct_parse_without_mitteilungen():
     result = parser.parse(text)
     assert result.service_type == "Twint"
     assert result.provider == "Twint"
-    assert result.transaction_type_detail == "Geld senden"
+    assert result.transaction_type_detail == "Send Money"
     assert "+41790000000" in result.merchant
     assert "MAX MUSTER" in result.merchant
 
@@ -228,7 +228,7 @@ def test_twint_receive_parser_parse():
     result = parser.parse(text)
     assert result.service_type == "Twint"
     assert result.provider == "Twint"
-    assert result.transaction_type_detail == "Geld empfangen"
+    assert result.transaction_type_detail == "Receive Money"
     assert "+41790000000" in result.merchant
     assert "MAX MUSTER" in result.merchant
     assert "MITTEILUNGEN: TEST" in result.merchant
@@ -244,7 +244,7 @@ def test_twint_purchase_parser_parse():
     result = parser.parse(text)
     assert result.service_type == "Twint"
     assert result.provider == "Twint"
-    assert result.transaction_type_detail == "Kauf/Dienstleistung"
+    assert result.transaction_type_detail == "Purchase/Service"
     assert result.merchant == "MUSTER CAFE"
     assert result.location == "YVERDON-LES-BAINS"
 
@@ -257,8 +257,8 @@ def test_debit_direct_parser():
     assert parser.supports(text), "Should support Debit Direct format"
 
     result = parser.parse(text)
-    assert result.service_type == "Lastschrift"
-    assert result.transaction_type_detail == "Lastschrift Debit Direct"
+    assert result.service_type == "Direct Debit"
+    assert result.transaction_type_detail == "Direct Debit (CH-DD)"
     assert result.counterparty == "STEUERDIENSTE REGION WEST"
     assert result.counterparty_iban == "41101000000123456"
     assert "2025/04/01 / 7045128" in result.reference
@@ -274,14 +274,14 @@ def test_payment_parser():
     assert parser.supports(bank_route_text), "Should support Zahlung format with bank route details"
 
     result = parser.parse(text)
-    assert result.service_type == "Lastschrift"
-    assert result.transaction_type_detail == "Zahlung"
+    assert result.service_type == "Direct Debit"
+    assert result.transaction_type_detail == "Payment"
     assert result.counterparty_iban == "CH6330000011998877665"
     assert "SUNRISE GMBH POSTFACH 8050 ZURICH" in result.counterparty
 
     bank_route_result = parser.parse(bank_route_text)
-    assert bank_route_result.service_type == "Lastschrift"
-    assert bank_route_result.transaction_type_detail == "Zahlung"
+    assert bank_route_result.service_type == "Direct Debit"
+    assert bank_route_result.transaction_type_detail == "Payment"
     assert bank_route_result.counterparty_iban == "CH5600000000000000000"
     assert bank_route_result.counterparty == "MOBILITY MUSTER GENOSSENSCHAFT 6343 ROTKREUZ"
     assert bank_route_result.reference == "MUSTERBANK AG MUSTERSTRASSE 12 6002 LUZERN"
@@ -295,8 +295,8 @@ def test_standing_order_parser():
     assert parser.supports(text), "Should support Dauerauftrag format"
 
     result = parser.parse(text)
-    assert result.service_type == "Lastschrift"
-    assert result.transaction_type_detail == "Dauerauftrag"
+    assert result.service_type == "Direct Debit"
+    assert result.transaction_type_detail == "Standing Order"
     assert result.counterparty_iban == "CH3409000000802999554"
     assert result.reference == "90-33445566"
 

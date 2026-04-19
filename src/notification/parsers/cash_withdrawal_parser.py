@@ -19,8 +19,8 @@ class CashWithdrawalParser(AbstractServiceParser):
 
         merchant, location = self._extract_merchant_location(match.group("rest").strip())
         return NotificationParseResult(
-            service_type="Bargeldbezug",
-            transaction_type_detail="Bargeldbezug",
+            service_type="Cash Withdrawal",
+            transaction_type_detail="Cash Withdrawal",
             card_number=match.group("card").strip(),
             merchant=merchant,
             location=location,

@@ -33,8 +33,8 @@ class PaymentParser(AbstractServiceParser):
         counterparty = match.group(3).strip()
 
         return NotificationParseResult(
-            service_type="Lastschrift",
-            transaction_type_detail="Zahlung",
+            service_type="Direct Debit",
+            transaction_type_detail="Payment",
             counterparty=counterparty,
             counterparty_iban=counterparty_iban,
             reference=bank_route,

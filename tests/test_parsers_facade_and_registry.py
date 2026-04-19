@@ -27,7 +27,7 @@ def test_facade_parses_apple_pay():
     text = "APPLE PAY KAUF/DIENSTLEISTUNG VOM 31.03.2025 KARTEN NR. XXXX4821 CITY TANKSTELLE OLTEN WAREN 10.34"
 
     result = NotificationTextParser.parse(text)
-    assert result["service_type"] == "Karteneinkauf"
+    assert result["service_type"] == "Card Purchase"
     assert result["provider"] == "Apple Pay"
     assert result["card_number"] == "XXXX4821"
     assert result["merchant"] == "CITY TANKSTELLE"
@@ -39,7 +39,7 @@ def test_facade_parses_generic_card_purchase():
     text = "KAUF/DIENSTLEISTUNG VOM 27.03.2025 KARTEN NR. XXXX4821 YOOJI'S ROSENGARTEN BIEL SCHWEIZ"
 
     result = NotificationTextParser.parse(text)
-    assert result["service_type"] == "Karteneinkauf"
+    assert result["service_type"] == "Card Purchase"
     assert result["provider"] == ""
     assert result["card_number"] == "XXXX4821"
     assert result["merchant"] == "YOOJI'S ROSENGARTEN"
@@ -51,9 +51,9 @@ def test_facade_parses_online_shopping():
     text = "KAUF/ONLINE-SHOPPING VOM 27.03.2025 KARTEN NR. XXXX4821 APPLE.COM/BILL CORK"
 
     result = NotificationTextParser.parse(text)
-    assert result["service_type"] == "Karteneinkauf"
+    assert result["service_type"] == "Card Purchase"
     assert result["provider"] == ""
-    assert result["transaction_type_detail"] == "Kauf/Online-Shopping"
+    assert result["transaction_type_detail"] == "Purchase/Online Shopping"
     assert result["card_number"] == "XXXX4821"
     assert result["merchant"] == "APPLE.COM/BILL"
     assert result["location"] == "CORK"
@@ -64,8 +64,8 @@ def test_facade_parses_cash_withdrawal():
     text = "BARGELDBEZUG VOM 27.03.2025 KARTEN NR. XXXX4821 EINKAUFSZENTRUM METROPOLE BIEL"
 
     result = NotificationTextParser.parse(text)
-    assert result["service_type"] == "Bargeldbezug"
-    assert result["transaction_type_detail"] == "Bargeldbezug"
+    assert result["service_type"] == "Cash Withdrawal"
+    assert result["transaction_type_detail"] == "Cash Withdrawal"
     assert result["card_number"] == "XXXX4821"
     assert result["merchant"] == "EINKAUFSZENTRUM METROPOLE"
     assert result["location"] == "BIEL"
@@ -76,8 +76,8 @@ def test_facade_parses_credit_transfer():
     text = "GUTSCHRIFT AUFTRAGGEBER: ALPENWERK AG INDUSTRIESTRASSE 12 CH-5430 WETTINGEN AG MITTEILUNGEN: SALAER MAERZ 2025 REFERENZEN: SALA80E5ED528784F48B451A4175649C112 9988776655/1XXXX 250325CH7LMNQRTS"
 
     result = NotificationTextParser.parse(text)
-    assert result["service_type"] == "Gutschrift"
-    assert result["transaction_type_detail"] == "Gutschrift"
+    assert result["service_type"] == "Credit"
+    assert result["transaction_type_detail"] == "Credit"
     assert result["counterparty"] == "ALPENWERK AG INDUSTRIESTRASSE 12 CH-5430 WETTINGEN AG"
     assert "SALAER MAERZ 2025" in result["reference"]
 
@@ -87,8 +87,8 @@ def test_facade_parses_credit_transfer_sender_with_iban():
     text = "GUTSCHRIFT CH6709000000400025000 ABSENDER: VIVAO SYMPANY AG PETER MERIAN-WEG 4 4052 BASEL MITTEILUNGEN: RECHNUNG NR.: 201941771110536469 WE DER ANDREAS110536469 WEDER ANDREASB ETRIFFT DIV. ABRECHNUNGEN REFERENZEN: SYM95CB11F8253446278F81749F26F10588"
 
     result = NotificationTextParser.parse(text)
-    assert result["service_type"] == "Gutschrift"
-    assert result["transaction_type_detail"] == "Gutschrift"
+    assert result["service_type"] == "Credit"
+    assert result["transaction_type_detail"] == "Credit"
     assert result["counterparty_iban"] == "CH6709000000400025000"
     assert result["counterparty"] == "VIVAO SYMPANY AG PETER MERIAN-WEG 4 4052 BASEL"
     assert "RECHNUNG NR." in result["reference"]
@@ -99,8 +99,8 @@ def test_facade_parses_bank_package_fee():
     text = "PREIS FÜR BANKPAKET SMART 02.2025"
 
     result = NotificationTextParser.parse(text)
-    assert result["service_type"] == "Gebühren"
-    assert result["transaction_type_detail"] == "Bankpaketpreis"
+    assert result["service_type"] == "Fees"
+    assert result["transaction_type_detail"] == "Bank Package Fee"
     assert result["reference"] == "PREIS FÜR BANKPAKET SMART 02.2025"
 
 
@@ -109,8 +109,8 @@ def test_facade_parses_lastschrift_with_bank_route_details():
     text = "LASTSCHRIFT MUSTERBANK AG MUSTERSTRASSE 12 6002 LUZERN CH5600000000000000000 MOBILITY MUSTER GENOSSENSCHAFT 6343 ROTKREUZ"
 
     result = NotificationTextParser.parse(text)
-    assert result["service_type"] == "Lastschrift"
-    assert result["transaction_type_detail"] == "Zahlung"
+    assert result["service_type"] == "Direct Debit"
+    assert result["transaction_type_detail"] == "Payment"
     assert result["counterparty_iban"] == "CH5600000000000000000"
     assert result["counterparty"] == "MOBILITY MUSTER GENOSSENSCHAFT 6343 ROTKREUZ"
     assert result["reference"] == "MUSTERBANK AG MUSTERSTRASSE 12 6002 LUZERN"
@@ -122,7 +122,7 @@ def test_notification_text_parser_facade_api_contract():
     parsed = NotificationTextParser.parse(text)
 
     assert isinstance(parsed, dict), "Facade should return dict"
-    assert parsed["service_type"] == "Karteneinkauf"
+    assert parsed["service_type"] == "Card Purchase"
     assert parsed["provider"] == "Apple Pay"
     assert parsed["card_number"] == "XXXX4821"
     assert parsed["merchant"] == "KKIOSK 45810"

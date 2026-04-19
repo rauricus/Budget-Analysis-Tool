@@ -29,8 +29,8 @@ class Transaction:
 
     @property
     def transaction_type(self) -> str:
-        """Normalized transaction direction: 'credit' or 'debit'."""
-        return "credit" if self.credit > self.debit else "debit"
+        """Normalized transaction direction: 'Credit' or 'Debit'."""
+        return "Credit" if self.credit > self.debit else "Debit"
 
     @property
     def amount(self) -> float:

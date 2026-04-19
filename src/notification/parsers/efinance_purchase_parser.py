@@ -26,9 +26,9 @@ class EFinancePurchaseParser(AbstractServiceParser):
         order_ref = (match.group("order_ref") or "").strip()
 
         return NotificationParseResult(
-            service_type="Karteneinkauf",
+            service_type="Card Purchase",
             provider=provider,
-            transaction_type_detail="Kauf/Online-Shopping",
+            transaction_type_detail="Purchase/Online Shopping",
             merchant=merchant,
             reference=f"PAYMENT ID {payment_id} BESTELLNUMMER {order_ref}",
         )

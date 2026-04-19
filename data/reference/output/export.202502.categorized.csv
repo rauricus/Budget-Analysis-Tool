@@ -1,2 +1,2 @@
 Transaction ID;Date;Transaction Type;Transaction Type Detail;Service;Provider;Card Number;Merchant;Location;Counterparty;Counterparty IBAN;Reference;Credit in CHF;Debit in CHF;Label;Transaction Category;Category;Subcategory
-TX-000060;27.02.2025;debit;Kauf/Dienstleistung;Twint;Twint;;MUSTER CAFE;YVERDON-LES-BAINS;;;;;3.0;;expense;Freizeit;Gastronomie
+TX-000060;27.02.2025;Debit;Purchase/Service;Twint;Twint;;MUSTER CAFE;YVERDON-LES-BAINS;;;;;3.0;;Expense;Freizeit;Gastronomie

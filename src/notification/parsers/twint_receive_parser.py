@@ -26,6 +26,6 @@ class TwintReceiveParser(AbstractServiceParser):
         return NotificationParseResult(
             service_type="Twint",
             provider="Twint",
-            transaction_type_detail="Geld empfangen",
+            transaction_type_detail="Receive Money",
             merchant=merchant,
         )

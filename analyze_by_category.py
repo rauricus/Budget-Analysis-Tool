@@ -275,7 +275,7 @@ def _create_summary_sheet(ws, df: pd.DataFrame, source_label: str):
 
     if 'Transaction Category' in df.columns:
         grouped = (
-            df.assign(_tc=df['Transaction Category'].fillna('').astype(str).str.lower())
+            df.assign(_tc=df['Transaction Category'].fillna('').astype(str))
             .groupby('_tc', as_index=False)
             .agg({'Credit in CHF': 'sum', 'Debit in CHF': 'sum'})
         )
@@ -288,15 +288,15 @@ def _create_summary_sheet(ws, df: pd.DataFrame, source_label: str):
             return 0.0, 0.0
         return float(row['Credit in CHF'].iloc[0]), float(row['Debit in CHF'].iloc[0])
 
-    income_credit, income_debit = sums_for('income')
-    expense_credit, expense_debit = sums_for('expense')
-    refund_credit, refund_debit = sums_for('refund')
-    transfer_credit, transfer_debit = sums_for('transfer')
+    income_credit, income_debit = sums_for('Income')
+    expense_credit, expense_debit = sums_for('Expense')
+    refund_credit, refund_debit = sums_for('Refund')
+    transfer_credit, transfer_debit = sums_for('Transfer')
 
     summary_rows = [
-        (7, 'income', income_credit, income_debit),
-        (8, 'expense', expense_credit, expense_debit),
-        (9, 'refund', refund_credit, refund_debit),
+        (7, 'Income', income_credit, income_debit),
+        (8, 'Expense', expense_credit, expense_debit),
+        (9, 'Refund', refund_credit, refund_debit),
     ]
 
     for row_idx, label, credit, debit in summary_rows:
@@ -312,7 +312,7 @@ def _create_summary_sheet(ws, df: pd.DataFrame, source_label: str):
     ws.cell(row=10, column=2).font = Font(bold=True)
     ws.cell(row=10, column=3).font = Font(bold=True)
 
-    ws.cell(row=12, column=1, value='transfer')
+    ws.cell(row=12, column=1, value='Transfer')
     ws.cell(row=12, column=2, value=transfer_credit).number_format = '#,##0.00'
     ws.cell(row=12, column=3, value=transfer_debit).number_format = '#,##0.00'
 
@@ -328,10 +328,10 @@ def _create_summary_sheet(ws, df: pd.DataFrame, source_label: str):
     ws.cell(row=6, column=8, value='Transaction Category')
     ws.cell(row=6, column=9, value='Amount (CHF)')
     chart_rows = [
-        ('income', income_credit + income_debit),
-        ('expense', expense_credit + expense_debit),
-        ('refund', refund_credit + refund_debit),
-        ('transfer', transfer_credit + transfer_debit),
+        ('Income', income_credit + income_debit),
+        ('Expense', expense_credit + expense_debit),
+        ('Refund', refund_credit + refund_debit),
+        ('Transfer', transfer_credit + transfer_debit),
     ]
     for idx, (label, amount) in enumerate(chart_rows, start=7):
         ws.cell(row=idx, column=8, value=label)
@@ -367,19 +367,19 @@ def _create_overview_sheet(ws, df: pd.DataFrame, source_label: str):
     # Build all three overview blocks with the same aggregation approach.
     income_data = _build_transaction_category_overview(
         df,
-        transaction_category='income',
+        transaction_category='Income',
         amount_column='Income in CHF',
         amount_formula='credit_minus_debit',
     )
     expense_data = _build_transaction_category_overview(
         df,
-        transaction_category='expense',
+        transaction_category='Expense',
         amount_column='Expense in CHF',
         amount_formula='debit_minus_credit',
     )
     refund_data = _build_transaction_category_overview(
         df,
-        transaction_category='refund',
+        transaction_category='Refund',
         amount_column='Refund in CHF',
         amount_formula='credit_minus_debit',
     )
@@ -488,7 +488,7 @@ def _build_transaction_category_overview(
     if 'Transaction Category' not in df.columns:
         return pd.DataFrame(columns=['Category', amount_column])
 
-    rows = df[df['Transaction Category'].fillna('').astype(str).str.lower() == transaction_category].copy()
+    rows = df[df['Transaction Category'].fillna('').astype(str) == transaction_category].copy()
     if rows.empty:
         return pd.DataFrame(columns=['Category', amount_column])
 

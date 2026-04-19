@@ -81,10 +81,10 @@ def test_export_includes_service_fields():
         assert "Transaction Category" in df.columns, "Transaction Category column should exist"
 
         first_row = df.iloc[0]
-        assert first_row["Service"] == "Karteneinkauf", "First row service should be Karteneinkauf"
+        assert first_row["Service"] == "Card Purchase", "First row service should be Karteneinkauf"
         assert first_row["Provider"] == "Apple Pay", "First row provider should be Apple Pay"
         assert first_row["Card Number"] == "XXXX4821", "First row card number should be parsed"
-        assert first_row["Transaction Category"] == "expense", "First row transaction category should be expense"
+        assert first_row["Transaction Category"] == "Expense", "First row transaction category should be expense"
 
 
 def test_export_preserves_amounts():
@@ -125,7 +125,7 @@ def test_export_splits_legacy_category_into_subcategory():
         debit=10.0,
         label="",
         category="Einkaufen // Detail-Lebensmittel",
-        service_type="Karteneinkauf",
+        service_type="Card Purchase",
         provider="Apple Pay",
     )
 

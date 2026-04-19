@@ -21,9 +21,9 @@ def _rule(id, category="Kategorie A", subcategory="", priority=50, merchant="TES
         "category": category,
         "subcategory": subcategory,
         "scope": {
-            "transaction_type": "debit",
+            "transaction_type": "Debit",
             "transaction_type_detail": None,
-            "services": ["Karteneinkauf"],
+            "services": ["Card Purchase"],
             "providers": ["Apple Pay"],
             "notification_filters": {
                 "merchants": [merchant],
@@ -67,12 +67,12 @@ class TestBaseRulesOnly:
 class TestOverlay:
     def test_loads_optional_transaction_type_detail(self, tmp_path):
         base = tmp_path / "base.json"
-        _write(base, [{**_rule(1), "scope": {**_rule(1)["scope"], "transaction_type_detail": "Geld senden"}}])
+        _write(base, [{**_rule(1), "scope": {**_rule(1)["scope"], "transaction_type_detail": "Send Money"}}])
 
         engine = RuleEngine(str(base))
 
         rule = next(r for r in engine.rules if r.id == 1)
-        assert rule.transaction_type_detail == "Geld senden"
+        assert rule.transaction_type_detail == "Send Money"
 
     def test_null_transaction_type_detail_is_supported(self, tmp_path):
         base = tmp_path / "base.json"
@@ -172,7 +172,7 @@ class TestOverlay:
             debit=12.5,
             label="",
             category="",
-            service_type="Karteneinkauf",
+            service_type="Card Purchase",
             provider="Apple Pay",
             parsed_merchant="MATCHSHOP",
             parsed_location="Aarau",
@@ -200,7 +200,7 @@ class TestOverlay:
             debit=12.5,
             label="",
             category="",
-            service_type="Karteneinkauf",
+            service_type="Card Purchase",
             provider="Apple Pay",
             parsed_merchant="MATCHSHOP",
             parsed_location="Aarau",
@@ -259,11 +259,11 @@ class TestOverlay:
             debit=9.5,
             label="",
             category="",
-            service_type="Karteneinkauf",
+            service_type="Card Purchase",
             provider="Apple Pay",
             parsed_merchant="TESTLADEN",
             parsed_location="Aarau",
         )
 
         categorized, _ = engine.categorize_batch([transaction])
-        assert categorized[0].auto_transaction_category == "expense"
+        assert categorized[0].auto_transaction_category == "Expense"

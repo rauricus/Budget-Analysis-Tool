@@ -28,8 +28,8 @@ class CreditTransferParser(AbstractServiceParser):
         reference = " | ".join(reference_parts)
 
         return NotificationParseResult(
-            service_type="Gutschrift",
-            transaction_type_detail="Gutschrift",
+            service_type="Credit",
+            transaction_type_detail="Credit",
             counterparty=sender,
             counterparty_iban=iban,
             reference=reference,

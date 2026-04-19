@@ -48,8 +48,8 @@ class DebitDirectParser(AbstractServiceParser):
             reference = mitteilungen_match.group(1).strip()
 
         return NotificationParseResult(
-            service_type="Lastschrift",
-            transaction_type_detail="Lastschrift Debit Direct",
+            service_type="Direct Debit",
+            transaction_type_detail="Direct Debit (CH-DD)",
             counterparty=counterparty,
             counterparty_iban=counterparty_iban,
             reference=reference,

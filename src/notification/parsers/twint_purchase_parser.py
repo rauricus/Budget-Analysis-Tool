@@ -21,8 +21,8 @@ class TwintPurchaseParser(AbstractServiceParser):
 
         detail = (match.group("detail") or "").strip().upper()
         detail_map = {
-            "DIENSTLEISTUNG": "Kauf/Dienstleistung",
-            "ONLINE-SHOPPING": "Kauf/Online-Shopping",
+            "DIENSTLEISTUNG": "Purchase/Service",
+            "ONLINE-SHOPPING": "Purchase/Online Shopping",
         }
         merchant, location = self._extract_merchant_location(match.group("rest").strip())
 

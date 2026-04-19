@@ -144,11 +144,11 @@ def test_excel_report_creation():
         assert ws_summary['A6'].value == 'Transaction Category', "Should have transaction category table header"
         assert ws_summary['B6'].value == 'Credit (CHF)', "Should have credit header"
         assert ws_summary['C6'].value == 'Debit (CHF)', "Should have debit header"
-        assert ws_summary['A7'].value == 'income', "Should list income row"
-        assert ws_summary['A8'].value == 'expense', "Should list expense row"
-        assert ws_summary['A9'].value == 'refund', "Should list refund row"
+        assert ws_summary['A7'].value == 'Income', "Should list income row"
+        assert ws_summary['A8'].value == 'Expense', "Should list expense row"
+        assert ws_summary['A9'].value == 'Refund', "Should list refund row"
         assert ws_summary['A10'].value == 'Total', "Should have total row"
-        assert ws_summary['A12'].value == 'transfer', "Should show transfer row with spacing"
+        assert ws_summary['A12'].value == 'Transfer', "Should show transfer row with spacing"
         assert ws_summary['A14'].value == 'Grand Total', "Should have grand total row"
 
         # Verify first overview sheet has expected headers

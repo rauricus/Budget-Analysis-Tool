@@ -10,13 +10,13 @@ class Rule:
 
     id: int
     name: str
-    transaction_category: str  # One of: income, expense, refund, transfer
+    transaction_category: str  # One of: Income, Expense, Refund, Transfer
     category: str
     subcategory: str
     priority: int
-    transaction_type: str = ""  # Optional filter: "credit" or "debit"
-    transaction_type_detail: Optional[str] = None  # Optional filter: e.g. "Geld senden" or "Kauf/Dienstleistung"
-    services: list[str] = field(default_factory=list)  # Optional filter, e.g. ["Karteneinkauf", "Twint"]
+    transaction_type: str = ""  # Optional filter: "Credit" or "Debit"
+    transaction_type_detail: Optional[str] = None  # Optional filter: e.g. "Send Money" or "Purchase/Service"
+    services: list[str] = field(default_factory=list)  # Optional filter, e.g. ["Card Purchase", "Twint"]
     merchants: list[str] = field(default_factory=list)  # Optional filter, e.g. ["MIGROS", "COOP"]
     locations: list[str] = field(default_factory=list)  # Optional filter, e.g. ["AARAU", "ZURICH"]
     include_keywords: list[str] = field(default_factory=list)  # Optional filter; all must be present

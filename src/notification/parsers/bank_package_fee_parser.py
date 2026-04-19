@@ -20,7 +20,7 @@ class BankPackageFeeParser(AbstractServiceParser):
             return NotificationParseResult()
 
         return NotificationParseResult(
-            service_type="Gebühren",
-            transaction_type_detail="Bankpaketpreis",
+            service_type="Fees",
+            transaction_type_detail="Bank Package Fee",
             reference=text_stripped,
         )

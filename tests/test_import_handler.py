@@ -41,7 +41,7 @@ def test_apple_pay_notification_parsing():
     txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
 
     apple_pay_txn = txns[0]
-    assert apple_pay_txn.service_type == 'Karteneinkauf', "Service type should be Karteneinkauf"
+    assert apple_pay_txn.service_type == 'Card Purchase', "Service type should be Card Purchase"
     assert apple_pay_txn.provider == 'Apple Pay', "Provider should be Apple Pay"
     assert apple_pay_txn.card_number == 'XXXX4821', "Card number should be parsed"
     assert apple_pay_txn.parsed_merchant == 'CITY TANKSTELLE', "Merchant should be parsed"

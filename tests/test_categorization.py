@@ -54,7 +54,7 @@ def test_reference_dataset_contains_transfer_case():
     engine = RuleEngine('data/reference/rules.json')
 
     categorized, _ = engine.categorize_batch(txns)
-    transfer_count = sum(1 for txn in categorized if txn.auto_transaction_category == 'transfer')
+    transfer_count = sum(1 for txn in categorized if txn.auto_transaction_category == 'Transfer')
 
     assert transfer_count > 0, "Expected at least one transfer transaction in reference dataset"
 

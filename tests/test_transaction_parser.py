@@ -19,13 +19,13 @@ def test_parse_row_apple_pay():
     txn = TransactionParser.parse_row(row)
 
     assert txn is not None, "Parser should return a transaction"
-    assert txn.service_type == 'Karteneinkauf', "Service type should be Karteneinkauf"
+    assert txn.service_type == 'Card Purchase', "Service type should be Card Purchase"
     assert txn.provider == 'Apple Pay', "Provider should be Apple Pay"
     assert txn.card_number == 'XXXX4821', "Card number should be parsed"
     assert txn.parsed_merchant == 'CITY TANKSTELLE', "Merchant should be parsed"
     assert txn.parsed_location == 'OLTEN', "Location should be parsed"
     assert txn.debit > 0, "Lastschrift should be stored as positive"
-    assert txn.transaction_type == 'debit', "Transaction type should be normalized to debit"
+    assert txn.transaction_type == 'Debit', "Transaction type should be normalized to Debit"
 
 
 def test_parse_row_skips_empty_date():
@@ -53,7 +53,7 @@ def test_parse_row_credit_transaction_type():
 
     txn = TransactionParser.parse_row(row)
     assert txn is not None
-    assert txn.transaction_type == 'credit'
+    assert txn.transaction_type == 'Credit'
 
 
 if __name__ == '__main__':

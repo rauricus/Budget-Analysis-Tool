@@ -24,7 +24,7 @@ def test_migros_supermarket_rule():
     # Verify rule properties
     assert rule.merchants == ['MIGROS', 'COOP']
     assert rule.exclude_keywords == ['TAKE AWAY']
-    assert rule.transaction_category == 'expense'
+    assert rule.transaction_category == 'Expense'
     
     # Verify transaction direction matches
     assert rule.transaction_type == txn.transaction_type
@@ -68,14 +68,14 @@ def test_rule_service_filtering():
     txn = txns[4]
     rule = [r for r in engine.rules if r.id == 1001][0]
 
-    rule.services = ["Karteneinkauf"]
+    rule.services = ["Card Purchase"]
     rule.providers = ["Apple Pay"]
     assert rule.matches(txn), "Rule should match when service/provider filters include Karteneinkauf + Apple Pay"
 
     rule.services = ["Twint"]
     assert not rule.matches(txn), "Rule should not match when service filter excludes Karteneinkauf"
 
-    rule.services = ["Karteneinkauf"]
+    rule.services = ["Card Purchase"]
     rule.providers = ["Google Pay"]
     assert not rule.matches(txn), "Rule should not match when provider filter excludes Apple Pay"
 
@@ -101,14 +101,14 @@ def test_rule_transaction_type_detail_filtering_for_twint_send():
     txn = next(
         t for t in txns
         if t.service_type == 'Twint'
-        and t.transaction_type_detail == 'Geld senden'
+        and t.transaction_type_detail == 'Send Money'
         and 'ESSEN' in (t.parsed_merchant or '').upper()
     )
     rule = [r for r in engine.rules if r.id == 2005][0]
 
     assert rule.matches(txn), "Essensanteil rule should match Twint send detail"
 
-    rule.transaction_type_detail = 'Geld empfangen'
+    rule.transaction_type_detail = 'Receive Money'
     assert not rule.matches(txn), "Rule should not match when transaction_type_detail differs"
 
     rule.transaction_type_detail = ''

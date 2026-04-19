@@ -1,5 +1,5 @@
 Transaction ID;Date;Transaction Type;Transaction Type Detail;Service;Provider;Card Number;Merchant;Location;Counterparty;Counterparty IBAN;Reference;Credit in CHF;Debit in CHF;Label;Transaction Category;Category;Subcategory
-TX-000001;25.01.2025;credit;Geld empfangen;Twint;Twint;;+41790000000 MAX MUSTER MITTEILUNGEN: TEST;;;;;1.0;;;refund;Rückerstattungen;
-TX-000002;19.01.2025;debit;Kauf/Online-Shopping;Karteneinkauf;;;ONLINE HAUSHALT AG;;;;PAYMENT ID 250119000000000000 BESTELLNUMMER DP-P-00000000;;13.9;;expense;Wohnen;Haushalt
-TX-000057;15.01.2025;debit;Kontoübertrag Auf;Kontoübertrag;;;ZMITTAG 13.1.;;;CH5600000000000000000;ZMITTAG 13.1.;;19.0;;expense;Leben;Familie
-TX-000059;03.01.2025;debit;Zahlung;Lastschrift;;;MOBILITY;;MOBILITY MUSTER GENOSSENSCHAFT 6343 ROTKREUZ;CH5600000000000000000;MUSTERBANK AG MUSTERSTRASSE 12 6002 LUZERN;;26.7;;expense;Mobilität;Privater Verkehr
+TX-000001;25.01.2025;Credit;Receive Money;Twint;Twint;;+41790000000 MAX MUSTER MITTEILUNGEN: TEST;;;;;1.0;;;;?;
+TX-000002;19.01.2025;Debit;Purchase/Online Shopping;Card Purchase;;;ONLINE HAUSHALT AG;;;;PAYMENT ID 250119000000000000 BESTELLNUMMER DP-P-00000000;;13.9;;Expense;Wohnen;Haushalt
+TX-000057;15.01.2025;Debit;Account Transfer Auf;Account Transfer;;;ZMITTAG 13.1.;;;CH5600000000000000000;ZMITTAG 13.1.;;19.0;;Expense;Leben;Familie
+TX-000059;03.01.2025;Debit;Payment;Direct Debit;;;MOBILITY;;MOBILITY MUSTER GENOSSENSCHAFT 6343 ROTKREUZ;CH5600000000000000000;MUSTERBANK AG MUSTERSTRASSE 12 6002 LUZERN;;26.7;;Expense;Mobilität;Privater Verkehr

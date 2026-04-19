@@ -112,7 +112,7 @@ src/
   ├── facade.py                  # Public facade to parser registry
   ├── registry.py                # Parser dispatch (first supporting parser wins)
   └── parsers/
-    ├── card_purchase_parser.py  # Card purchase parser (Kauf/Dienstleistung + Online-Shopping, optional provider)
+    ├── card_purchase_parser.py  # Card purchase parser (Purchase/Service + Purchase/Online Shopping, optional provider)
     ├── cash_withdrawal_parser.py# Cash withdrawal parser (Bargeldbezug)
     ├── credit_transfer_parser.py# Credit transfer parser (Gutschrift Auftraggeber/Absender)
     ├── bank_package_fee_parser.py# Bank package fee parser
@@ -156,14 +156,14 @@ Example:
     {
       "id": 1,
       "name": "Migros Take-Away",
-      "transaction_category": "expense",
+      "transaction_category": "Expense",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 100,
       "scope": {
-        "transaction_type": "debit",
-        "transaction_type_detail": "Kauf/Dienstleistung",
-        "services": ["Karteneinkauf"],
+        "transaction_type": "Debit",
+        "transaction_type_detail": "Purchase/Service",
+        "services": ["Card Purchase"],
         "providers": ["Apple Pay"],
         "notification_filters": {
           "merchants": ["MIGROS"],
@@ -180,11 +180,11 @@ Example:
 ### Matching behavior
 
 - Rules are sorted by descending `priority`.
-- `transaction_category` is required and must be one of: `income`, `expense`, `refund`, `transfer`.
+- `transaction_category` is required and must be one of: `Income`, `Expense`, `Refund`, `Transfer`.
 - Category assignment uses two levels: `category` and `subcategory`.
 - `category`/`subcategory` mapping is optional per rule (empty values are allowed).
-- `scope.transaction_type` filters on money direction: `credit` or `debit`.
-- `scope.transaction_type_detail` can optionally filter on parsed detail (for example `Geld senden`, `Kauf/Dienstleistung`, `Dauerauftrag`). Use `null` (or empty) to disable this filter.
+- `scope.transaction_type` filters on money direction: `Credit` or `Debit`.
+- `scope.transaction_type_detail` can optionally filter on parsed detail (for example `Send Money`, `Purchase/Service`, `Standing Order`). Use `null` (or empty) to disable this filter.
 - `scope.services` filters by parsed `service_type` and `scope.providers` optionally by payment provider.
 - `scope.notification_filters` contains text-based matching criteria (`merchants`, `locations`, `include_keywords`, `exclude_keywords`).
 - A rule matches only if all configured conditions match.

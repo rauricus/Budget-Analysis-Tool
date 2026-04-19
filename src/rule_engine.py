@@ -7,7 +7,7 @@ from models import Rule, Transaction
 
 logger = logging.getLogger(__name__)
 
-VALID_TRANSACTION_CATEGORIES = {"income", "expense", "refund", "transfer"}
+VALID_TRANSACTION_CATEGORIES = {"Income", "Expense", "Refund", "Transfer"}
 
 
 class RuleEngine:
@@ -39,18 +39,20 @@ class RuleEngine:
             )
             transaction_category = str(
                 scope.get("transaction_category", rule_data.get("transaction_category", ""))
-            ).strip().lower()
-            if transaction_category not in VALID_TRANSACTION_CATEGORIES:
+            ).strip()
+            # Normalize to Title case for comparison
+            transaction_category_normalized = transaction_category[0].upper() + transaction_category[1:].lower() if transaction_category else ""
+            if transaction_category_normalized not in VALID_TRANSACTION_CATEGORIES:
                 raise ValueError(
                     "Invalid or missing 'transaction_category' for rule "
                     f"#{rule_data.get('id', '?')} ('{rule_data.get('name', '')}') in {source}: "
-                    f"'{transaction_category}'. Allowed: {sorted(VALID_TRANSACTION_CATEGORIES)}"
+                    f"'{transaction_category_normalized}'. Allowed: {sorted(VALID_TRANSACTION_CATEGORIES)}"
                 )
 
             rule = Rule(
                 id=rule_data["id"],
                 name=rule_data["name"],
-                transaction_category=transaction_category,
+                transaction_category=transaction_category_normalized,
                 category=rule_data.get("category", ""),
                 subcategory=rule_data.get("subcategory", ""),
                 priority=rule_data["priority"],
