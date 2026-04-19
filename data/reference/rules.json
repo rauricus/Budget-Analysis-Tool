@@ -7,24 +7,26 @@
       "category": "Einkaufen",
       "subcategory": "Supermärkte",
       "priority": 50,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Karteneinkauf"
-      ],
-      "providers": [
-        "Apple Pay"
-      ],
-      "triggers": {
-        "merchants": [
-          "MIGROS",
-          "COOP"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Karteneinkauf"
         ],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": [
-          "TAKE AWAY"
-        ]
+        "providers": [
+          "Apple Pay"
+        ],
+        "notification_filters": {
+          "merchants": [
+            "MIGROS",
+            "COOP"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [
+            "TAKE AWAY"
+          ]
+        }
       }
     },
     {
@@ -34,25 +36,27 @@
       "category": "Einkaufen",
       "subcategory": "Detail-Lebensmittel",
       "priority": 40,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Karteneinkauf"
-      ],
-      "providers": [
-        "Apple Pay"
-      ],
-      "triggers": {
-        "merchants": [
-          "BÄCKEREI",
-          "BACKEREI",
-          "BRANKOVIC",
-          "CONFISERIE",
-          "SPRÜNGLI"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Karteneinkauf"
         ],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
+        "providers": [
+          "Apple Pay"
+        ],
+        "notification_filters": {
+          "merchants": [
+            "BÄCKEREI",
+            "BACKEREI",
+            "BRANKOVIC",
+            "CONFISERIE",
+            "SPRÜNGLI"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -62,23 +66,25 @@
       "category": "Einkaufen",
       "subcategory": "Detail-Lebensmittel",
       "priority": 40,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Karteneinkauf"
-      ],
-      "providers": [
-        "Apple Pay"
-      ],
-      "triggers": {
-        "merchants": [
-          "YUMIHANA",
-          "YUMI HANA",
-          "WAKARA"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Karteneinkauf"
         ],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
+        "providers": [
+          "Apple Pay"
+        ],
+        "notification_filters": {
+          "merchants": [
+            "YUMIHANA",
+            "YUMI HANA",
+            "WAKARA"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -88,21 +94,23 @@
       "category": "Einkaufen",
       "subcategory": "Sonstiges Einkaufen",
       "priority": 30,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Karteneinkauf"
-      ],
-      "providers": [
-        "Apple Pay"
-      ],
-      "triggers": {
-        "merchants": [
-          "KKIOSK"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Karteneinkauf"
         ],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
+        "providers": [
+          "Apple Pay"
+        ],
+        "notification_filters": {
+          "merchants": [
+            "KKIOSK"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -112,26 +120,28 @@
       "category": "Einkaufen",
       "subcategory": "Sonstiges Einkaufen",
       "priority": 30,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Karteneinkauf"
-      ],
-      "providers": [
-        "Apple Pay"
-      ],
-      "triggers": {
-        "merchants": [
-          "BAHNHOF"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Karteneinkauf"
         ],
-        "locations": [],
-        "include_keywords": [
-          "BAHNHOF",
-          "KIOSK"
+        "providers": [
+          "Apple Pay"
         ],
-        "exclude_keywords": [
-          "APOTHEKE"
-        ]
+        "notification_filters": {
+          "merchants": [
+            "BAHNHOF"
+          ],
+          "locations": [],
+          "include_keywords": [
+            "BAHNHOF",
+            "KIOSK"
+          ],
+          "exclude_keywords": [
+            "APOTHEKE"
+          ]
+        }
       }
     },
     {
@@ -141,21 +151,23 @@
       "category": "Einkaufen",
       "subcategory": "Detail-Lebensmittel",
       "priority": 45,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Karteneinkauf"
-      ],
-      "providers": [
-        "Apple Pay"
-      ],
-      "triggers": {
-        "merchants": [
-          "CITY TANKSTELLE"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Karteneinkauf"
         ],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
+        "providers": [
+          "Apple Pay"
+        ],
+        "notification_filters": {
+          "merchants": [
+            "CITY TANKSTELLE"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -165,24 +177,26 @@
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 100,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Karteneinkauf"
-      ],
-      "providers": [
-        "Apple Pay"
-      ],
-      "triggers": {
-        "merchants": [
-          "MIGROS",
-          "COOP"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Karteneinkauf"
         ],
-        "locations": [],
-        "include_keywords": [
-          "TAKE AWAY"
+        "providers": [
+          "Apple Pay"
         ],
-        "exclude_keywords": []
+        "notification_filters": {
+          "merchants": [
+            "MIGROS",
+            "COOP"
+          ],
+          "locations": [],
+          "include_keywords": [
+            "TAKE AWAY"
+          ],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -192,20 +206,22 @@
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 60,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Karteneinkauf"
-      ],
-      "providers": null,
-      "triggers": {
-        "merchants": [
-          "YOOJI'S",
-          "SIGNOR ROSSI"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Karteneinkauf"
         ],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "YOOJI'S",
+            "SIGNOR ROSSI"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -215,19 +231,21 @@
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 60,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Karteneinkauf"
-      ],
-      "providers": null,
-      "triggers": {
-        "merchants": [
-          "COFFEE AND PLANTS"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Karteneinkauf"
         ],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "COFFEE AND PLANTS"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -237,20 +255,22 @@
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 56,
-      "transaction_type": "debit",
-      "transaction_type_detail": "Geld senden",
-      "services": [
-        "Twint"
-      ],
-      "providers": null,
-      "triggers": {
-        "merchants": [
-          "KEBAB",
-          "IMBISS"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": "Geld senden",
+        "services": [
+          "Twint"
         ],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "KEBAB",
+            "IMBISS"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -260,19 +280,21 @@
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 60,
-      "transaction_type": "debit",
-      "transaction_type_detail": "Geld senden",
-      "services": [
-        "Twint"
-      ],
-      "providers": null,
-      "triggers": {
-        "merchants": [],
-        "locations": [],
-        "include_keywords": [
-          "ESSEN"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": "Geld senden",
+        "services": [
+          "Twint"
         ],
-        "exclude_keywords": []
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [
+            "ESSEN"
+          ],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -282,19 +304,21 @@
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 60,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Twint"
-      ],
-      "providers": null,
-      "triggers": {
-        "merchants": [],
-        "locations": [],
-        "include_keywords": [
-          "CAFE"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Twint"
         ],
-        "exclude_keywords": []
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [
+            "CAFE"
+          ],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -304,21 +328,23 @@
       "category": "Leben",
       "subcategory": "Gesundheit",
       "priority": 45,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Karteneinkauf"
-      ],
-      "providers": [
-        "Apple Pay"
-      ],
-      "triggers": {
-        "merchants": [
-          "APOTHEKE"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Karteneinkauf"
         ],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
+        "providers": [
+          "Apple Pay"
+        ],
+        "notification_filters": {
+          "merchants": [
+            "APOTHEKE"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -328,21 +354,23 @@
       "category": "Leben",
       "subcategory": "Styling und Wellness",
       "priority": 45,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Karteneinkauf"
-      ],
-      "providers": [
-        "Apple Pay"
-      ],
-      "triggers": {
-        "merchants": [
-          "THE BODY SHOP"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Karteneinkauf"
         ],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
+        "providers": [
+          "Apple Pay"
+        ],
+        "notification_filters": {
+          "merchants": [
+            "THE BODY SHOP"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -352,24 +380,26 @@
       "category": "Leben",
       "subcategory": "Styling und Wellness",
       "priority": 45,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Karteneinkauf"
-      ],
-      "providers": [
-        "Apple Pay"
-      ],
-      "triggers": {
-        "merchants": [
-          "SUMUP",
-          "DELIAS HAIRSTY"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Karteneinkauf"
         ],
-        "locations": [],
-        "include_keywords": [
-          "HAIRSTY"
+        "providers": [
+          "Apple Pay"
         ],
-        "exclude_keywords": []
+        "notification_filters": {
+          "merchants": [
+            "SUMUP",
+            "DELIAS HAIRSTY"
+          ],
+          "locations": [],
+          "include_keywords": [
+            "HAIRSTY"
+          ],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -379,20 +409,22 @@
       "category": "Leben",
       "subcategory": "Gesundheit",
       "priority": 70,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Lastschrift"
-      ],
-      "providers": null,
-      "triggers": {
-        "merchants": [
-          "MEDICURA",
-          "SYMPANY"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Lastschrift"
         ],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "MEDICURA",
+            "SYMPANY"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -402,21 +434,23 @@
       "category": "Leben",
       "subcategory": "Sonstiges Leben",
       "priority": 35,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Karteneinkauf"
-      ],
-      "providers": [
-        "Apple Pay"
-      ],
-      "triggers": {
-        "merchants": [
-          "BYRO"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Karteneinkauf"
         ],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
+        "providers": [
+          "Apple Pay"
+        ],
+        "notification_filters": {
+          "merchants": [
+            "BYRO"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -426,21 +460,23 @@
       "category": "Leben",
       "subcategory": "Familie",
       "priority": 72,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Lastschrift"
-      ],
-      "providers": null,
-      "triggers": {
-        "merchants": [
-          "FAMILIENKASSE"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Lastschrift"
         ],
-        "locations": [],
-        "include_keywords": [
-          "FAMILIENZULAGE"
-        ],
-        "exclude_keywords": []
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "FAMILIENKASSE"
+          ],
+          "locations": [],
+          "include_keywords": [
+            "FAMILIENZULAGE"
+          ],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -450,20 +486,22 @@
       "category": "Leben",
       "subcategory": "Familie",
       "priority": 73,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Kontoübertrag"
-      ],
-      "providers": null,
-      "triggers": {
-        "merchants": [
-          "ZMITTAG",
-          "ESSEN"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Kontoübertrag"
         ],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "ZMITTAG",
+            "ESSEN"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -473,21 +511,23 @@
       "category": "Wohnen",
       "subcategory": "Handwerk und Garten",
       "priority": 50,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Karteneinkauf"
-      ],
-      "providers": [
-        "Apple Pay"
-      ],
-      "triggers": {
-        "merchants": [
-          "JUMBO"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Karteneinkauf"
         ],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
+        "providers": [
+          "Apple Pay"
+        ],
+        "notification_filters": {
+          "merchants": [
+            "JUMBO"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -497,19 +537,21 @@
       "category": "Wohnen",
       "subcategory": "Kommunikation",
       "priority": 70,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Lastschrift"
-      ],
-      "providers": null,
-      "triggers": {
-        "merchants": [
-          "SUNRISE"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Lastschrift"
         ],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "SUNRISE"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -519,19 +561,21 @@
       "category": "Wohnen",
       "subcategory": "Kommunikation",
       "priority": 60,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Karteneinkauf"
-      ],
-      "providers": null,
-      "triggers": {
-        "merchants": [
-          "APPLE.COM"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Karteneinkauf"
         ],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "APPLE.COM"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -541,19 +585,21 @@
       "category": "Wohnen",
       "subcategory": "Miete und Hypothek",
       "priority": 60,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Lastschrift"
-      ],
-      "providers": null,
-      "triggers": {
-        "merchants": [],
-        "locations": [],
-        "include_keywords": [
-          "FINANZVERWALTUNG STADT SOLOTHURN"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Lastschrift"
         ],
-        "exclude_keywords": []
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [
+            "FINANZVERWALTUNG STADT SOLOTHURN"
+          ],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -563,21 +609,23 @@
       "category": "Wohnen",
       "subcategory": "Haushalt",
       "priority": 50,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Karteneinkauf"
-      ],
-      "providers": [
-        "Apple Pay"
-      ],
-      "triggers": {
-        "merchants": [
-          "MANOR"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Karteneinkauf"
         ],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
+        "providers": [
+          "Apple Pay"
+        ],
+        "notification_filters": {
+          "merchants": [
+            "MANOR"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -587,19 +635,21 @@
       "category": "Wohnen",
       "subcategory": "Kommunikation",
       "priority": 60,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Karteneinkauf"
-      ],
-      "providers": null,
-      "triggers": {
-        "merchants": [
-          "CLOUDSERVICE"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Karteneinkauf"
         ],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "CLOUDSERVICE"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -609,22 +659,24 @@
       "category": "Wohnen",
       "subcategory": "Haushalt",
       "priority": 75,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Karteneinkauf"
-      ],
-      "providers": null,
-      "triggers": {
-        "merchants": [
-          "ONLINE HAUSHALT AG"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Karteneinkauf"
         ],
-        "locations": [],
-        "include_keywords": [
-          "PAYMENT ID",
-          "BESTELLNUMMER"
-        ],
-        "exclude_keywords": []
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "ONLINE HAUSHALT AG"
+          ],
+          "locations": [],
+          "include_keywords": [
+            "PAYMENT ID",
+            "BESTELLNUMMER"
+          ],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -634,20 +686,22 @@
       "category": "Mobilität",
       "subcategory": "Öffentlicher Verkehr",
       "priority": 70,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Karteneinkauf"
-      ],
-      "providers": null,
-      "triggers": {
-        "merchants": [
-          "TRANSPORTS PUBLICS",
-          "FAIRTIQ"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Karteneinkauf"
         ],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "TRANSPORTS PUBLICS",
+            "FAIRTIQ"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -657,19 +711,21 @@
       "category": "Mobilität",
       "subcategory": "Privater Verkehr",
       "priority": 72,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Lastschrift"
-      ],
-      "providers": null,
-      "triggers": {
-        "merchants": [
-          "MOBILITY"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Lastschrift"
         ],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "MOBILITY"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -679,19 +735,21 @@
       "category": "Finanzen",
       "subcategory": "Bargeldbezug",
       "priority": 80,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Bargeldbezug"
-      ],
-      "providers": null,
-      "triggers": {
-        "merchants": [],
-        "locations": [],
-        "include_keywords": [
-          "BARGELDBEZUG"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Bargeldbezug"
         ],
-        "exclude_keywords": []
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [
+            "BARGELDBEZUG"
+          ],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -701,19 +759,21 @@
       "category": "Finanzen",
       "subcategory": "Gebühren",
       "priority": 85,
-      "transaction_type": "debit",
-      "transaction_type_detail": null,
-      "services": [
-        "Gebühren"
-      ],
-      "providers": null,
-      "triggers": {
-        "merchants": [],
-        "locations": [],
-        "include_keywords": [
-          "BANKPAKET SMART"
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Gebühren"
         ],
-        "exclude_keywords": []
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [
+            "BANKPAKET SMART"
+          ],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -723,21 +783,23 @@
       "category": "Einkommen",
       "subcategory": "Lohn",
       "priority": 80,
-      "transaction_type": "credit",
-      "transaction_type_detail": null,
-      "services": [
-        "Gutschrift"
-      ],
-      "providers": null,
-      "triggers": {
-        "merchants": [
-          "ALPENWERK"
+      "scope": {
+        "transaction_type": "credit",
+        "transaction_type_detail": null,
+        "services": [
+          "Gutschrift"
         ],
-        "locations": [],
-        "include_keywords": [
-          "SALAER"
-        ],
-        "exclude_keywords": []
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "ALPENWERK"
+          ],
+          "locations": [],
+          "include_keywords": [
+            "SALAER"
+          ],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -747,19 +809,21 @@
       "category": "Rückerstattungen",
       "subcategory": "",
       "priority": 50,
-      "transaction_type": "credit",
-      "transaction_type_detail": null,
-      "services": [
-        "Twint"
-      ],
-      "providers": null,
-      "triggers": {
-        "merchants": [],
-        "locations": [],
-        "include_keywords": [
-          "GELD EMPFANGEN"
+      "scope": {
+        "transaction_type": "credit",
+        "transaction_type_detail": null,
+        "services": [
+          "Twint"
         ],
-        "exclude_keywords": []
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [
+            "GELD EMPFANGEN"
+          ],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -769,19 +833,21 @@
       "category": "Leben",
       "subcategory": "Gesundheit",
       "priority": 75,
-      "transaction_type": "credit",
-      "transaction_type_detail": null,
-      "services": [
-        "Gutschrift"
-      ],
-      "providers": null,
-      "triggers": {
-        "merchants": [
-          "MEDICURA PLUS"
+      "scope": {
+        "transaction_type": "credit",
+        "transaction_type_detail": null,
+        "services": [
+          "Gutschrift"
         ],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "MEDICURA PLUS"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
       }
     },
     {
@@ -791,35 +857,37 @@
       "category": "Überträge",
       "subcategory": "Kontoübertrag",
       "priority": 95,
-      "transaction_type": "credit",
-      "transaction_type_detail": null,
-      "services": [
-        "Kontoübertrag"
-      ],
-      "providers": null,
-      "triggers": {
-        "merchants": [
-          "EIGENES SPARKONTO"
+      "scope": {
+        "transaction_type": "credit",
+        "transaction_type_detail": null,
+        "services": [
+          "Kontoübertrag"
         ],
-        "locations": [],
-        "include_keywords": [
-          "KONTOUEBERTRAG"
-        ],
-        "exclude_keywords": []
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "EIGENES SPARKONTO"
+          ],
+          "locations": [],
+          "include_keywords": [
+            "KONTOUEBERTRAG"
+          ],
+          "exclude_keywords": []
+        }
       }
     }
   ],
   "comments": {
-    "required_fields": "Rule fields that should always be set: id, name, transaction_category, priority, transaction_type.",
-    "optional_fields": "Optional rule filters: services, providers, merchants, locations, include_keywords, exclude_keywords. Empty list means 'do not filter by this field'.",
-    "transaction_type": "Required filter by money direction: 'credit' or 'debit'.",
-    "transaction_type_detail": null,
-    "services": "Optional filter on parsed generic service type (e.g. Karteneinkauf, Twint, Lastschrift).",
-    "providers": "Optional filter on payment provider (e.g. Apple Pay). Provider must NOT be encoded in services.",
-    "merchants": "Optional merchant filter (case-insensitive). OR logic (at least one must match).",
-    "locations": "Optional location filter (case-insensitive). AND logic (all listed locations must match).",
-    "include_keywords": "Optional keywords that MUST be present. AND logic.",
-    "exclude_keywords": "Optional keywords that must NOT be present. NONE may be present.",
+    "required_fields": "Rule fields that should always be set: id, name, transaction_category, priority, scope.transaction_type.",
+    "optional_fields": "Optional scope filters: scope.transaction_type_detail, scope.services, scope.providers, scope.notification_filters.{merchants,locations,include_keywords,exclude_keywords}. Empty list means 'do not filter by this field'.",
+    "scope.transaction_type": "Required filter by money direction: 'credit' or 'debit'.",
+    "scope.transaction_type_detail": "Optional exact detail filter (e.g. 'Geld senden', 'Kauf/Dienstleistung'). Use null to disable.",
+    "scope.services": "Optional filter on parsed generic service type (e.g. Karteneinkauf, Twint, Lastschrift).",
+    "scope.providers": "Optional filter on payment provider (e.g. Apple Pay). Provider must NOT be encoded in services.",
+    "scope.notification_filters.merchants": "Optional merchant filter (case-insensitive). OR logic (at least one must match).",
+    "scope.notification_filters.locations": "Optional location filter (case-insensitive). AND logic (all listed locations must match).",
+    "scope.notification_filters.include_keywords": "Optional keywords that MUST be present. AND logic.",
+    "scope.notification_filters.exclude_keywords": "Optional keywords that must NOT be present. NONE may be present.",
     "matching": "A rule matches only if all active (non-empty) filters are satisfied. Highest priority wins.",
     "fallback": "No fallback category. If no rule matches, transaction stays uncategorized.",
     "subcategory": "Optional subcategory for fine-grained classification (e.g. 'Gastronomie' within 'Freizeit'). Empty string if not applicable.",

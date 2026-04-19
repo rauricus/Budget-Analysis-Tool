@@ -17,20 +17,22 @@ def _rule(id, category="Kategorie A", subcategory="", priority=50, merchant="TES
     return {
         "id": id,
         "name": name or f"Regel {id}",
+        "transaction_category": "expense",
         "category": category,
         "subcategory": subcategory,
-        "transaction_category": "expense",
-        "priority": priority,
-        "transaction_type": "debit",
-        "transaction_type_detail": None,
-        "services": ["Karteneinkauf"],
-        "providers": ["Apple Pay"],
-        "triggers": {
-            "merchants": [merchant],
-            "locations": [],
-            "include_keywords": [],
-            "exclude_keywords": [],
+        "scope": {
+            "transaction_type": "debit",
+            "transaction_type_detail": None,
+            "services": ["Karteneinkauf"],
+            "providers": ["Apple Pay"],
+            "notification_filters": {
+                "merchants": [merchant],
+                "locations": [],
+                "include_keywords": [],
+                "exclude_keywords": [],
+            },
         },
+        "priority": priority,
     }
 
 
@@ -65,7 +67,7 @@ class TestBaseRulesOnly:
 class TestOverlay:
     def test_loads_optional_transaction_type_detail(self, tmp_path):
         base = tmp_path / "base.json"
-        _write(base, [{**_rule(1), "transaction_type_detail": "Geld senden"}])
+        _write(base, [{**_rule(1), "scope": {**_rule(1)["scope"], "transaction_type_detail": "Geld senden"}}])
 
         engine = RuleEngine(str(base))
 
@@ -74,7 +76,7 @@ class TestOverlay:
 
     def test_null_transaction_type_detail_is_supported(self, tmp_path):
         base = tmp_path / "base.json"
-        _write(base, [{**_rule(1), "transaction_type_detail": None}])
+        _write(base, [{**_rule(1), "scope": {**_rule(1)["scope"], "transaction_type_detail": None}}])
 
         engine = RuleEngine(str(base))
 

@@ -30,7 +30,16 @@ class RuleEngine:
         """Parse a rules JSON dict into a {id: Rule} mapping."""
         result = {}
         for rule_data in data.get("rules", []):
-            transaction_category = str(rule_data.get("transaction_category", "")).strip().lower()
+            scope = rule_data.get("scope") or {}
+            filters = (
+                scope.get("notification_filters")
+                or rule_data.get("notification_filters")
+                or rule_data.get("triggers")
+                or {}
+            )
+            transaction_category = str(
+                scope.get("transaction_category", rule_data.get("transaction_category", ""))
+            ).strip().lower()
             if transaction_category not in VALID_TRANSACTION_CATEGORIES:
                 raise ValueError(
                     "Invalid or missing 'transaction_category' for rule "
@@ -45,14 +54,17 @@ class RuleEngine:
                 category=rule_data.get("category", ""),
                 subcategory=rule_data.get("subcategory", ""),
                 priority=rule_data["priority"],
-                transaction_type=rule_data.get("transaction_type", ""),
-                transaction_type_detail=rule_data.get("transaction_type_detail") or None,
-                services=rule_data.get("services", []),
-                providers=rule_data.get("providers", []),
-                merchants=rule_data["triggers"].get("merchants", []),
-                locations=rule_data["triggers"].get("locations", []),
-                include_keywords=rule_data["triggers"].get("include_keywords", []),
-                exclude_keywords=rule_data["triggers"].get("exclude_keywords", []),
+                transaction_type=scope.get("transaction_type", rule_data.get("transaction_type", "")),
+                transaction_type_detail=(
+                    scope.get("transaction_type_detail", rule_data.get("transaction_type_detail"))
+                    or None
+                ),
+                services=scope.get("services", rule_data.get("services", [])),
+                providers=scope.get("providers", rule_data.get("providers", [])),
+                merchants=filters.get("merchants", []),
+                locations=filters.get("locations", []),
+                include_keywords=filters.get("include_keywords", []),
+                exclude_keywords=filters.get("exclude_keywords", []),
                 source=source,
             )
             result[rule.id] = rule

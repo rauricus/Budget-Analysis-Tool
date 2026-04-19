@@ -160,15 +160,17 @@ Example:
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 100,
-      "transaction_type": "debit",
-      "transaction_type_detail": "Kauf/Dienstleistung",
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
-      "triggers": {
-        "merchants": ["MIGROS"],
-        "locations": [],
-        "include_keywords": ["TAKE AWAY"],
-        "exclude_keywords": []
+      "scope": {
+        "transaction_type": "debit",
+        "transaction_type_detail": "Kauf/Dienstleistung",
+        "services": ["Karteneinkauf"],
+        "providers": ["Apple Pay"],
+        "notification_filters": {
+          "merchants": ["MIGROS"],
+          "locations": [],
+          "include_keywords": ["TAKE AWAY"],
+          "exclude_keywords": []
+        }
       }
     }
   ]
@@ -181,9 +183,10 @@ Example:
 - `transaction_category` is required and must be one of: `income`, `expense`, `refund`, `transfer`.
 - Category assignment uses two levels: `category` and `subcategory`.
 - `category`/`subcategory` mapping is optional per rule (empty values are allowed).
-- `transaction_type` filters on money direction: `credit` or `debit`.
-- `transaction_type_detail` can optionally filter on parsed detail (for example `Geld senden`, `Kauf/Dienstleistung`, `Dauerauftrag`). Use `null` (or empty) to disable this filter.
-- Rules can filter by parsed `service_type` (`services`) and optional `provider` (`providers`).
+- `scope.transaction_type` filters on money direction: `credit` or `debit`.
+- `scope.transaction_type_detail` can optionally filter on parsed detail (for example `Geld senden`, `Kauf/Dienstleistung`, `Dauerauftrag`). Use `null` (or empty) to disable this filter.
+- `scope.services` filters by parsed `service_type` and `scope.providers` optionally by payment provider.
+- `scope.notification_filters` contains text-based matching criteria (`merchants`, `locations`, `include_keywords`, `exclude_keywords`).
 - A rule matches only if all configured conditions match.
 - `merchants`: OR logic (at least one must match).
 - `locations`: AND logic (all must match).
