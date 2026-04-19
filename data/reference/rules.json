@@ -739,7 +739,7 @@
       "priority": 95,
       "transaction_type": "credit",
       "services": [
-        "Gutschrift"
+        "Kontoübertrag"
       ],
       "providers": null,
       "triggers": {
