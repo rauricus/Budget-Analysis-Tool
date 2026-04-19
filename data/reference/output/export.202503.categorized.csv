@@ -5,7 +5,7 @@ TX-000003;31.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX482
 TX-000004;31.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;KKIOSK 45810;BERN;;;;;7.55;;Einkaufen;Sonstiges Einkaufen
 TX-000005;31.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;MIGROS MARKTHALLE (8812);SOLOTHURN;;;;;22.2;;Einkaufen;Supermärkte
 TX-000006;31.03.2025;Buchung;Bankpaketpreis;Gebühren;;;;;;;PREIS FÜR BANKPAKET SMART 02.2025;;5.0;;Finanzen;Gebühren
-TX-000007;31.03.2025;Buchung;Lastschrift Debit Direct;Lastschrift;;;;;STEUERDIENSTE REGION WEST;41101000000123456;2025/04/01 / 7045128;;1774.0;;Wohnen;Nebenkosten
+TX-000057;31.03.2025;Buchung;Lastschrift Debit Direct;Lastschrift;;;;;FINANZVERWALTUNG STADT SOLOTHURN;41101000000123456;2025/04/01 / 7045128;;1774.0;;Wohnen;Nebenkosten
 TX-000008;30.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;SIGNOR ROSSI;WINTERTHUR;;;;;20.0;;Freizeit;Gastronomie
 TX-000009;30.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;MIGROS MARKTHALLE (8812);SOLOTHURN;;;;;20.7;;Einkaufen;Supermärkte
 TX-000010;30.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;MIGROS CITY TAKE AWAY (6624);BASEL;;;;;3.9;;Freizeit;Gastronomie
@@ -32,7 +32,7 @@ TX-000030;27.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX482
 TX-000031;27.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;YUMI HANA;FRIBOURG;;;;;26.8;;Einkaufen;Detail-Lebensmittel
 TX-000032;27.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;COOP - 7811 QUAI WEST;BERN;;;;;7.75;;Einkaufen;Supermärkte
 TX-000033;26.03.2025;Buchung;Kauf/Online-Shopping;Karteneinkauf;;XXXX4821;TRANSPORTS PUBLICS FRIBOURGEOIS (FAIRTIQ) N/A PAYMENT ID 250326064915818975ZX BESTELLNUMMER;ZUNCTYVS45RXNGTQIH;;;;;62.6;;Mobilität;Öffentlicher Verkehr
-TX-000034;26.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;JUMBO-7782 INDUSTRIEPARK;WINTERTHUR;;;;;10.9;;Einkaufen;Supermärkte
+TX-000034;26.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;JUMBO-7782 INDUSTRIEPARK;WINTERTHUR;;;;;10.9;;Wohnen;Handwerk und Garten
 TX-000035;26.03.2025;Buchung;Geld senden;Twint;;;+41796666222 KEBAB, IMBISS MITTEILUNGEN: KEBAB;;;;;;14.0;;Freizeit;Gastronomie
 TX-000036;26.03.2025;Buchung;Dauerauftrag;Lastschrift;;;FAMILIENKASSE;;FAMILIENKASSE MUSTERHAUSEN SENDER REFERENZ: FAMILIENZULAGE;CH3409000000802999554;90-33445566;;200.0;;Leben;Familie
 TX-000037;25.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;BÄCKEREI HUG;OLTEN;;;;;6.1;;Einkaufen;Detail-Lebensmittel
@@ -48,7 +48,7 @@ TX-000045;24.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX482
 TX-000046;24.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;MIGROS CITY TAKE AWAY (6624);BASEL;;;;;6.8;;Freizeit;Gastronomie
 TX-000047;24.03.2025;Buchung;Zahlung;Lastschrift;;;MEDICURA / SYMPANY;;MEDICURA PLUS AG GESUNDHEITSWEG 8 4052 BASEL;CH1830000001400099001;;;77.45;;Leben;Gesundheit
 TX-000048;23.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;BÄCKEREI HUG;OLTEN;;;;;17.3;;Einkaufen;Detail-Lebensmittel
-TX-000049;23.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;MANOR AG - 771 (CENTRA);BERN;;;;;23.95;;Überträge;
+TX-000049;23.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;MANOR AG - 771 (CENTRA);BERN;;;;;23.95;;Wohnen;Haushalt
 TX-000050;23.03.2025;Buchung;Geld senden;Twint;;;+41796666222 KEBAB, IMBISS;;;;;;13.5;;Freizeit;Gastronomie
 TX-000054;22.03.2025;Buchung;Geld senden;Twint;;;+41790000000 MAX MUSTER MITTEILUNGEN: ESSEN GESTERN ABEND;;;;;;20.0;;Freizeit;Gastronomie
 TX-000051;22.03.2025;Buchung;Kauf/Dienstleistung;Karteneinkauf;Apple Pay;XXXX4821;UNMATCHED TEST STORE;ZURICH;;;;;12.4;TEST-INTENTIONAL-UNMATCHED;?;

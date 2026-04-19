@@ -22,7 +22,7 @@ def test_migros_supermarket_rule():
     rule = [r for r in engine.rules if r.id == 3][0]
     
     # Verify rule properties
-    assert rule.merchants == ['MIGROS']
+    assert rule.merchants == ['MIGROS', 'COOP']
     assert rule.exclude_keywords == ['TAKE AWAY']
     
     # Verify transaction type matches

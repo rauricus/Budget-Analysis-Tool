@@ -2,7 +2,7 @@
   "rules": [
     {
       "id": 1,
-      "name": "Migros Take-Away → Gastronomie",
+      "name": "Take Away: Gastronomie",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 100,
@@ -10,23 +10,7 @@
       "services": ["Karteneinkauf"],
       "providers": ["Apple Pay"],
       "triggers": {
-        "merchants": ["MIGROS"],
-        "locations": [],
-        "include_keywords": ["TAKE AWAY"],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 2,
-      "name": "Coop Take-Away → Gastronomie",
-      "category": "Freizeit",
-      "subcategory": "Gastronomie",
-      "priority": 100,
-      "transaction_types": ["Buchung"],
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
-      "triggers": {
-        "merchants": ["COOP"],
+        "merchants": ["MIGROS", "COOP"],
         "locations": [],
         "include_keywords": ["TAKE AWAY"],
         "exclude_keywords": []
@@ -34,7 +18,7 @@
     },
     {
       "id": 3,
-      "name": "Migros Supermarkt",
+      "name": "Supermarkt: Migros/Coop",
       "category": "Einkaufen",
       "subcategory": "Supermärkte",
       "priority": 50,
@@ -42,23 +26,7 @@
       "services": ["Karteneinkauf"],
       "providers": ["Apple Pay"],
       "triggers": {
-        "merchants": ["MIGROS"],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": ["TAKE AWAY"]
-      }
-    },
-    {
-      "id": 4,
-      "name": "Coop Supermarkt",
-      "category": "Einkaufen",
-      "subcategory": "Supermärkte",
-      "priority": 50,
-      "transaction_types": ["Buchung"],
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
-      "triggers": {
-        "merchants": ["COOP"],
+        "merchants": ["MIGROS", "COOP"],
         "locations": [],
         "include_keywords": [],
         "exclude_keywords": ["TAKE AWAY"]
@@ -66,9 +34,9 @@
     },
     {
       "id": 5,
-      "name": "Jumbo Supermarkt",
-      "category": "Einkaufen",
-      "subcategory": "Supermärkte",
+      "name": "Einkauf Handwerk/Garten: Jumbo",
+      "category": "Wohnen",
+      "subcategory": "Handwerk und Garten",
       "priority": 50,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -82,7 +50,7 @@
     },
     {
       "id": 6,
-      "name": "Bäckereien",
+      "name": "Detailhandel: Bäckereien",
       "category": "Einkaufen",
       "subcategory": "Detail-Lebensmittel",
       "priority": 40,
@@ -90,7 +58,13 @@
       "services": ["Karteneinkauf"],
       "providers": ["Apple Pay"],
       "triggers": {
-        "merchants": ["BÄCKEREI", "BACKEREI", "BRANKOVIC"],
+        "merchants": [
+          "BÄCKEREI",
+          "BACKEREI",
+          "BRANKOVIC",
+          "CONFISERIE",
+          "SPRÜNGLI"
+        ],
         "locations": [],
         "include_keywords": [],
         "exclude_keywords": []
@@ -98,7 +72,7 @@
     },
     {
       "id": 7,
-      "name": "Confiserie",
+      "name": "Detailhandel: Lebensmittel",
       "category": "Einkaufen",
       "subcategory": "Detail-Lebensmittel",
       "priority": 40,
@@ -106,39 +80,11 @@
       "services": ["Karteneinkauf"],
       "providers": ["Apple Pay"],
       "triggers": {
-        "merchants": ["CONFISERIE", "SPRÜNGLI"],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 8,
-      "name": "Yumihana",
-      "category": "Einkaufen",
-      "subcategory": "Detail-Lebensmittel",
-      "priority": 40,
-      "transaction_types": ["Buchung"],
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
-      "triggers": {
-        "merchants": ["YUMIHANA", "YUMI HANA"],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 9,
-      "name": "Wakara",
-      "category": "Einkaufen",
-      "subcategory": "Detail-Lebensmittel",
-      "priority": 40,
-      "transaction_types": ["Buchung"],
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
-      "triggers": {
-        "merchants": ["WAKARA"],
+        "merchants": [
+          "YUMIHANA",
+          "YUMI HANA",
+          "WAKARA"
+        ],
         "locations": [],
         "include_keywords": [],
         "exclude_keywords": []
@@ -146,15 +92,14 @@
     },
     {
       "id": 10,
-      "name": "Yooji's Restaurant",
+      "name": "Restaurant: Gastronomie",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 60,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
       "triggers": {
-        "merchants": ["YOOJI'S"],
+        "merchants": ["YOOJI'S", "SIGNOR ROSSI"],
         "locations": [],
         "include_keywords": [],
         "exclude_keywords": []
@@ -162,29 +107,12 @@
     },
     {
       "id": 11,
-      "name": "Signor Rossi Restaurant",
+      "name": "Cafés: Gastronomie",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 60,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
-      "triggers": {
-        "merchants": ["SIGNOR ROSSI"],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 12,
-      "name": "Coffee & Plants",
-      "category": "Freizeit",
-      "subcategory": "Gastronomie",
-      "priority": 60,
-      "transaction_types": ["Buchung"],
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
       "triggers": {
         "merchants": ["COFFEE AND PLANTS"],
         "locations": [],
@@ -194,7 +122,7 @@
     },
     {
       "id": 13,
-      "name": "Apotheken",
+      "name": "Einkauf Apotheke",
       "category": "Leben",
       "subcategory": "Gesundheit",
       "priority": 45,
@@ -210,7 +138,7 @@
     },
     {
       "id": 14,
-      "name": "The Body Shop",
+      "name": "Einkauf Styling/Wellness",
       "category": "Leben",
       "subcategory": "Styling und Wellness",
       "priority": 45,
@@ -226,7 +154,7 @@
     },
     {
       "id": 15,
-      "name": "Friseur",
+      "name": "Coiffeur",
       "category": "Leben",
       "subcategory": "Styling und Wellness",
       "priority": 45,
@@ -242,7 +170,7 @@
     },
     {
       "id": 16,
-      "name": "Kiosk",
+      "name": "Kiosk: Sonstiges Einkaufen",
       "category": "Einkaufen",
       "subcategory": "Sonstiges Einkaufen",
       "priority": 30,
@@ -258,7 +186,7 @@
     },
     {
       "id": 17,
-      "name": "Bahnhof Kiosk",
+      "name": "Bahnhof-Kiosk: Sonstiges Einkaufen",
       "category": "Einkaufen",
       "subcategory": "Sonstiges Einkaufen",
       "priority": 30,
@@ -274,7 +202,7 @@
     },
     {
       "id": 18,
-      "name": "Fairtiq (Öffentlicher Verkehr)",
+      "name": "Öffentlicher Verkehr",
       "category": "Mobilität",
       "subcategory": "Öffentlicher Verkehr",
       "priority": 70,
@@ -289,7 +217,7 @@
     },
     {
       "id": 19,
-      "name": "Sunrise (Kommunikation)",
+      "name": "Kommunikation: Sunrise",
       "category": "Wohnen",
       "subcategory": "Kommunikation",
       "priority": 70,
@@ -304,7 +232,7 @@
     },
     {
       "id": 20,
-      "name": "Apple (Subscription/Dienstleistung)",
+      "name": "Kommunikation: Apple Services",
       "category": "Wohnen",
       "subcategory": "Kommunikation",
       "priority": 60,
@@ -334,7 +262,7 @@
     },
     {
       "id": 22,
-      "name": "Nebenkosten (Strom/Wasser)",
+      "name": "Wohnen: Miete und Hypothek",
       "category": "Wohnen",
       "subcategory": "Nebenkosten",
       "priority": 60,
@@ -343,13 +271,13 @@
       "triggers": {
         "merchants": [],
         "locations": [],
-        "include_keywords": ["STEUERDIENSTE"],
+        "include_keywords": ["FINANZVERWALTUNG STADT SOLOTHURN"],
         "exclude_keywords": []
       }
     },
     {
       "id": 23,
-      "name": "Krankenversicherung",
+      "name": "Krankenkasse",
       "category": "Leben",
       "subcategory": "Gesundheit",
       "priority": 70,
@@ -364,7 +292,7 @@
     },
     {
       "id": 24,
-      "name": "Byro (Freizeit/Hobby)",
+      "name": "Co-Working",
       "category": "Leben",
       "subcategory": "Sonstiges Leben",
       "priority": 35,
@@ -380,7 +308,7 @@
     },
     {
       "id": 25,
-      "name": "Twint Geldtransfer",
+      "name": "Twint: Gastronomie",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 55,
@@ -395,9 +323,9 @@
     },
     {
       "id": 26,
-      "name": "Manor (Kaufhaus/Transfers)",
-      "category": "Überträge",
-      "subcategory": "",
+      "name": "Einkauf Haushalt: Manor",
+      "category": "Wohnen",
+      "subcategory": "Haushalt",
       "priority": 50,
       "transaction_types": ["Buchung"],
       "services": ["Karteneinkauf"],
@@ -411,7 +339,7 @@
     },
     {
       "id": 27,
-      "name": "City Tankstelle",
+      "name": "Einkauf Tankstellen-Shop",
       "category": "Einkaufen",
       "subcategory": "Detail-Lebensmittel",
       "priority": 45,
@@ -427,7 +355,7 @@
     },
     {
       "id": 28,
-      "name": "Bankpaketpreis",
+      "name": "Bankgebühren: Paketpreis",
       "category": "Finanzen",
       "subcategory": "Gebühren",
       "priority": 85,
@@ -441,23 +369,8 @@
       }
     },
     {
-      "id": 29,
-      "name": "Yooji's Restaurant (ohne Provider)",
-      "category": "Freizeit",
-      "subcategory": "Gastronomie",
-      "priority": 58,
-      "transaction_types": ["Buchung"],
-      "services": ["Karteneinkauf"],
-      "triggers": {
-        "merchants": ["YOOJI'S"],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
-      }
-    },
-    {
       "id": 30,
-      "name": "Twint Kebab/Imbiss",
+      "name": "Twint Kebab/Imbiss: Gastronomie",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 56,
@@ -472,7 +385,7 @@
     },
     {
       "id": 31,
-      "name": "Familienkasse Dauerauftrag",
+      "name": "Dauerauftrag: Familienkasse",
       "category": "Leben",
       "subcategory": "Familie",
       "priority": 72,
@@ -487,7 +400,7 @@
     },
     {
       "id": 32,
-      "name": "Gehalt Alpenwerk",
+      "name": "Gehalt: Alpenwerk",
       "category": "Einkommen",
       "subcategory": "Lohn",
       "priority": 80,
@@ -502,7 +415,7 @@
     },
     {
       "id": 33,
-      "name": "Medicura Plus Gutschrift",
+      "name": "Gutschrift: Medicura Plus",
       "category": "Überträge",
       "subcategory": "",
       "priority": 75,
@@ -517,7 +430,7 @@
     },
     {
       "id": 34,
-      "name": "Cloud Services (Subscription)",
+      "name": "Subscription: Cloud Services",
       "category": "Wohnen",
       "subcategory": "Kommunikation",
       "priority": 60,
@@ -532,7 +445,7 @@
     },
     {
       "id": 35,
-      "name": "Twint Geld senden: Essensanteil",
+      "name": "Twint senden: Essensanteil",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 60,
@@ -547,7 +460,7 @@
     },
     {
       "id": 36,
-      "name": "Twint Geld empfangen: Rückerstattung",
+      "name": "Twint empfangen: Rückerstattung",
       "category": "Rückerstattungen",
       "subcategory": "",
       "priority": 50,
@@ -562,7 +475,7 @@
     },
     {
       "id": 37,
-      "name": "eFinance Kauf: Online Haushalt AG",
+      "name": "eFinance Kauf: Online Haushalt",
       "category": "Wohnen",
       "subcategory": "Haushalt",
       "priority": 75,
