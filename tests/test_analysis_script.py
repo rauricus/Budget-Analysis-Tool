@@ -140,51 +140,62 @@ def test_excel_report_creation():
         # Verify Summary sheet structure
         ws_summary = wb['Summary']
         assert ws_summary['A1'].value == 'Budget Analysis Summary', "Should have summary title"
-        assert ws_summary['A4'].value == 'Overall Summary', "Should have overall summary section"
-        assert ws_summary['A6'].value == 'Transaction Category', "Should have transaction category table header"
-        assert ws_summary['B6'].value == 'Credit (CHF)', "Should have credit header"
-        assert ws_summary['C6'].value == 'Debit (CHF)', "Should have debit header"
-        assert ws_summary['A7'].value == 'Income', "Should list income row"
-        assert ws_summary['A8'].value == 'Expense', "Should list expense row"
-        assert ws_summary['A9'].value == 'Refund', "Should list refund row"
-        assert ws_summary['A10'].value == 'Total', "Should have total row"
-        assert ws_summary['A12'].value == 'Transfer', "Should show transfer row with spacing"
-        assert ws_summary['A14'].value == 'Grand Total', "Should have grand total row"
+        assert ws_summary['A1'].font.size == 16, "Summary main title should use size 16"
+        assert ws_summary['A3'].value is None and ws_summary['A4'].value is None, "Summary should keep two blank rows after source"
+        assert ws_summary['A5'].value == 'Overall Summary', "Should have overall summary section"
+        assert ws_summary['A5'].font.size == 14, "Overall summary subtitle should use size 14"
+        assert ws_summary['A7'].value == 'Transaction Category', "Should have transaction category table header"
+        assert ws_summary['B7'].value == 'Credit (CHF)', "Should have credit header"
+        assert ws_summary['C7'].value == 'Debit (CHF)', "Should have debit header"
+        assert ws_summary['A8'].value == 'Income', "Should list income row"
+        assert ws_summary['A9'].value == 'Expense', "Should list expense row"
+        assert ws_summary['A10'].value == 'Refund', "Should list refund row"
+        assert ws_summary['A11'].value == 'Total', "Should have total row"
+        assert ws_summary['A13'].value == 'Transfer', "Should show transfer row with spacing"
+        assert ws_summary['A15'].value == 'Grand Total', "Should have grand total row"
 
         # Verify first overview sheet has expected headers
         ws_overview = wb['Overviews by category']
         assert ws_overview['A1'].value == 'Budget Analysis by Category', "Should have title"
-        assert ws_overview['A6'].value == 'Income by Category', "Should have income section"
+        assert ws_overview['A1'].font.size == 16, "Overview main title should use size 16"
+        assert ws_overview['A3'].value is None and ws_overview['A4'].value is None, "Overview should keep two blank rows after source"
+        assert ws_overview['A5'].value == 'Income by Category', "Should have income section"
+        assert ws_overview['A5'].font.size == 14, "Overview subtitle should use size 14"
 
         # Verify income table has proper headers
-        # Income table starts at row 8 (A6 is section title, A7 is blank, A8 is header row)
-        assert ws_overview['A8'].value == 'Category', "Should have Category header for income table"
-        assert ws_overview['B8'].value == 'Amount (CHF)', "Should have Amount header for income table"
+        # Income table starts at row 7 (A5 is section title, A6 is blank, A7 is header row)
+        assert ws_overview['A7'].value == 'Category', "Should have Category header for income table"
+        assert ws_overview['B7'].value == 'Amount (CHF)', "Should have Amount header for income table"
 
         # Verify fixed spacing: next table header is 22 rows below previous table header
-        assert ws_overview['A28'].value == 'Expenses by Category', "Should have Expenses section title at row 28"
-        assert ws_overview['A30'].value == 'Category', "Should have Category header for expense table"
-        assert ws_overview['B30'].value == 'Amount (CHF)', "Should have Amount header for expense table"
+        assert ws_overview['A27'].value == 'Expenses by Category', "Should have Expenses section title at row 27"
+        assert ws_overview['A29'].value == 'Category', "Should have Category header for expense table"
+        assert ws_overview['B29'].value == 'Amount (CHF)', "Should have Amount header for expense table"
 
         # Verify fixed spacing: refund section title and header positions
-        assert ws_overview['A50'].value == 'Refunds by Category', "Should have Refunds section title at row 50"
-        if ws_overview['A52'].value == 'No refund data available.':
+        assert ws_overview['A49'].value == 'Refunds by Category', "Should have Refunds section title at row 49"
+        if ws_overview['A51'].value == 'No refund data available.':
             pass
         else:
-            assert ws_overview['A52'].value == 'Category', "Should have Category header for refund table"
-            assert ws_overview['B52'].value == 'Amount (CHF)', "Should have Amount header for refund table"
+            assert ws_overview['A51'].value == 'Category', "Should have Category header for refund table"
+            assert ws_overview['B51'].value == 'Amount (CHF)', "Should have Amount header for refund table"
 
         # Verify Category Analysis sheet has data
         ws_category = wb['Category Analysis']
         assert ws_category['A1'].value == 'Category Analysis', "Should have title"
+        assert ws_category['A1'].font.size == 16, "Category sheet main title should use size 16"
         assert ws_category['A2'].value == "Note: Transactions with Transaction Category 'transfer' are excluded.", \
             "Should show transfer exclusion note on category sheet"
-        # A3 is the month label, A5 is the table header row
-        assert ws_category['A5'].value == 'Category', "Should have Category header"
+        assert ws_category['A3'].value is None and ws_category['A4'].value is None, "Category sheet should keep two blank rows after note"
+        # A5 is the month label, A7 is the table header row
+        assert ws_category['A5'].font.size == 14, "Month subtitle should use size 14"
+        assert ws_category['A7'].value == 'Category', "Should have Category header"
 
         ws_subcategory = wb['Subcategory Analysis']
+        assert ws_subcategory['A1'].font.size == 16, "Subcategory sheet main title should use size 16"
         assert ws_subcategory['A2'].value == "Note: Transactions with Transaction Category 'transfer' are excluded.", \
             "Should show transfer exclusion note on subcategory sheet"
+        assert ws_subcategory['A3'].value is None and ws_subcategory['A4'].value is None, "Subcategory sheet should keep two blank rows after note"
 
         wb.close()
 

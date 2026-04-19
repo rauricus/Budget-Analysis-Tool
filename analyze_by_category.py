@@ -37,6 +37,9 @@ REQUIRED_COLUMNS = {
 }
 
 OVERVIEW_TABLE_HEADER_GAP = 22
+SHEET_TITLE_FONT_SIZE = 16
+SUBTITLE_FONT_SIZE = 14
+TOP_NOTE_CONTENT_START_ROW = 5
 
 def _month_label(month_str: str) -> str:
     """Convert 'YYYY-MM' string to English month name, e.g. '2024-01' -> 'January 2024'."""
@@ -257,15 +260,15 @@ def create_excel_report(df: pd.DataFrame, category_stats: pd.DataFrame,
 def _create_summary_sheet(ws, df: pd.DataFrame, source_label: str):
     """Create Summary sheet with transaction-category overview and chart."""
     ws['A1'] = 'Budget Analysis Summary'
-    ws['A1'].font = Font(size=16, bold=True)
+    ws['A1'].font = Font(size=SHEET_TITLE_FONT_SIZE, bold=True)
 
     ws['A2'] = f'Source: {source_label}'
     ws['A2'].font = Font(size=10, italic=True)
 
-    ws['A4'] = 'Overall Summary'
-    ws['A4'].font = Font(size=14, bold=True)
+    ws[f'A{TOP_NOTE_CONTENT_START_ROW}'] = 'Overall Summary'
+    ws[f'A{TOP_NOTE_CONTENT_START_ROW}'].font = Font(size=SUBTITLE_FONT_SIZE, bold=True)
 
-    header_row = 6
+    header_row = TOP_NOTE_CONTENT_START_ROW + 2
     headers = ['Transaction Category', 'Credit (CHF)', 'Debit (CHF)']
     for col, header in enumerate(headers, start=1):
         cell = ws.cell(row=header_row, column=col, value=header)
@@ -293,10 +296,11 @@ def _create_summary_sheet(ws, df: pd.DataFrame, source_label: str):
     refund_credit, refund_debit = sums_for('Refund')
     transfer_credit, transfer_debit = sums_for('Transfer')
 
+    first_data_row = header_row + 1
     summary_rows = [
-        (7, 'Income', income_credit, income_debit),
-        (8, 'Expense', expense_credit, expense_debit),
-        (9, 'Refund', refund_credit, refund_debit),
+        (first_data_row, 'Income', income_credit, income_debit),
+        (first_data_row + 1, 'Expense', expense_credit, expense_debit),
+        (first_data_row + 2, 'Refund', refund_credit, refund_debit),
     ]
 
     for row_idx, label, credit, debit in summary_rows:
@@ -306,23 +310,26 @@ def _create_summary_sheet(ws, df: pd.DataFrame, source_label: str):
 
     total_credit = income_credit + expense_credit + refund_credit
     total_debit = income_debit + expense_debit + refund_debit
-    ws.cell(row=10, column=1, value='Total').font = Font(bold=True)
-    ws.cell(row=10, column=2, value=total_credit).number_format = '#,##0.00'
-    ws.cell(row=10, column=3, value=total_debit).number_format = '#,##0.00'
-    ws.cell(row=10, column=2).font = Font(bold=True)
-    ws.cell(row=10, column=3).font = Font(bold=True)
+    total_row = first_data_row + 3
+    ws.cell(row=total_row, column=1, value='Total').font = Font(bold=True)
+    ws.cell(row=total_row, column=2, value=total_credit).number_format = '#,##0.00'
+    ws.cell(row=total_row, column=3, value=total_debit).number_format = '#,##0.00'
+    ws.cell(row=total_row, column=2).font = Font(bold=True)
+    ws.cell(row=total_row, column=3).font = Font(bold=True)
 
-    ws.cell(row=12, column=1, value='Transfer')
-    ws.cell(row=12, column=2, value=transfer_credit).number_format = '#,##0.00'
-    ws.cell(row=12, column=3, value=transfer_debit).number_format = '#,##0.00'
+    transfer_row = total_row + 2
+    ws.cell(row=transfer_row, column=1, value='Transfer')
+    ws.cell(row=transfer_row, column=2, value=transfer_credit).number_format = '#,##0.00'
+    ws.cell(row=transfer_row, column=3, value=transfer_debit).number_format = '#,##0.00'
 
     grand_total_credit = total_credit + transfer_credit
     grand_total_debit = total_debit + transfer_debit
-    ws.cell(row=14, column=1, value='Grand Total').font = Font(bold=True)
-    ws.cell(row=14, column=2, value=grand_total_credit).number_format = '#,##0.00'
-    ws.cell(row=14, column=3, value=grand_total_debit).number_format = '#,##0.00'
-    ws.cell(row=14, column=2).font = Font(bold=True)
-    ws.cell(row=14, column=3).font = Font(bold=True)
+    grand_total_row = transfer_row + 2
+    ws.cell(row=grand_total_row, column=1, value='Grand Total').font = Font(bold=True)
+    ws.cell(row=grand_total_row, column=2, value=grand_total_credit).number_format = '#,##0.00'
+    ws.cell(row=grand_total_row, column=3, value=grand_total_debit).number_format = '#,##0.00'
+    ws.cell(row=grand_total_row, column=2).font = Font(bold=True)
+    ws.cell(row=grand_total_row, column=3).font = Font(bold=True)
 
     # Helper block for contiguous chart data (all four transaction categories)
     ws.cell(row=6, column=8, value='Transaction Category')
@@ -359,7 +366,7 @@ def _create_overview_sheet(ws, df: pd.DataFrame, source_label: str):
     """Create the overview sheet with summary and pie charts."""
     # Title
     ws['A1'] = 'Budget Analysis by Category'
-    ws['A1'].font = Font(size=16, bold=True)
+    ws['A1'].font = Font(size=SHEET_TITLE_FONT_SIZE, bold=True)
 
     ws['A2'] = f'Source: {source_label}'
     ws['A2'].font = Font(size=10, italic=True)
@@ -385,9 +392,9 @@ def _create_overview_sheet(ws, df: pd.DataFrame, source_label: str):
     )
 
     # Income section
-    current_row = 6
+    current_row = TOP_NOTE_CONTENT_START_ROW
     ws[f'A{current_row}'] = 'Income by Category'
-    ws[f'A{current_row}'].font = Font(size=12, bold=True)
+    ws[f'A{current_row}'].font = Font(size=SUBTITLE_FONT_SIZE, bold=True)
 
     current_row += 2
     _add_table_and_chart(
@@ -404,7 +411,7 @@ def _create_overview_sheet(ws, df: pd.DataFrame, source_label: str):
     expense_header_row = income_header_row + OVERVIEW_TABLE_HEADER_GAP
     current_row = expense_header_row - 2
     ws[f'A{current_row}'] = 'Expenses by Category'
-    ws[f'A{current_row}'].font = Font(size=12, bold=True)
+    ws[f'A{current_row}'].font = Font(size=SUBTITLE_FONT_SIZE, bold=True)
 
     current_row += 2
     _add_table_and_chart(
@@ -420,7 +427,7 @@ def _create_overview_sheet(ws, df: pd.DataFrame, source_label: str):
     # Refund section (header is fixed OVERVIEW_TABLE_HEADER_GAP rows below prior table header)
     current_row = (expense_header_row + OVERVIEW_TABLE_HEADER_GAP) - 2
     ws[f'A{current_row}'] = 'Refunds by Category'
-    ws[f'A{current_row}'].font = Font(size=12, bold=True)
+    ws[f'A{current_row}'].font = Font(size=SUBTITLE_FONT_SIZE, bold=True)
 
     current_row += 2
     _add_table_and_chart(
@@ -518,21 +525,21 @@ def _exclude_transfer_transactions(df: pd.DataFrame) -> pd.DataFrame:
 def _create_category_sheet(ws, df: pd.DataFrame, months: list[str]):
     """Create category analysis sheet with one table per month."""
     ws['A1'] = 'Category Analysis'
-    ws['A1'].font = Font(size=14, bold=True)
+    ws['A1'].font = Font(size=SHEET_TITLE_FONT_SIZE, bold=True)
 
     ws['A2'] = "Note: Transactions with Transaction Category 'transfer' are excluded."
     ws['A2'].font = Font(size=10, italic=True)
 
     analysis_df = _exclude_transfer_transactions(df)
 
-    current_row = 3
+    current_row = TOP_NOTE_CONTENT_START_ROW
     for month_str in months:
         year, month = map(int, month_str.split("-"))
         mask = (analysis_df['Date'].dt.year == year) & (analysis_df['Date'].dt.month == month)
         month_stats = analyze_by_category(analysis_df[mask])
 
         # Month header
-        ws.cell(row=current_row, column=1, value=_month_label(month_str)).font = Font(size=12, bold=True)
+        ws.cell(row=current_row, column=1, value=_month_label(month_str)).font = Font(size=SUBTITLE_FONT_SIZE, bold=True)
         current_row += 2
 
         # Table header + data rows
@@ -559,14 +566,14 @@ def _create_category_sheet(ws, df: pd.DataFrame, months: list[str]):
 def _create_subcategory_sheet(ws, df: pd.DataFrame, months: list[str]):
     """Create subcategory analysis sheet with one table per month."""
     ws['A1'] = 'Subcategory Analysis'
-    ws['A1'].font = Font(size=14, bold=True)
+    ws['A1'].font = Font(size=SHEET_TITLE_FONT_SIZE, bold=True)
 
     ws['A2'] = "Note: Transactions with Transaction Category 'transfer' are excluded."
     ws['A2'].font = Font(size=10, italic=True)
 
     analysis_df = _exclude_transfer_transactions(df)
 
-    current_row = 3
+    current_row = TOP_NOTE_CONTENT_START_ROW
     for month_str in months:
         year, month = map(int, month_str.split("-"))
         mask = (analysis_df['Date'].dt.year == year) & (analysis_df['Date'].dt.month == month)
@@ -576,7 +583,7 @@ def _create_subcategory_sheet(ws, df: pd.DataFrame, months: list[str]):
             continue
 
         # Month header
-        ws.cell(row=current_row, column=1, value=_month_label(month_str)).font = Font(size=12, bold=True)
+        ws.cell(row=current_row, column=1, value=_month_label(month_str)).font = Font(size=SUBTITLE_FONT_SIZE, bold=True)
         current_row += 2
 
         # Table header + data rows
