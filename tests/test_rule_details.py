@@ -19,7 +19,7 @@ def test_migros_supermarket_rule():
     txn = txns[4]
     
     # Get the migros_supermarket rule
-    rule = [r for r in engine.rules if r.id == 3][0]
+    rule = [r for r in engine.rules if r.id == 1001][0]
     
     # Verify rule properties
     assert rule.merchants == ['MIGROS', 'COOP']
@@ -65,7 +65,7 @@ def test_rule_service_filtering():
     engine = RuleEngine('data/reference/rules.json')
 
     txn = txns[4]
-    rule = [r for r in engine.rules if r.id == 3][0]
+    rule = [r for r in engine.rules if r.id == 1001][0]
 
     rule.services = ["Karteneinkauf"]
     rule.providers = ["Apple Pay"]
@@ -85,7 +85,7 @@ def test_rule_without_service_filter_can_match():
     engine = RuleEngine('data/reference/rules.json')
 
     txn = txns[4]
-    rule = [r for r in engine.rules if r.id == 3][0]
+    rule = [r for r in engine.rules if r.id == 1001][0]
 
     rule.services = []
     rule.providers = []

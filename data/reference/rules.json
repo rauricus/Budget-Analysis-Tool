@@ -1,23 +1,7 @@
 {
   "rules": [
     {
-      "id": 1,
-      "name": "Take Away: Gastronomie",
-      "category": "Freizeit",
-      "subcategory": "Gastronomie",
-      "priority": 100,
-      "transaction_types": ["Buchung"],
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
-      "triggers": {
-        "merchants": ["MIGROS", "COOP"],
-        "locations": [],
-        "include_keywords": ["TAKE AWAY"],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 3,
+      "id": 1001,
       "name": "Supermarkt: Migros/Coop",
       "category": "Einkaufen",
       "subcategory": "Supermärkte",
@@ -33,23 +17,7 @@
       }
     },
     {
-      "id": 5,
-      "name": "Einkauf Handwerk/Garten: Jumbo",
-      "category": "Wohnen",
-      "subcategory": "Handwerk und Garten",
-      "priority": 50,
-      "transaction_types": ["Buchung"],
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
-      "triggers": {
-        "merchants": ["JUMBO"],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 6,
+      "id": 1002,
       "name": "Detailhandel: Bäckereien",
       "category": "Einkaufen",
       "subcategory": "Detail-Lebensmittel",
@@ -71,7 +39,7 @@
       }
     },
     {
-      "id": 7,
+      "id": 1003,
       "name": "Detailhandel: Lebensmittel",
       "category": "Einkaufen",
       "subcategory": "Detail-Lebensmittel",
@@ -91,85 +59,7 @@
       }
     },
     {
-      "id": 10,
-      "name": "Restaurant: Gastronomie",
-      "category": "Freizeit",
-      "subcategory": "Gastronomie",
-      "priority": 60,
-      "transaction_types": ["Buchung"],
-      "services": ["Karteneinkauf"],
-      "triggers": {
-        "merchants": ["YOOJI'S", "SIGNOR ROSSI"],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 11,
-      "name": "Cafés: Gastronomie",
-      "category": "Freizeit",
-      "subcategory": "Gastronomie",
-      "priority": 60,
-      "transaction_types": ["Buchung"],
-      "services": ["Karteneinkauf"],
-      "triggers": {
-        "merchants": ["COFFEE AND PLANTS"],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 13,
-      "name": "Einkauf Apotheke",
-      "category": "Leben",
-      "subcategory": "Gesundheit",
-      "priority": 45,
-      "transaction_types": ["Buchung"],
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
-      "triggers": {
-        "merchants": ["APOTHEKE"],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 14,
-      "name": "Einkauf Styling/Wellness",
-      "category": "Leben",
-      "subcategory": "Styling und Wellness",
-      "priority": 45,
-      "transaction_types": ["Buchung"],
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
-      "triggers": {
-        "merchants": ["THE BODY SHOP"],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 15,
-      "name": "Coiffeur",
-      "category": "Leben",
-      "subcategory": "Styling und Wellness",
-      "priority": 45,
-      "transaction_types": ["Buchung"],
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
-      "triggers": {
-        "merchants": ["SUMUP", "DELIAS HAIRSTY"],
-        "locations": [],
-        "include_keywords": ["HAIRSTY"],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 16,
+      "id": 1004,
       "name": "Kiosk: Sonstiges Einkaufen",
       "category": "Einkaufen",
       "subcategory": "Sonstiges Einkaufen",
@@ -185,7 +75,7 @@
       }
     },
     {
-      "id": 17,
+      "id": 1005,
       "name": "Bahnhof-Kiosk: Sonstiges Einkaufen",
       "category": "Einkaufen",
       "subcategory": "Sonstiges Einkaufen",
@@ -201,144 +91,7 @@
       }
     },
     {
-      "id": 18,
-      "name": "Öffentlicher Verkehr",
-      "category": "Mobilität",
-      "subcategory": "Öffentlicher Verkehr",
-      "priority": 70,
-      "transaction_types": ["Buchung"],
-      "services": ["Karteneinkauf"],
-      "triggers": {
-        "merchants": ["TRANSPORTS PUBLICS", "FAIRTIQ"],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 19,
-      "name": "Kommunikation: Sunrise",
-      "category": "Wohnen",
-      "subcategory": "Kommunikation",
-      "priority": 70,
-      "transaction_types": ["Buchung"],
-      "services": ["Lastschrift"],
-      "triggers": {
-        "merchants": ["SUNRISE"],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 20,
-      "name": "Kommunikation: Apple Services",
-      "category": "Wohnen",
-      "subcategory": "Kommunikation",
-      "priority": 60,
-      "transaction_types": ["Buchung"],
-      "services": ["Karteneinkauf"],
-      "triggers": {
-        "merchants": ["APPLE.COM"],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 21,
-      "name": "Bargeldbezug",
-      "category": "Finanzen",
-      "subcategory": "Bargeldbezug",
-      "priority": 80,
-      "transaction_types": ["Buchung"],
-      "services": ["Bargeldbezug"],
-      "triggers": {
-        "merchants": [],
-        "locations": [],
-        "include_keywords": ["BARGELDBEZUG"],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 22,
-      "name": "Wohnen: Miete und Hypothek",
-      "category": "Wohnen",
-      "subcategory": "Nebenkosten",
-      "priority": 60,
-      "transaction_types": ["Buchung"],
-      "services": ["Lastschrift"],
-      "triggers": {
-        "merchants": [],
-        "locations": [],
-        "include_keywords": ["FINANZVERWALTUNG STADT SOLOTHURN"],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 23,
-      "name": "Krankenkasse",
-      "category": "Leben",
-      "subcategory": "Gesundheit",
-      "priority": 70,
-      "transaction_types": ["Buchung"],
-      "services": ["Lastschrift"],
-      "triggers": {
-        "merchants": ["MEDICURA", "SYMPANY"],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 24,
-      "name": "Co-Working",
-      "category": "Leben",
-      "subcategory": "Sonstiges Leben",
-      "priority": 35,
-      "transaction_types": ["Buchung"],
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
-      "triggers": {
-        "merchants": ["BYRO"],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 25,
-      "name": "Twint: Gastronomie",
-      "category": "Freizeit",
-      "subcategory": "Gastronomie",
-      "priority": 55,
-      "transaction_types": ["Buchung"],
-      "services": ["Twint"],
-      "triggers": {
-        "merchants": ["TWINT"],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 26,
-      "name": "Einkauf Haushalt: Manor",
-      "category": "Wohnen",
-      "subcategory": "Haushalt",
-      "priority": 50,
-      "transaction_types": ["Buchung"],
-      "services": ["Karteneinkauf"],
-      "providers": ["Apple Pay"],
-      "triggers": {
-        "merchants": ["MANOR"],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 27,
+      "id": 1006,
       "name": "Einkauf Tankstellen-Shop",
       "category": "Einkaufen",
       "subcategory": "Detail-Lebensmittel",
@@ -354,22 +107,68 @@
       }
     },
     {
-      "id": 28,
-      "name": "Bankgebühren: Paketpreis",
-      "category": "Finanzen",
-      "subcategory": "Gebühren",
-      "priority": 85,
+      "id": 2001,
+      "name": "Take Away: Gastronomie",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
+      "priority": 100,
       "transaction_types": ["Buchung"],
-      "services": ["Gebühren"],
+      "services": ["Karteneinkauf"],
+      "providers": ["Apple Pay"],
       "triggers": {
-        "merchants": [],
+        "merchants": ["MIGROS", "COOP"],
         "locations": [],
-        "include_keywords": ["BANKPAKET SMART"],
+        "include_keywords": ["TAKE AWAY"],
         "exclude_keywords": []
       }
     },
     {
-      "id": 30,
+      "id": 2002,
+      "name": "Restaurant: Gastronomie",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
+      "priority": 60,
+      "transaction_types": ["Buchung"],
+      "services": ["Karteneinkauf"],
+      "triggers": {
+        "merchants": ["YOOJI'S", "SIGNOR ROSSI"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 2003,
+      "name": "Cafés: Gastronomie",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
+      "priority": 60,
+      "transaction_types": ["Buchung"],
+      "services": ["Karteneinkauf"],
+      "triggers": {
+        "merchants": ["COFFEE AND PLANTS"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 2004,
+      "name": "Twint: Gastronomie",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
+      "priority": 55,
+      "transaction_types": ["Buchung"],
+      "services": ["Twint"],
+      "triggers": {
+        "merchants": ["TWINT"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 2005,
       "name": "Twint Kebab/Imbiss: Gastronomie",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
@@ -384,67 +183,7 @@
       }
     },
     {
-      "id": 31,
-      "name": "Dauerauftrag: Familienkasse",
-      "category": "Leben",
-      "subcategory": "Familie",
-      "priority": 72,
-      "transaction_types": ["Buchung"],
-      "services": ["Lastschrift"],
-      "triggers": {
-        "merchants": ["FAMILIENKASSE"],
-        "locations": [],
-        "include_keywords": ["FAMILIENZULAGE"],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 32,
-      "name": "Gehalt: Alpenwerk",
-      "category": "Einkommen",
-      "subcategory": "Lohn",
-      "priority": 80,
-      "transaction_types": ["Buchung"],
-      "services": ["Gutschrift"],
-      "triggers": {
-        "merchants": ["ALPENWERK"],
-        "locations": [],
-        "include_keywords": ["SALAER"],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 33,
-      "name": "Gutschrift: Medicura Plus",
-      "category": "Überträge",
-      "subcategory": "",
-      "priority": 75,
-      "transaction_types": ["Buchung"],
-      "services": ["Gutschrift"],
-      "triggers": {
-        "merchants": ["MEDICURA PLUS"],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 34,
-      "name": "Subscription: Cloud Services",
-      "category": "Wohnen",
-      "subcategory": "Kommunikation",
-      "priority": 60,
-      "transaction_types": ["Buchung"],
-      "services": ["Karteneinkauf"],
-      "triggers": {
-        "merchants": ["CLOUDSERVICE"],
-        "locations": [],
-        "include_keywords": [],
-        "exclude_keywords": []
-      }
-    },
-    {
-      "id": 35,
+      "id": 2006,
       "name": "Twint senden: Essensanteil",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
@@ -459,7 +198,268 @@
       }
     },
     {
-      "id": 36,
+      "id": 3001,
+      "name": "Einkauf Apotheke",
+      "category": "Leben",
+      "subcategory": "Gesundheit",
+      "priority": 45,
+      "transaction_types": ["Buchung"],
+      "services": ["Karteneinkauf"],
+      "providers": ["Apple Pay"],
+      "triggers": {
+        "merchants": ["APOTHEKE"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 3002,
+      "name": "Einkauf Styling/Wellness",
+      "category": "Leben",
+      "subcategory": "Styling und Wellness",
+      "priority": 45,
+      "transaction_types": ["Buchung"],
+      "services": ["Karteneinkauf"],
+      "providers": ["Apple Pay"],
+      "triggers": {
+        "merchants": ["THE BODY SHOP"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 3003,
+      "name": "Coiffeur",
+      "category": "Leben",
+      "subcategory": "Styling und Wellness",
+      "priority": 45,
+      "transaction_types": ["Buchung"],
+      "services": ["Karteneinkauf"],
+      "providers": ["Apple Pay"],
+      "triggers": {
+        "merchants": ["SUMUP", "DELIAS HAIRSTY"],
+        "locations": [],
+        "include_keywords": ["HAIRSTY"],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 3004,
+      "name": "Krankenkasse",
+      "category": "Leben",
+      "subcategory": "Gesundheit",
+      "priority": 70,
+      "transaction_types": ["Buchung"],
+      "services": ["Lastschrift"],
+      "triggers": {
+        "merchants": ["MEDICURA", "SYMPANY"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 3005,
+      "name": "Co-Working",
+      "category": "Leben",
+      "subcategory": "Sonstiges Leben",
+      "priority": 35,
+      "transaction_types": ["Buchung"],
+      "services": ["Karteneinkauf"],
+      "providers": ["Apple Pay"],
+      "triggers": {
+        "merchants": ["BYRO"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 3006,
+      "name": "Dauerauftrag: Familienkasse",
+      "category": "Leben",
+      "subcategory": "Familie",
+      "priority": 72,
+      "transaction_types": ["Buchung"],
+      "services": ["Lastschrift"],
+      "triggers": {
+        "merchants": ["FAMILIENKASSE"],
+        "locations": [],
+        "include_keywords": ["FAMILIENZULAGE"],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 4001,
+      "name": "Einkauf Handwerk/Garten: Jumbo",
+      "category": "Wohnen",
+      "subcategory": "Handwerk und Garten",
+      "priority": 50,
+      "transaction_types": ["Buchung"],
+      "services": ["Karteneinkauf"],
+      "providers": ["Apple Pay"],
+      "triggers": {
+        "merchants": ["JUMBO"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 4002,
+      "name": "Kommunikation: Sunrise",
+      "category": "Wohnen",
+      "subcategory": "Kommunikation",
+      "priority": 70,
+      "transaction_types": ["Buchung"],
+      "services": ["Lastschrift"],
+      "triggers": {
+        "merchants": ["SUNRISE"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 4003,
+      "name": "Kommunikation: Apple Services",
+      "category": "Wohnen",
+      "subcategory": "Kommunikation",
+      "priority": 60,
+      "transaction_types": ["Buchung"],
+      "services": ["Karteneinkauf"],
+      "triggers": {
+        "merchants": ["APPLE.COM"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 4004,
+      "name": "Wohnen: Miete und Hypothek",
+      "category": "Wohnen",
+      "subcategory": "Miete und Hypothek",
+      "priority": 60,
+      "transaction_types": ["Buchung"],
+      "services": ["Lastschrift"],
+      "triggers": {
+        "merchants": [],
+        "locations": [],
+        "include_keywords": ["FINANZVERWALTUNG STADT SOLOTHURN"],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 4005,
+      "name": "Einkauf Haushalt: Manor",
+      "category": "Wohnen",
+      "subcategory": "Haushalt",
+      "priority": 50,
+      "transaction_types": ["Buchung"],
+      "services": ["Karteneinkauf"],
+      "providers": ["Apple Pay"],
+      "triggers": {
+        "merchants": ["MANOR"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 4006,
+      "name": "Subscription: Cloud Services",
+      "category": "Wohnen",
+      "subcategory": "Kommunikation",
+      "priority": 60,
+      "transaction_types": ["Buchung"],
+      "services": ["Karteneinkauf"],
+      "triggers": {
+        "merchants": ["CLOUDSERVICE"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 4007,
+      "name": "Einkauf Haushalt: Online Haushalt AG",
+      "category": "Wohnen",
+      "subcategory": "Haushalt",
+      "priority": 75,
+      "transaction_types": ["Buchung"],
+      "services": ["Karteneinkauf"],
+      "triggers": {
+        "merchants": ["ONLINE HAUSHALT AG"],
+        "locations": [],
+        "include_keywords": ["PAYMENT ID", "BESTELLNUMMER"],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 5001,
+      "name": "Öffentlicher Verkehr",
+      "category": "Mobilität",
+      "subcategory": "Öffentlicher Verkehr",
+      "priority": 70,
+      "transaction_types": ["Buchung"],
+      "services": ["Karteneinkauf"],
+      "triggers": {
+        "merchants": ["TRANSPORTS PUBLICS", "FAIRTIQ"],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 6001,
+      "name": "Bargeldbezug",
+      "category": "Finanzen",
+      "subcategory": "Bargeldbezug",
+      "priority": 80,
+      "transaction_types": ["Buchung"],
+      "services": ["Bargeldbezug"],
+      "triggers": {
+        "merchants": [],
+        "locations": [],
+        "include_keywords": ["BARGELDBEZUG"],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 6002,
+      "name": "Bankgebühren: Paketpreis",
+      "category": "Finanzen",
+      "subcategory": "Gebühren",
+      "priority": 85,
+      "transaction_types": ["Buchung"],
+      "services": ["Gebühren"],
+      "triggers": {
+        "merchants": [],
+        "locations": [],
+        "include_keywords": ["BANKPAKET SMART"],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 9001,
+      "name": "Lohn: Alpenwerk",
+      "category": "Einkommen",
+      "subcategory": "Lohn",
+      "priority": 80,
+      "transaction_types": ["Buchung"],
+      "services": ["Gutschrift"],
+      "triggers": {
+        "merchants": ["ALPENWERK"],
+        "locations": [],
+        "include_keywords": ["SALAER"],
+        "exclude_keywords": []
+      }
+    },
+    {
+      "id": 11001,
       "name": "Twint empfangen: Rückerstattung",
       "category": "Rückerstattungen",
       "subcategory": "",
@@ -474,17 +474,17 @@
       }
     },
     {
-      "id": 37,
-      "name": "eFinance Kauf: Online Haushalt",
-      "category": "Wohnen",
-      "subcategory": "Haushalt",
+      "id": 11002,
+      "name": "Gutschrift: Medicura Plus",
+      "category": "Rückerstattungen",
+      "subcategory": "",
       "priority": 75,
       "transaction_types": ["Buchung"],
-      "services": ["Karteneinkauf"],
+      "services": ["Gutschrift"],
       "triggers": {
-        "merchants": ["ONLINE HAUSHALT AG"],
+        "merchants": ["MEDICURA PLUS"],
         "locations": [],
-        "include_keywords": ["PAYMENT ID", "BESTELLNUMMER"],
+        "include_keywords": [],
         "exclude_keywords": []
       }
     }
@@ -501,6 +501,21 @@
     "exclude_keywords": "Optional keywords that must NOT be present. NONE may be present.",
     "matching": "A rule matches only if all active (non-empty) filters are satisfied. Highest priority wins.",
     "fallback": "No fallback category. If no rule matches, transaction stays uncategorized.",
-    "subcategory": "Subcategory for fine-grained classification (e.g. 'Gastronomie' within 'Freizeit'). Empty string if not applicable."
+    "subcategory": "Subcategory for fine-grained classification (e.g. 'Gastronomie' within 'Freizeit'). Empty string if not applicable.",
+    "foreseen_id_ranges": [
+      { "category": "Einkaufen", "range": [1000, 1999] },
+      { "category": "Freizeit", "range": [2000, 2999] },
+      { "category": "Leben", "range": [3000, 3999] },
+      { "category": "Wohnen", "range": [4000, 4999] },
+      { "category": "Mobilität", "range": [5000, 5999] },
+      { "category": "Finanzen", "range": [6000, 6999] },
+      { "category": "Vermögensaufbau", "range": [7000, 7999] },
+      { "category": "Sonstige Ausgaben", "range": [8000, 8999] },
+      { "category": "Einkommen", "range": [9000, 9999] },
+      { "category": "Zinsen", "range": [10000, 10999] },
+      { "category": "Rückerstattungen", "range": [11000, 11999] },
+      { "category": "Sonstige Einnahmen", "range": [12000, 12999] },
+      { "category": "Überträge", "range": [13000, 13999] }
+    ]
   }
 }
