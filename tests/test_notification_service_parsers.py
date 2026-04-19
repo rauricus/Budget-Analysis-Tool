@@ -12,7 +12,7 @@ from notification.parsers.cash_withdrawal_parser import CashWithdrawalParser
 from notification.parsers.card_purchase_parser import CardPurchaseParser
 from notification.parsers.efinance_purchase_parser import EFinancePurchaseParser
 from notification.parsers.credit_transfer_parser import CreditTransferParser
-from notification.parsers.konto_transfer_parser import KontoTransferParser
+from notification.parsers.account_transfer_parser import AccountTransferParser
 from notification.parsers.debit_direct_parser import DebitDirectParser
 from notification.parsers.payment_parser import PaymentParser
 from notification.parsers.standing_order_parser import StandingOrderParser
@@ -131,7 +131,7 @@ def test_credit_transfer_parser_sender_credit_with_iban():
 
 def test_konto_transfer_parser_for_debit_transfer_to_iban():
     """KontoTransferParser should parse KONTOUEBERTRAG AUF format with IBAN and message."""
-    parser = KontoTransferParser()
+    parser = AccountTransferParser()
     text = "KONTOÜBERTRAG AUF CH5600000000000000000 ZMITTAG 13.1."
 
     assert parser.supports(text), "Konto transfer parser should support AUF format"

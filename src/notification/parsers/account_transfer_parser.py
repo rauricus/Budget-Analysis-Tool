@@ -3,7 +3,7 @@ import re
 from notification.base import NotificationParseResult, AbstractServiceParser
 
 
-class KontoTransferParser(AbstractServiceParser):
+class AccountTransferParser(AbstractServiceParser):
     """Parser for account-transfer notifications (KONTOÜBERTRAG AUF/VON CH...)."""
 
     PATTERN = re.compile(

@@ -12,7 +12,7 @@ from notification.parsers.cash_withdrawal_parser import CashWithdrawalParser
 from notification.parsers.card_purchase_parser import CardPurchaseParser
 from notification.parsers.efinance_purchase_parser import EFinancePurchaseParser
 from notification.parsers.credit_transfer_parser import CreditTransferParser
-from notification.parsers.konto_transfer_parser import KontoTransferParser
+from notification.parsers.account_transfer_parser import AccountTransferParser
 from notification.parsers.standing_order_parser import StandingOrderParser
 from notification.parsers.debit_direct_parser import DebitDirectParser
 from notification.parsers.twint_send_parser import TwintSendParser
@@ -40,7 +40,7 @@ class _NotificationParserRegistry:
             EFinancePurchaseParser(),
             CashWithdrawalParser(),
             CreditTransferParser(),
-            KontoTransferParser(),
+            AccountTransferParser(),
             BankPackageFeeParser(),
             TwintSendParser(),
             TwintReceiveParser(),
