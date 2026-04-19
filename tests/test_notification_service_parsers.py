@@ -12,6 +12,7 @@ from notification.parsers.cash_withdrawal_parser import CashWithdrawalParser
 from notification.parsers.card_purchase_parser import CardPurchaseParser
 from notification.parsers.efinance_purchase_parser import EFinancePurchaseParser
 from notification.parsers.credit_transfer_parser import CreditTransferParser
+from notification.parsers.konto_transfer_parser import KontoTransferParser
 from notification.parsers.debit_direct_parser import DebitDirectParser
 from notification.parsers.payment_parser import PaymentParser
 from notification.parsers.standing_order_parser import StandingOrderParser
@@ -125,6 +126,21 @@ def test_credit_transfer_parser_sender_credit_with_iban():
     assert result.counterparty_iban == "CH6709000000400025000"
     assert result.counterparty == "VIVAO SYMPANY AG PETER MERIAN-WEG 4 4052 BASEL"
     assert "RECHNUNG NR." in result.reference
+
+
+def test_konto_transfer_parser_for_debit_transfer_to_iban():
+    """KontoTransferParser should parse KONTOUEBERTRAG AUF format with IBAN and message."""
+    parser = KontoTransferParser()
+    text = "KONTOÜBERTRAG AUF CH5600000000000000000 ZMITTAG 13.1."
+
+    assert parser.supports(text), "Konto transfer parser should support AUF format"
+
+    result = parser.parse(text)
+    assert result.service_type == "Kontoübertrag"
+    assert result.transaction_type_detail == "Kontoübertrag Auf"
+    assert result.merchant == "ZMITTAG 13.1."
+    assert result.counterparty_iban == "CH5600000000000000000"
+    assert result.reference == "ZMITTAG 13.1."
 
 
 def test_bank_package_fee_parser():
@@ -264,6 +280,7 @@ if __name__ == '__main__':
     test_cash_withdrawal_parser()
     test_credit_transfer_parser_salary_credit()
     test_credit_transfer_parser_sender_credit_with_iban()
+    test_konto_transfer_parser_for_debit_transfer_to_iban()
     test_bank_package_fee_parser()
     test_twint_send_parser_supports()
     test_twint_send_parser_parse()

@@ -426,6 +426,28 @@
       }
     },
     {
+      "id": 3007,
+      "name": "Familie: Geld für Essen",
+      "transaction_category": "expense",
+      "category": "Leben",
+      "subcategory": "Familie",
+      "priority": 73,
+      "transaction_type": "debit",
+      "services": [
+        "Kontoübertrag"
+      ],
+      "providers": null,
+      "triggers": {
+        "merchants": [
+          "ZMITTAG",
+          "ESSEN"
+        ],
+        "locations": [],
+        "include_keywords": [],
+        "exclude_keywords": []
+      }
+    },
+    {
       "id": 4001,
       "name": "Einkauf Handwerk/Garten: Jumbo",
       "transaction_category": "expense",
