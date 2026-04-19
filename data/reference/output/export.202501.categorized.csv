@@ -1,0 +1,2 @@
+Transaction ID;Date;Transaction Type;Transaction Type Detail;Service;Provider;Card Number;Merchant;Location;Counterparty;Counterparty IBAN;Reference;Credit in CHF;Debit in CHF;Label;Category;Subcategory
+TX-000055;25.01.2025;Buchung;Geld empfangen;Twint;;;+41790000000 MAX MUSTER MITTEILUNGEN: TEST;;;;;1.0;;;Rückerstattungen;

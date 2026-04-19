@@ -14,6 +14,7 @@ from notification.parsers.credit_transfer_parser import CreditTransferParser
 from notification.parsers.debit_direct_parser import DebitDirectParser
 from notification.parsers.payment_parser import PaymentParser
 from notification.parsers.standing_order_parser import StandingOrderParser
+from notification.parsers.twint_receive_parser import TwintReceiveParser
 
 
 def test_card_purchase_parser_for_generic_card_purchase():
@@ -173,6 +174,27 @@ def test_twint_send_parser_direct_parse_without_mitteilungen():
     assert "MAX MUSTER" in result.merchant
 
 
+def test_twint_receive_parser_supports():
+    """TwintReceiveParser should detect TWINT receive transaction texts."""
+    parser = TwintReceiveParser()
+    text = "TWINT GELD EMPFANGEN VOM 25.01.2025 VON TELEFON-NR. +41790000000 MAX MUSTER MITTEILUNGEN: TEST"
+
+    assert parser.supports(text), "TWINT receive parser should support valid receive format"
+
+
+def test_twint_receive_parser_parse():
+    """TwintReceiveParser should extract sender phone and remaining info."""
+    parser = TwintReceiveParser()
+    text = "TWINT GELD EMPFANGEN VOM 25.01.2025 VON TELEFON-NR. +41790000000 MAX MUSTER MITTEILUNGEN: TEST"
+
+    result = parser.parse(text)
+    assert result.service_type == "Twint"
+    assert result.transaction_type_detail == "Geld empfangen"
+    assert "+41790000000" in result.merchant
+    assert "MAX MUSTER" in result.merchant
+    assert "MITTEILUNGEN: TEST" in result.merchant
+
+
 def test_debit_direct_parser():
     """DebitDirectParser should parse Debit Direct format"""
     parser = DebitDirectParser()
@@ -229,6 +251,8 @@ if __name__ == '__main__':
     test_twint_send_parser_direct_supports()
     test_twint_send_parser_direct_parse()
     test_twint_send_parser_direct_parse_without_mitteilungen()
+    test_twint_receive_parser_supports()
+    test_twint_receive_parser_parse()
     test_debit_direct_parser()
     test_payment_parser()
     test_standing_order_parser()

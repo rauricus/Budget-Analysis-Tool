@@ -544,6 +544,21 @@
         "include_keywords": ["ESSEN"],
         "exclude_keywords": []
       }
+    },
+    {
+      "id": 36,
+      "name": "Twint Geld empfangen: Rückerstattung",
+      "category": "Rückerstattungen",
+      "subcategory": "",
+      "priority": 50,
+      "transaction_types": ["Buchung"],
+      "services": ["Twint"],
+      "triggers": {
+        "merchants": [],
+        "locations": [],
+        "include_keywords": ["GELD EMPFANGEN"],
+        "exclude_keywords": []
+      }
     }
   ],
   "comments": {
