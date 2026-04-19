@@ -229,16 +229,20 @@ def create_excel_report(df: pd.DataFrame, category_stats: pd.DataFrame,
     # Remove default sheet
     wb.remove(wb.active)
 
+    # Create summary sheet
+    ws_summary = wb.create_sheet("Summary", 0)
+    _create_summary_sheet(ws_summary, df, source_label)
+
     # Create first overview sheet
-    ws_overview = wb.create_sheet("Overviews by category", 0)
-    _create_overview_sheet(ws_overview, df, category_stats, source_label)
+    ws_overview = wb.create_sheet("Overviews by category", 1)
+    _create_overview_sheet(ws_overview, df, source_label)
 
     # Create Category Analysis sheet (one table per month)
-    ws_category = wb.create_sheet("Category Analysis", 1)
+    ws_category = wb.create_sheet("Category Analysis", 2)
     _create_category_sheet(ws_category, df, months)
 
     # Create Subcategory Analysis sheet (one table per month)
-    ws_subcategory = wb.create_sheet("Subcategory Analysis", 2)
+    ws_subcategory = wb.create_sheet("Subcategory Analysis", 3)
     _create_subcategory_sheet(ws_subcategory, df, months)
 
     # Ensure output directory exists before saving
@@ -250,7 +254,108 @@ def create_excel_report(df: pd.DataFrame, category_stats: pd.DataFrame,
     print(f"✓ Excel report saved to: {output_file}")
 
 
-def _create_overview_sheet(ws, df: pd.DataFrame, category_stats: pd.DataFrame, source_label: str):
+def _create_summary_sheet(ws, df: pd.DataFrame, source_label: str):
+    """Create Summary sheet with transaction-category overview and chart."""
+    ws['A1'] = 'Budget Analysis Summary'
+    ws['A1'].font = Font(size=16, bold=True)
+
+    ws['A2'] = f'Source: {source_label}'
+    ws['A2'].font = Font(size=10, italic=True)
+
+    ws['A4'] = 'Overall Summary'
+    ws['A4'].font = Font(size=14, bold=True)
+
+    header_row = 6
+    headers = ['Transaction Category', 'Credit (CHF)', 'Debit (CHF)']
+    for col, header in enumerate(headers, start=1):
+        cell = ws.cell(row=header_row, column=col, value=header)
+        cell.font = Font(color='FFFFFF', bold=True)
+        cell.fill = PatternFill(start_color='366092', end_color='366092', fill_type='solid')
+        cell.alignment = Alignment(horizontal='center')
+
+    if 'Transaction Category' in df.columns:
+        grouped = (
+            df.assign(_tc=df['Transaction Category'].fillna('').astype(str).str.lower())
+            .groupby('_tc', as_index=False)
+            .agg({'Credit in CHF': 'sum', 'Debit in CHF': 'sum'})
+        )
+    else:
+        grouped = pd.DataFrame(columns=['_tc', 'Credit in CHF', 'Debit in CHF'])
+
+    def sums_for(tc: str) -> tuple[float, float]:
+        row = grouped[grouped['_tc'] == tc]
+        if row.empty:
+            return 0.0, 0.0
+        return float(row['Credit in CHF'].iloc[0]), float(row['Debit in CHF'].iloc[0])
+
+    income_credit, income_debit = sums_for('income')
+    expense_credit, expense_debit = sums_for('expense')
+    refund_credit, refund_debit = sums_for('refund')
+    transfer_credit, transfer_debit = sums_for('transfer')
+
+    summary_rows = [
+        (7, 'income', income_credit, income_debit),
+        (8, 'expense', expense_credit, expense_debit),
+        (9, 'refund', refund_credit, refund_debit),
+    ]
+
+    for row_idx, label, credit, debit in summary_rows:
+        ws.cell(row=row_idx, column=1, value=label)
+        ws.cell(row=row_idx, column=2, value=credit).number_format = '#,##0.00'
+        ws.cell(row=row_idx, column=3, value=debit).number_format = '#,##0.00'
+
+    total_credit = income_credit + expense_credit + refund_credit
+    total_debit = income_debit + expense_debit + refund_debit
+    ws.cell(row=10, column=1, value='Total').font = Font(bold=True)
+    ws.cell(row=10, column=2, value=total_credit).number_format = '#,##0.00'
+    ws.cell(row=10, column=3, value=total_debit).number_format = '#,##0.00'
+    ws.cell(row=10, column=2).font = Font(bold=True)
+    ws.cell(row=10, column=3).font = Font(bold=True)
+
+    ws.cell(row=12, column=1, value='transfer')
+    ws.cell(row=12, column=2, value=transfer_credit).number_format = '#,##0.00'
+    ws.cell(row=12, column=3, value=transfer_debit).number_format = '#,##0.00'
+
+    grand_total_credit = total_credit + transfer_credit
+    grand_total_debit = total_debit + transfer_debit
+    ws.cell(row=14, column=1, value='Grand Total').font = Font(bold=True)
+    ws.cell(row=14, column=2, value=grand_total_credit).number_format = '#,##0.00'
+    ws.cell(row=14, column=3, value=grand_total_debit).number_format = '#,##0.00'
+    ws.cell(row=14, column=2).font = Font(bold=True)
+    ws.cell(row=14, column=3).font = Font(bold=True)
+
+    # Helper block for contiguous chart data (all four transaction categories)
+    ws.cell(row=6, column=8, value='Transaction Category')
+    ws.cell(row=6, column=9, value='Amount (CHF)')
+    chart_rows = [
+        ('income', income_credit + income_debit),
+        ('expense', expense_credit + expense_debit),
+        ('refund', refund_credit + refund_debit),
+        ('transfer', transfer_credit + transfer_debit),
+    ]
+    for idx, (label, amount) in enumerate(chart_rows, start=7):
+        ws.cell(row=idx, column=8, value=label)
+        ws.cell(row=idx, column=9, value=amount).number_format = '#,##0.00'
+
+    chart = PieChart()
+    chart.title = 'Transaction Categories Overview'
+    chart.style = 10
+    chart.height = 10
+    chart.width = 14
+    labels = Reference(ws, min_col=8, min_row=7, max_row=10)
+    chart_data = Reference(ws, min_col=9, min_row=6, max_row=10)
+    chart.add_data(chart_data, titles_from_data=True)
+    chart.set_categories(labels)
+
+    # Keep chart aligned with table header row.
+    ws.add_chart(chart, 'E6')
+
+    ws.column_dimensions['A'].width = 24
+    ws.column_dimensions['B'].width = 15
+    ws.column_dimensions['C'].width = 15
+
+
+def _create_overview_sheet(ws, df: pd.DataFrame, source_label: str):
     """Create the overview sheet with summary and pie charts."""
     # Title
     ws['A1'] = 'Budget Analysis by Category'
@@ -258,27 +363,6 @@ def _create_overview_sheet(ws, df: pd.DataFrame, category_stats: pd.DataFrame, s
 
     ws['A2'] = f'Source: {source_label}'
     ws['A2'].font = Font(size=10, italic=True)
-
-    # Overall summary
-    ws['A4'] = 'Overall Summary'
-    ws['A4'].font = Font(size=14, bold=True)
-
-    total_income = category_stats['Credit in CHF'].sum()
-    total_expenses = category_stats['Debit in CHF'].sum()
-    total_net = total_income - total_expenses
-
-    ws['A6'] = 'Total Income:'
-    ws['B6'] = total_income
-    ws['B6'].number_format = '#,##0.00'
-
-    ws['A7'] = 'Total Expenses:'
-    ws['B7'] = total_expenses
-    ws['B7'].number_format = '#,##0.00'
-
-    ws['A8'] = 'Net (Income - Expenses):'
-    ws['B8'] = total_net
-    ws['B8'].number_format = '#,##0.00'
-    ws['B8'].font = Font(bold=True)
 
     # Build all three overview blocks with the same aggregation approach.
     income_data = _build_transaction_category_overview(
@@ -301,7 +385,7 @@ def _create_overview_sheet(ws, df: pd.DataFrame, category_stats: pd.DataFrame, s
     )
 
     # Income section
-    current_row = 11
+    current_row = 6
     ws[f'A{current_row}'] = 'Income by Category'
     ws[f'A{current_row}'].font = Font(size=12, bold=True)
 

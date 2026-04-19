@@ -50,3 +50,5 @@ htmlcov/
 
 # Project specific
 data/private
+
+~$dataset.analysis.xlsx
