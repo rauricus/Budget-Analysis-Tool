@@ -1,0 +1,10 @@
+[project]
+name = "budget-analysis-tool"
+version = "0.1.0"
+description = "Automatic categorization of PostFinance bank transactions using configurable JSON rules"
+requires-python = ">=3.9,<3.10"
+dependencies = [
+  "openpyxl==3.1.2",
+  "pandas==2.1.4",
+  "pytest==7.4.3",
+]

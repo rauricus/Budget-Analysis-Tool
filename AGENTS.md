@@ -2,7 +2,8 @@
 
 ## Virtual Environment for Python
 
-- Use the existing Micromamba environment named `bat`. Never create a new (Python) virtual environment in this repository.
-- Prefer `micromamba run -n bat <command>` for scripts and tests.
-- If `-n bat` does not resolve due prefix differences, use the explicit environment path with `micromamba run -p /Users/andreas/micromamba/envs/bat <command>`.
-- If activation is required in an interactive shell, use `micromamba activate bat`.
+- Use `uv` with a local `.venv` in this repository.
+- Never create additional Python environments besides `.venv` for this project.
+- Use `uv sync` to install/update dependencies from `pyproject.toml`.
+- Prefer `uv run <command>` for scripts and tests.
+- If activation is required in an interactive shell, use `source .venv/bin/activate`.

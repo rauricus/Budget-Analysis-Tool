@@ -21,22 +21,30 @@ Automatic categorization of bank transactions using configurable JSON rules.
 ## Setup
 
 ```bash
-# Create environment
-micromamba env create -f environment.yml
+# Install uv (one-time, outside project)
+brew install uv
 
-# Activate environment
-micromamba activate bat
+# Create/update local virtual environment from pyproject.toml
+uv sync
+
+# Optional: activate the local virtual environment in your shell
+source .venv/bin/activate
+
+# If you activate `.venv` via `source .venv/bin/activate`, you can run # the same commands without `uv run`, for example `python categorize_transactions.py reference`
+or `pytest -q`.
 
 # Run pipeline for reference dataset
-python categorize_transactions.py reference
+uv run python categorize_transactions.py reference
 
 # Optional: run pipeline for your own local dataset/overlay setup
 # I use a dataset in `data/private` only as an example here. If you choose to use that, however, note that it is already gitignored.
-python categorize_transactions.py private
+uv run python categorize_transactions.py private
 
 # Optional: reuse original input CSV categories for otherwise uncategorized rows
-python categorize_transactions.py reference --use-input-category-fallback
+uv run python categorize_transactions.py reference --use-input-category-fallback
 ```
+
+
 
 ## Analysis
 
@@ -45,10 +53,10 @@ The analysis script discovers all `*.categorized.csv` files in the dataset outpu
 
 ```bash
 # Generate aggregated analysis for all categorized CSV files in a dataset
-python analyze_by_category.py reference
+uv run python analyze_by_category.py reference
 
 # Specify a custom output file
-python analyze_by_category.py private my_analysis.xlsx
+uv run python analyze_by_category.py private my_analysis.xlsx
 ```
 
 The generated Excel file includes:
@@ -62,13 +70,13 @@ The Excel format allows you to easily modify charts, add custom analysis, and ad
 
 ```bash
 # Run all tests
-micromamba run -n bat pytest -q
+uv run pytest -q
 
 # Verbose output
-micromamba run -n bat pytest -v
+uv run pytest -v
 
 # Run a specific test file
-micromamba run -n bat pytest tests/test_rule_matching.py
+uv run pytest tests/test_rule_matching.py
 ```
 
 ## Structure
@@ -208,7 +216,7 @@ The structured export currently uses these columns:
 ## Iterative workflow
 
 1. Put a new CSV into `data/reference/input/` (shared) or into your local `data/private/input/` setup.
-2. Run `python categorize_transactions.py reference` or, for your local setup, `python categorize_transactions.py private`.
+2. Run `uv run python categorize_transactions.py reference` or, for your local setup, `uv run python categorize_transactions.py private`.
 3. Inspect `data/reference/output/*.categorized.csv` or your local `data/private/output/*.categorized.csv`.
 4. Add/refine parser(s) in `src/notification/parsers/` if needed.
 5. Add/refine matching rules in `data/reference/rules.json` (base) and/or optional personal overrides in `data/private/rules.json`.
