@@ -91,7 +91,7 @@ data/
 │ ├── input/                       # Stable sample input CSV files
 │ └── output/                      # Expected/known categorized outputs
 └── private/                       # Example for local-only data + optional rule overrides (gitignored)
-  ├── rules.json                   # Overlay rules (same id overrides base, new id adds)
+  ├── rules.json                   # Overlay rules (same key overrides base, new key adds)
   ├── metadata/                    # Persistent metadata (transaction registry + months)
   │ ├── transaction_id_registry.json # Local persistent transaction fingerprint -> ID mapping
   │ └── months.json                # Processed month periods
@@ -148,13 +148,17 @@ IDs remain stable across reruns as long as the normalized transaction content (d
 `data/reference/rules.json` is the shared base configuration.
 `data/private/rules.json` is an optional local overlay example for personal rules and is typically not committed.
 
+Each rule has a stable string `key` instead of a numeric rule ID.
+Recommended format: `group_number` (for example `gastronomy_1`, `transport_2`).
+The key is the rule identity used for overlay matching.
+
 Example:
 
 ```json
 {
   "rules": [
     {
-      "id": 1,
+      "key": "gastronomy_1",
       "name": "Migros Take-Away",
       "transaction_category": "Expense",
       "category": "Freizeit",
@@ -179,6 +183,7 @@ Example:
 
 ### Matching behavior
 
+- Rules in `rules.json` can be kept sorted by `key` for readability; at runtime the engine evaluates them by descending `priority`.
 - Rules are sorted by descending `priority`.
 - `transaction_category` is required and must be one of: `Income`, `Expense`, `Refund`, `Transfer`.
 - Category assignment uses two levels: `category` and `subcategory`.
@@ -262,4 +267,4 @@ Both approaches work with the current overlay mechanism:
 
 - Base rules are always loaded from `data/reference/rules.json`.
 - Optional overlay rules are loaded from `{run_dir}/rules.json` (for example `data/private/rules.json`).
-- Same rule ID overrides base; new rule ID adds a new rule.
+- Same rule key overrides base; new rule key adds a new rule.
