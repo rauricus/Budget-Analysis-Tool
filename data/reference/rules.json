@@ -64,7 +64,8 @@
         "providers": [],
         "notification_filters": {
           "merchants": [
-            "CLOUDSERVICE"
+            "CLOUDSERVICE",
+            "OPENAI *CHATGPT SUBSCR"
           ],
           "locations": [],
           "include_keywords": [],
