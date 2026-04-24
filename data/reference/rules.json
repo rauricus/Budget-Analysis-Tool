@@ -1,12 +1,181 @@
 {
   "rules": [
     {
-      "id": 1001,
-      "name": "Supermarkt: Migros/Coop",
+      "key": "communication_1",
+      "name": "Kommunikation: Sunrise",
       "transaction_category": "Expense",
-      "category": "Einkaufen",
-      "subcategory": "Supermärkte",
-      "priority": 50,
+      "category": "Wohnen",
+      "subcategory": "Kommunikation",
+      "priority": 70,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "SUNRISE"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "communication_2",
+      "name": "Kommunikation: Apple Services",
+      "transaction_category": "Expense",
+      "category": "Wohnen",
+      "subcategory": "Kommunikation",
+      "priority": 60,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "APPLE.COM"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "communication_3",
+      "name": "Subscription: Cloud Services",
+      "transaction_category": "Expense",
+      "category": "Wohnen",
+      "subcategory": "Kommunikation",
+      "priority": 60,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "CLOUDSERVICE"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "family_1",
+      "name": "Dauerauftrag: Familienkasse",
+      "transaction_category": "Expense",
+      "category": "Leben",
+      "subcategory": "Familie",
+      "priority": 72,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "FAMILIENKASSE"
+          ],
+          "locations": [],
+          "include_keywords": [
+            "FAMILIENZULAGE"
+          ],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "family_2",
+      "name": "Familie: Geld für Essen",
+      "transaction_category": "Expense",
+      "category": "Leben",
+      "subcategory": "Familie",
+      "priority": 73,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Account Transfer"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "ZMITTAG",
+            "ESSEN"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "finance_1",
+      "name": "Cash Withdrawal",
+      "transaction_category": "Expense",
+      "category": "Finanzen",
+      "subcategory": "Cash Withdrawal",
+      "priority": 80,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Cash Withdrawal"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "finance_2",
+      "name": "Bankgebühren: Paketpreis",
+      "transaction_category": "Expense",
+      "category": "Finanzen",
+      "subcategory": "Fees",
+      "priority": 85,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Fees"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [
+            "BANKPAKET SMART"
+          ],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "gastronomy_1",
+      "name": "Take Away: Gastronomie",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
+      "priority": 100,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -22,15 +191,135 @@
             "COOP"
           ],
           "locations": [],
-          "include_keywords": [],
-          "exclude_keywords": [
+          "include_keywords": [
             "TAKE AWAY"
-          ]
+          ],
+          "exclude_keywords": []
         }
       }
     },
     {
-      "id": 1002,
+      "key": "gastronomy_2",
+      "name": "Restaurant: Gastronomie",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
+      "priority": 60,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "YOOJI'S",
+            "SIGNOR ROSSI"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "gastronomy_3",
+      "name": "Cafés: Gastronomie",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
+      "priority": 60,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "COFFEE AND PLANTS"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "gastronomy_4",
+      "name": "Twint: Fastfood",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
+      "priority": 56,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": "Send Money",
+        "services": [
+          "Twint"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "KEBAB",
+            "IMBISS"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "gastronomy_5",
+      "name": "Twint senden: Essensanteil",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
+      "priority": 60,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": "Send Money",
+        "services": [],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [
+            "ESSEN"
+          ],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "gastronomy_6",
+      "name": "Twint: Cafés",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
+      "priority": 60,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Twint"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [
+            "CAFE"
+          ],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "grocery_1",
       "name": "Detailhandel: Bäckereien",
       "transaction_category": "Expense",
       "category": "Einkaufen",
@@ -60,7 +349,7 @@
       }
     },
     {
-      "id": 1003,
+      "key": "grocery_2",
       "name": "Detailhandel: Lebensmittel",
       "transaction_category": "Expense",
       "category": "Einkaufen",
@@ -88,7 +377,309 @@
       }
     },
     {
-      "id": 1004,
+      "key": "grocery_3",
+      "name": "Einkauf Tankstellen-Shop",
+      "transaction_category": "Expense",
+      "category": "Einkaufen",
+      "subcategory": "Detail-Lebensmittel",
+      "priority": 45,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [
+          "Apple Pay"
+        ],
+        "notification_filters": {
+          "merchants": [
+            "CITY TANKSTELLE"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "health_1",
+      "name": "Einkauf Apotheke",
+      "transaction_category": "Expense",
+      "category": "Leben",
+      "subcategory": "Gesundheit",
+      "priority": 45,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [
+          "Apple Pay"
+        ],
+        "notification_filters": {
+          "merchants": [
+            "APOTHEKE"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "health_2",
+      "name": "Krankenkasse",
+      "transaction_category": "Expense",
+      "category": "Leben",
+      "subcategory": "Gesundheit",
+      "priority": 70,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "MEDICURA",
+            "SYMPANY"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "home_1",
+      "name": "Einkauf Handwerk/Garten: Jumbo",
+      "transaction_category": "Expense",
+      "category": "Wohnen",
+      "subcategory": "Handwerk und Garten",
+      "priority": 50,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [
+          "Apple Pay"
+        ],
+        "notification_filters": {
+          "merchants": [
+            "JUMBO"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "home_2",
+      "name": "Einkauf Haushalt: Manor",
+      "transaction_category": "Expense",
+      "category": "Wohnen",
+      "subcategory": "Haushalt",
+      "priority": 50,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [
+          "Apple Pay"
+        ],
+        "notification_filters": {
+          "merchants": [
+            "MANOR"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "home_3",
+      "name": "Einkauf Haushalt: Online Haushalt AG",
+      "transaction_category": "Expense",
+      "category": "Wohnen",
+      "subcategory": "Haushalt",
+      "priority": 75,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "ONLINE HAUSHALT AG"
+          ],
+          "locations": [],
+          "include_keywords": [
+            "PAYMENT ID",
+            "BESTELLNUMMER"
+          ],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "housing_1",
+      "name": "Wohnen: Miete und Hypothek",
+      "transaction_category": "Expense",
+      "category": "Wohnen",
+      "subcategory": "Miete und Hypothek",
+      "priority": 60,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [
+            "FINANZVERWALTUNG STADT SOLOTHURN"
+          ],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "income_1",
+      "name": "Lohn: Alpenwerk",
+      "transaction_category": "Income",
+      "category": "Einkommen",
+      "subcategory": "Lohn",
+      "priority": 80,
+      "scope": {
+        "transaction_type": "Credit",
+        "transaction_type_detail": null,
+        "services": [
+          "Credit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "ALPENWERK"
+          ],
+          "locations": [],
+          "include_keywords": [
+            "SALAER"
+          ],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "life_1",
+      "name": "Co-Working",
+      "transaction_category": "Expense",
+      "category": "Leben",
+      "subcategory": "Sonstiges Leben",
+      "priority": 35,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [
+          "Apple Pay"
+        ],
+        "notification_filters": {
+          "merchants": [
+            "BYRO"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "refund_1",
+      "name": "Twint empfangen: Rückerstattung",
+      "transaction_category": "Refund",
+      "category": "Rückerstattungen",
+      "subcategory": "",
+      "priority": 50,
+      "scope": {
+        "transaction_type": "Credit",
+        "transaction_type_detail": "Receive Money",
+        "services": [
+          "Twint"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "refund_2",
+      "name": "Rückerstattung Krankenkasse: Medicura Plus",
+      "transaction_category": "Refund",
+      "category": "Leben",
+      "subcategory": "Gesundheit",
+      "priority": 75,
+      "scope": {
+        "transaction_type": "Credit",
+        "transaction_type_detail": null,
+        "services": [
+          "Credit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "MEDICURA PLUS"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "refund_3",
+      "name": "Rückerstattung Event: UEFA Women's Euro",
+      "transaction_category": "Refund",
+      "category": "Freizeit",
+      "subcategory": "Reisen und Erleben",
+      "priority": 80,
+      "scope": {
+        "transaction_type": "Credit",
+        "transaction_type_detail": "Refund",
+        "services": [
+          "PostFinance Card Refund"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "UEFA WOMEN'S EURO 2025"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "shopping_1",
       "name": "Kiosk: Sonstiges Einkaufen",
       "transaction_category": "Expense",
       "category": "Einkaufen",
@@ -114,7 +705,7 @@
       }
     },
     {
-      "id": 1005,
+      "key": "shopping_2",
       "name": "Bahnhof-Kiosk: Sonstiges Einkaufen",
       "transaction_category": "Expense",
       "category": "Einkaufen",
@@ -145,38 +736,12 @@
       }
     },
     {
-      "id": 1006,
-      "name": "Einkauf Tankstellen-Shop",
+      "key": "supermarket_1",
+      "name": "Supermarkt: Migros/Coop",
       "transaction_category": "Expense",
       "category": "Einkaufen",
-      "subcategory": "Detail-Lebensmittel",
-      "priority": 45,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Card Purchase"
-        ],
-        "providers": [
-          "Apple Pay"
-        ],
-        "notification_filters": {
-          "merchants": [
-            "CITY TANKSTELLE"
-          ],
-          "locations": [],
-          "include_keywords": [],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 2001,
-      "name": "Take Away: Gastronomie",
-      "transaction_category": "Expense",
-      "category": "Freizeit",
-      "subcategory": "Gastronomie",
-      "priority": 100,
+      "subcategory": "Supermärkte",
+      "priority": 50,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -192,152 +757,57 @@
             "COOP"
           ],
           "locations": [],
-          "include_keywords": [
+          "include_keywords": [],
+          "exclude_keywords": [
             "TAKE AWAY"
-          ],
-          "exclude_keywords": []
+          ]
         }
       }
     },
     {
-      "id": 2002,
-      "name": "Restaurant: Gastronomie",
-      "transaction_category": "Expense",
-      "category": "Freizeit",
-      "subcategory": "Gastronomie",
-      "priority": 60,
+      "key": "transfer_1",
+      "name": "Kontoübertrag: Eigenes Sparkonto",
+      "transaction_category": "Transfer",
+      "category": "Überträge",
+      "subcategory": "Account Transfer",
+      "priority": 95,
       "scope": {
-        "transaction_type": "Debit",
+        "transaction_type": "Credit",
         "transaction_type_detail": null,
         "services": [
-          "Card Purchase"
+          "Account Transfer"
         ],
         "providers": [],
         "notification_filters": {
           "merchants": [
-            "YOOJI'S",
-            "SIGNOR ROSSI"
+            "EIGENES SPARKONTO"
           ],
-          "locations": [],
-          "include_keywords": [],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 2003,
-      "name": "Cafés: Gastronomie",
-      "transaction_category": "Expense",
-      "category": "Freizeit",
-      "subcategory": "Gastronomie",
-      "priority": 60,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Card Purchase"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [
-            "COFFEE AND PLANTS"
-          ],
-          "locations": [],
-          "include_keywords": [],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 2004,
-      "name": "Twint: Fastfood",
-      "transaction_category": "Expense",
-      "category": "Freizeit",
-      "subcategory": "Gastronomie",
-      "priority": 56,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": "Send Money",
-        "services": [
-          "Twint"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [
-            "KEBAB",
-            "IMBISS"
-          ],
-          "locations": [],
-          "include_keywords": [],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 2005,
-      "name": "Twint senden: Essensanteil",
-      "transaction_category": "Expense",
-      "category": "Freizeit",
-      "subcategory": "Gastronomie",
-      "priority": 60,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": "Send Money",
-        "services": [],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [],
           "locations": [],
           "include_keywords": [
-            "ESSEN"
+            "KONTOUEBERTRAG"
           ],
           "exclude_keywords": []
         }
       }
     },
     {
-      "id": 2006,
-      "name": "Twint: Cafés",
+      "key": "transport_1",
+      "name": "Öffentlicher Verkehr",
       "transaction_category": "Expense",
-      "category": "Freizeit",
-      "subcategory": "Gastronomie",
-      "priority": 60,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Twint"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [],
-          "locations": [],
-          "include_keywords": [
-            "CAFE"
-          ],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 3001,
-      "name": "Einkauf Apotheke",
-      "transaction_category": "Expense",
-      "category": "Leben",
-      "subcategory": "Gesundheit",
-      "priority": 45,
+      "category": "Mobilität",
+      "subcategory": "Öffentlicher Verkehr",
+      "priority": 70,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
         "services": [
           "Card Purchase"
         ],
-        "providers": [
-          "Apple Pay"
-        ],
+        "providers": [],
         "notification_filters": {
           "merchants": [
-            "APOTHEKE"
+            "TRANSPORTS PUBLICS",
+            "FAIRTIQ"
           ],
           "locations": [],
           "include_keywords": [],
@@ -346,7 +816,31 @@
       }
     },
     {
-      "id": 3002,
+      "key": "transport_2",
+      "name": "Mobility",
+      "transaction_category": "Expense",
+      "category": "Mobilität",
+      "subcategory": "Privater Verkehr",
+      "priority": 72,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "MOBILITY"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "wellness_1",
       "name": "Einkauf Styling/Wellness",
       "transaction_category": "Expense",
       "category": "Leben",
@@ -372,7 +866,7 @@
       }
     },
     {
-      "id": 3003,
+      "key": "wellness_2",
       "name": "Coiffeur",
       "transaction_category": "Expense",
       "category": "Leben",
@@ -399,508 +893,10 @@
           "exclude_keywords": []
         }
       }
-    },
-    {
-      "id": 3004,
-      "name": "Krankenkasse",
-      "transaction_category": "Expense",
-      "category": "Leben",
-      "subcategory": "Gesundheit",
-      "priority": 70,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Direct Debit"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [
-            "MEDICURA",
-            "SYMPANY"
-          ],
-          "locations": [],
-          "include_keywords": [],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 3005,
-      "name": "Co-Working",
-      "transaction_category": "Expense",
-      "category": "Leben",
-      "subcategory": "Sonstiges Leben",
-      "priority": 35,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Card Purchase"
-        ],
-        "providers": [
-          "Apple Pay"
-        ],
-        "notification_filters": {
-          "merchants": [
-            "BYRO"
-          ],
-          "locations": [],
-          "include_keywords": [],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 3006,
-      "name": "Dauerauftrag: Familienkasse",
-      "transaction_category": "Expense",
-      "category": "Leben",
-      "subcategory": "Familie",
-      "priority": 72,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Direct Debit"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [
-            "FAMILIENKASSE"
-          ],
-          "locations": [],
-          "include_keywords": [
-            "FAMILIENZULAGE"
-          ],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 3007,
-      "name": "Familie: Geld für Essen",
-      "transaction_category": "Expense",
-      "category": "Leben",
-      "subcategory": "Familie",
-      "priority": 73,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Account Transfer"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [
-            "ZMITTAG",
-            "ESSEN"
-          ],
-          "locations": [],
-          "include_keywords": [],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 4001,
-      "name": "Einkauf Handwerk/Garten: Jumbo",
-      "transaction_category": "Expense",
-      "category": "Wohnen",
-      "subcategory": "Handwerk und Garten",
-      "priority": 50,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Card Purchase"
-        ],
-        "providers": [
-          "Apple Pay"
-        ],
-        "notification_filters": {
-          "merchants": [
-            "JUMBO"
-          ],
-          "locations": [],
-          "include_keywords": [],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 4002,
-      "name": "Kommunikation: Sunrise",
-      "transaction_category": "Expense",
-      "category": "Wohnen",
-      "subcategory": "Kommunikation",
-      "priority": 70,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Direct Debit"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [
-            "SUNRISE"
-          ],
-          "locations": [],
-          "include_keywords": [],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 4003,
-      "name": "Kommunikation: Apple Services",
-      "transaction_category": "Expense",
-      "category": "Wohnen",
-      "subcategory": "Kommunikation",
-      "priority": 60,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Card Purchase"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [
-            "APPLE.COM"
-          ],
-          "locations": [],
-          "include_keywords": [],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 4004,
-      "name": "Wohnen: Miete und Hypothek",
-      "transaction_category": "Expense",
-      "category": "Wohnen",
-      "subcategory": "Miete und Hypothek",
-      "priority": 60,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Direct Debit"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [],
-          "locations": [],
-          "include_keywords": [
-            "FINANZVERWALTUNG STADT SOLOTHURN"
-          ],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 4005,
-      "name": "Einkauf Haushalt: Manor",
-      "transaction_category": "Expense",
-      "category": "Wohnen",
-      "subcategory": "Haushalt",
-      "priority": 50,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Card Purchase"
-        ],
-        "providers": [
-          "Apple Pay"
-        ],
-        "notification_filters": {
-          "merchants": [
-            "MANOR"
-          ],
-          "locations": [],
-          "include_keywords": [],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 4006,
-      "name": "Subscription: Cloud Services",
-      "transaction_category": "Expense",
-      "category": "Wohnen",
-      "subcategory": "Kommunikation",
-      "priority": 60,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Card Purchase"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [
-            "CLOUDSERVICE"
-          ],
-          "locations": [],
-          "include_keywords": [],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 4007,
-      "name": "Einkauf Haushalt: Online Haushalt AG",
-      "transaction_category": "Expense",
-      "category": "Wohnen",
-      "subcategory": "Haushalt",
-      "priority": 75,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Card Purchase"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [
-            "ONLINE HAUSHALT AG"
-          ],
-          "locations": [],
-          "include_keywords": [
-            "PAYMENT ID",
-            "BESTELLNUMMER"
-          ],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 5001,
-      "name": "Öffentlicher Verkehr",
-      "transaction_category": "Expense",
-      "category": "Mobilität",
-      "subcategory": "Öffentlicher Verkehr",
-      "priority": 70,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Card Purchase"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [
-            "TRANSPORTS PUBLICS",
-            "FAIRTIQ"
-          ],
-          "locations": [],
-          "include_keywords": [],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 5002,
-      "name": "Mobility",
-      "transaction_category": "Expense",
-      "category": "Mobilität",
-      "subcategory": "Privater Verkehr",
-      "priority": 72,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Direct Debit"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [
-            "MOBILITY"
-          ],
-          "locations": [],
-          "include_keywords": [],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 6001,
-      "name": "Cash Withdrawal",
-      "transaction_category": "Expense",
-      "category": "Finanzen",
-      "subcategory": "Cash Withdrawal",
-      "priority": 80,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Cash Withdrawal"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [],
-          "locations": [],
-          "include_keywords": [
-            "BARGELDBEZUG"
-          ],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 6002,
-      "name": "Bankgebühren: Paketpreis",
-      "transaction_category": "Expense",
-      "category": "Finanzen",
-      "subcategory": "Fees",
-      "priority": 85,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Fees"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [],
-          "locations": [],
-          "include_keywords": [
-            "BANKPAKET SMART"
-          ],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 9001,
-      "name": "Lohn: Alpenwerk",
-      "transaction_category": "Income",
-      "category": "Einkommen",
-      "subcategory": "Lohn",
-      "priority": 80,
-      "scope": {
-        "transaction_type": "Credit",
-        "transaction_type_detail": null,
-        "services": [
-          "Credit"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [
-            "ALPENWERK"
-          ],
-          "locations": [],
-          "include_keywords": [
-            "SALAER"
-          ],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 11001,
-      "name": "Twint empfangen: Rückerstattung",
-      "transaction_category": "Refund",
-      "category": "Rückerstattungen",
-      "subcategory": "",
-      "priority": 50,
-      "scope": {
-        "transaction_type": "Credit",
-        "transaction_type_detail": null,
-        "services": [
-          "Twint"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [],
-          "locations": [],
-          "include_keywords": [
-            "GELD EMPFANGEN"
-          ],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 11002,
-      "name": "Rückerstattung Krankenkasse: Medicura Plus",
-      "transaction_category": "Refund",
-      "category": "Leben",
-      "subcategory": "Gesundheit",
-      "priority": 75,
-      "scope": {
-        "transaction_type": "Credit",
-        "transaction_type_detail": null,
-        "services": [
-          "Credit"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [
-            "MEDICURA PLUS"
-          ],
-          "locations": [],
-          "include_keywords": [],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 11003,
-      "name": "Rückerstattung Event: UEFA Women's Euro",
-      "transaction_category": "Refund",
-      "category": "Freizeit",
-      "subcategory": "Reisen und Erleben",
-      "priority": 80,
-      "scope": {
-        "transaction_type": "Credit",
-        "transaction_type_detail": "Refund",
-        "services": [
-          "PostFinance Card Refund"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [
-            "UEFA WOMEN'S EURO 2025"
-          ],
-          "locations": [],
-          "include_keywords": [],
-          "exclude_keywords": []
-        }
-      }
-    },
-    {
-      "id": 13001,
-      "name": "Kontoübertrag: Eigenes Sparkonto",
-      "transaction_category": "Transfer",
-      "category": "Überträge",
-      "subcategory": "Account Transfer",
-      "priority": 95,
-      "scope": {
-        "transaction_type": "Credit",
-        "transaction_type_detail": null,
-        "services": [
-          "Account Transfer"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [
-            "EIGENES SPARKONTO"
-          ],
-          "locations": [],
-          "include_keywords": [
-            "KONTOUEBERTRAG"
-          ],
-          "exclude_keywords": []
-        }
-      }
     }
   ],
   "comments": {
-    "required_fields": "Rule fields that should always be set: id, name, transaction_category, priority, scope.transaction_type.",
+    "required_fields": "Rule fields that should always be set: key, name, transaction_category, priority, scope.transaction_type.",
     "optional_fields": "Optional scope filters: scope.transaction_type_detail, scope.services, scope.providers, scope.notification_filters.{merchants,locations,include_keywords,exclude_keywords}. Empty list means 'do not filter by this field'.",
     "scope.transaction_type": "Required filter by money direction: 'credit' or 'debit'.",
     "scope.transaction_type_detail": "Optional exact detail filter (e.g. 'Geld senden', 'Kauf/Dienstleistung'). Use null to disable.",
@@ -914,21 +910,6 @@
     "fallback": "No fallback category. If no rule matches, transaction stays uncategorized.",
     "subcategory": "Optional subcategory for fine-grained classification (e.g. 'Gastronomie' within 'Freizeit'). Empty string if not applicable.",
     "category": "Optional high-level category mapping. Empty string if not applicable.",
-    "transaction_category": "Required classification bucket: one of income, expense, refund, transfer.",
-    "foreseen_id_ranges": [
-      { "category": "Einkaufen", "range": [1000, 1999] },
-      { "category": "Freizeit", "range": [2000, 2999] },
-      { "category": "Leben", "range": [3000, 3999] },
-      { "category": "Wohnen", "range": [4000, 4999] },
-      { "category": "Mobilität", "range": [5000, 5999] },
-      { "category": "Finanzen", "range": [6000, 6999] },
-      { "category": "Vermögensaufbau", "range": [7000, 7999] },
-      { "category": "Sonstige Ausgaben", "range": [8000, 8999] },
-      { "category": "Einkommen", "range": [9000, 9999] },
-      { "category": "Zinsen", "range": [10000, 10999] },
-      { "category": "Rückerstattungen", "range": [11000, 11999] },
-      { "category": "Sonstige Einnahmen", "range": [12000, 12999] },
-      { "category": "Überträge", "range": [13000, 13999] }
-    ]
+    "transaction_category": "Required classification bucket: one of income, expense, refund, transfer."
   }
 }

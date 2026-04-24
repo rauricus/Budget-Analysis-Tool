@@ -8,7 +8,7 @@ from models.transaction import Transaction
 class Rule:
     """Categorization rule."""
 
-    id: int
+    key: str
     name: str
     transaction_category: str  # One of: Income, Expense, Refund, Transfer
     category: str

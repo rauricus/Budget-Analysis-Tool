@@ -27,7 +27,7 @@ TX-000027;27.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;THE
 TX-000028;27.03.2025;Debit;Purchase/Service;Card Purchase;;XXXX4821;YOOJI'S ROSENGARTEN;BIEL;;;;;11.9;;Expense;Freizeit;Gastronomie
 TX-000029;27.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;YOOJI'S ROSENGARTEN;BIEL;;;;;43.5;;Expense;Freizeit;Gastronomie
 TX-000030;27.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;COFFEE AND PLANTS;BIEL;;;;;10.0;;Expense;Freizeit;Gastronomie
-TX-000031;27.03.2025;Debit;Cash Withdrawal;Cash Withdrawal;;XXXX4821;EINKAUFSZENTRUM METROPOLE;BIEL;;;;;80.0;;;?;
+TX-000031;27.03.2025;Debit;Cash Withdrawal;Cash Withdrawal;;XXXX4821;EINKAUFSZENTRUM METROPOLE;BIEL;;;;;80.0;;Expense;Finanzen;Cash Withdrawal
 TX-000032;27.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;YUMIHANA;FRIBOURG;;;;;18.55;;Expense;Einkaufen;Detail-Lebensmittel
 TX-000033;27.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;YUMI HANA;FRIBOURG;;;;;26.8;;Expense;Einkaufen;Detail-Lebensmittel
 TX-000034;27.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;COOP - 7811 QUAI WEST;BERN;;;;;7.75;;Expense;Einkaufen;Supermärkte

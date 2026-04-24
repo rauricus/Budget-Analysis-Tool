@@ -19,8 +19,8 @@ def test_migros_supermarket_rule():
     txn = txns[4]
     
     # Get the migros_supermarket rule
-    rule = [r for r in engine.rules if r.id == 1001][0]
-    
+    rule = [r for r in engine.rules if r.key == "supermarket_1"][0]
+
     # Verify rule properties
     assert rule.merchants == ['MIGROS', 'COOP']
     assert rule.exclude_keywords == ['TAKE AWAY']
@@ -30,7 +30,7 @@ def test_migros_supermarket_rule():
     assert rule.transaction_type == txn.transaction_type
     
     # Verify the rule matches this transaction
-    assert rule.matches(txn), f"Rule '{rule.id}' should match transaction 4"
+    assert rule.matches(txn), f"Rule '{rule.key}' should match transaction 4"
     
     # Verify categorization
     category = engine.categorize(txn)
@@ -66,7 +66,7 @@ def test_rule_service_filtering():
     engine = RuleEngine('data/reference/rules.json')
 
     txn = txns[4]
-    rule = [r for r in engine.rules if r.id == 1001][0]
+    rule = [r for r in engine.rules if r.key == "supermarket_1"][0]
 
     rule.services = ["Card Purchase"]
     rule.providers = ["Apple Pay"]
@@ -86,7 +86,7 @@ def test_rule_without_service_filter_can_match():
     engine = RuleEngine('data/reference/rules.json')
 
     txn = txns[4]
-    rule = [r for r in engine.rules if r.id == 1001][0]
+    rule = [r for r in engine.rules if r.key == "supermarket_1"][0]
 
     rule.services = []
     rule.providers = []
@@ -104,7 +104,7 @@ def test_rule_transaction_type_detail_filtering_for_twint_send():
         and t.transaction_type_detail == 'Send Money'
         and 'ESSEN' in (t.parsed_merchant or '').upper()
     )
-    rule = [r for r in engine.rules if r.id == 2005][0]
+    rule = [r for r in engine.rules if r.key == "gastronomy_5"][0]
 
     assert rule.matches(txn), "Essensanteil rule should match Twint send detail"
 

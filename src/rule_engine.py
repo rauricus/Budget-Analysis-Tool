@@ -45,12 +45,12 @@ class RuleEngine:
             if transaction_category_normalized not in VALID_TRANSACTION_CATEGORIES:
                 raise ValueError(
                     "Invalid or missing 'transaction_category' for rule "
-                    f"#{rule_data.get('id', '?')} ('{rule_data.get('name', '')}') in {source}: "
+                    f"'{rule_data.get('key', '?')}' ('{rule_data.get('name', '')}') in {source}: "
                     f"'{transaction_category_normalized}'. Allowed: {sorted(VALID_TRANSACTION_CATEGORIES)}"
                 )
 
             rule = Rule(
-                id=rule_data["id"],
+                key=rule_data["key"],
                 name=rule_data["name"],
                 transaction_category=transaction_category_normalized,
                 category=rule_data.get("category", ""),
@@ -69,7 +69,7 @@ class RuleEngine:
                 exclude_keywords=filters.get("exclude_keywords", []),
                 source=source,
             )
-            result[rule.id] = rule
+            result[rule.key] = rule
         return result
 
     @staticmethod
@@ -87,7 +87,7 @@ class RuleEngine:
         )
 
     def load_rules(self):
-        """Load base rules, then apply overlay rules (same ID overrides, new ID appends)."""
+        """Load base rules, then apply overlay rules (same key overrides, new key appends)."""
         if not self.rules_path.exists():
             raise FileNotFoundError(f"Rules file not found: {self.rules_path}")
         
@@ -99,9 +99,9 @@ class RuleEngine:
             with open(self.overlay_path, "r", encoding="utf-8") as f:
                 overlay_rules = self._parse_rules(json.load(f), source=self.overlay_path.as_posix())
             overridden_rules = [
-                (base_rules[rule_id], overlay_rules[rule_id])
-                for rule_id in overlay_rules
-                if rule_id in base_rules
+                (base_rules[rule_key], overlay_rules[rule_key])
+                for rule_key in overlay_rules
+                if rule_key in base_rules
             ]
             overridden = len(overridden_rules)
             added = len(overlay_rules) - overridden
@@ -111,7 +111,7 @@ class RuleEngine:
                 for previous_rule, new_rule in overridden_rules:
                     print(
                         "      Override "
-                        f"#{new_rule.id}: '{previous_rule.name}' from {previous_rule.source} "
+                        f"'{new_rule.key}': '{previous_rule.name}' from {previous_rule.source} "
                         f"-> '{new_rule.name}' from {new_rule.source}"
                     )
 
@@ -189,7 +189,7 @@ class RuleEngine:
                 )
                 print(
                     f"      {row_label}Rule matched: "
-                    f"#{best_match.id} '{best_match.name}' from {best_match.source} "
+                    f"'{best_match.key}' '{best_match.name}' from {best_match.source} "
                     f"-> {category_label} | "
                     f"{self._transaction_debug_label(txn)}"
                 )
