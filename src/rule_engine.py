@@ -182,11 +182,24 @@ class RuleEngine:
                     if best_match.subcategory
                     else best_match.category
                 )
+                row_label = (
+                    f"Row {txn.source_line_number}: "
+                    if txn.source_line_number is not None
+                    else ""
+                )
                 print(
-                    "      Rule matched: "
+                    f"      {row_label}Rule matched: "
                     f"#{best_match.id} '{best_match.name}' from {best_match.source} "
                     f"-> {category_label} | "
                     f"{self._transaction_debug_label(txn)}"
                 )
+            elif self.debug:
+                row_label = (
+                    f"Row {txn.source_line_number}"
+                    if txn.source_line_number is not None
+                    else "Row ?"
+                )
+                row_text = txn.source_row_text or self._transaction_debug_label(txn)
+                print(f"      {row_label}: No matching rule | {row_text}")
 
         return transactions, matching_rules_map

@@ -53,10 +53,12 @@ class ImportHandler:
         # warnings point to the correct line in the original CSV, even when
         # empty or sparse lines are skipped.
         data_row_file_lines = []
+        data_row_texts = []
         for file_idx, line in enumerate(raw_lines[header_idx + 1:], start=header_idx + 1):
             if line.count(delimiter) >= _MIN_DELIMITER_COUNT:
                 kept_lines.append(line)
                 data_row_file_lines.append(file_idx + 1)  # 1-based
+                data_row_texts.append(line)
 
         df = pd.read_csv(io.StringIO("\n".join(kept_lines)), sep=delimiter)
 
@@ -80,6 +82,8 @@ class ImportHandler:
                 raise
 
             if txn is not None:
+                txn.source_line_number = csv_row
+                txn.source_row_text = data_row_texts[pandas_index]
                 transactions.append(txn)
 
         print()

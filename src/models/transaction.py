@@ -26,6 +26,8 @@ class Transaction:
     counterparty_iban: str = ""  # Neutral counterparty IBAN across debit/credit transactions
     reference: str = ""  # For direct debit (Lastschrift): reference
     transaction_type_detail: str = ""  # For direct debit (Lastschrift): detail type
+    source_line_number: Optional[int] = None  # 1-based line number in source CSV
+    source_row_text: str = ""  # Raw source CSV row text
 
     @property
     def transaction_type(self) -> str:
