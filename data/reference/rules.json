@@ -128,7 +128,7 @@
       "name": "Cash Withdrawal",
       "transaction_category": "Expense",
       "category": "Finanzen",
-      "subcategory": "Cash Withdrawal",
+      "subcategory": "Bargeldbezug",
       "priority": 80,
       "scope": {
         "transaction_type": "Debit",
