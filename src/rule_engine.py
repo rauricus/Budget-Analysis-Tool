@@ -28,8 +28,8 @@ class RuleEngine:
         self.load_rules()
     
     @staticmethod
-    def _parse_rules(data: dict, source: str = "") -> dict[int, Rule]:
-        """Parse a rules JSON dict into a {id: Rule} mapping."""
+    def _parse_rules(data: dict, source: str = "") -> dict[str, Rule]:
+        """Parse a rules JSON dict into a {key: Rule} mapping."""
         result = {}
         for rule_data in data.get("rules", []):
             scope = rule_data.get("scope") or {}
@@ -59,13 +59,22 @@ class RuleEngine:
                     f"'{priority}'. Allowed: integer {MIN_RULE_PRIORITY}-{MAX_RULE_PRIORITY}"
                 )
 
+            key = rule_data["key"]
+            if key in result:
+                raise ValueError(
+                    f"Duplicate key '{key}' in {source}. Each rule key must be unique within a file."
+                )
+
             rule = Rule(
-                key=rule_data["key"],
+                key=key,
                 name=rule_data["name"],
+                override=rule_data.get("override") or None,
+                
                 transaction_category=transaction_category_normalized,
                 category=rule_data.get("category", ""),
                 subcategory=rule_data.get("subcategory", ""),
                 priority=priority,
+                
                 transaction_type=scope.get("transaction_type", rule_data.get("transaction_type", "")),
                 transaction_type_detail=(
                     scope.get("transaction_type_detail", rule_data.get("transaction_type_detail"))
@@ -79,6 +88,7 @@ class RuleEngine:
                 counterparty_ibans=filters.get("counterparty_ibans", []),
                 include_keywords=filters.get("include_keywords", []),
                 exclude_keywords=filters.get("exclude_keywords", []),
+                
                 source=source,
             )
             result[rule.key] = rule
@@ -110,20 +120,42 @@ class RuleEngine:
         if self.overlay_path and self.overlay_path.exists():
             with open(self.overlay_path, "r", encoding="utf-8") as f:
                 overlay_rules = self._parse_rules(json.load(f), source=self.overlay_path.as_posix())
-            overridden_rules = [
-                (base_rules[rule_key], overlay_rules[rule_key])
-                for rule_key in overlay_rules
-                if rule_key in base_rules
-            ]
+
+            overridden_rules: list[tuple[Rule, Rule]] = []
+            for overlay_rule in overlay_rules.values():
+                if overlay_rule.override is not None:
+                    # Explicit override: must target an existing base key
+                    target_key = overlay_rule.override
+                    if target_key not in base_rules:
+                        raise ValueError(
+                            f"Rule '{overlay_rule.key}' in {self.overlay_path} declares "
+                            f"override: '{target_key}', but no such key exists in base rules."
+                        )
+                    overridden_rules.append((base_rules[target_key], overlay_rule))
+                else:
+                    # New rule: must not collide with an existing base key
+                    if overlay_rule.key in base_rules:
+                        raise ValueError(
+                            f"Rule '{overlay_rule.key}' in {self.overlay_path} uses a key that already "
+                            f"exists in base rules. Use 'override: \"{overlay_rule.key}\"' to replace it explicitly."
+                        )
+
+            # Apply overrides: store the overlay rule under the target (base) key
+            for base_rule, overlay_rule in overridden_rules:
+                overlay_rule.key = overlay_rule.override  # adopt base key as effective identity
+                base_rules[overlay_rule.override] = overlay_rule
+            # Add new rules
+            new_rules = {r.key: r for r in overlay_rules.values() if r.override is None}
+            base_rules.update(new_rules)
+
             overridden = len(overridden_rules)
-            added = len(overlay_rules) - overridden
-            base_rules.update(overlay_rules)
+            added = len(new_rules)
             print(f"   Applied overlay {self.overlay_path}: {overridden} overridden, {added} added")
             if self.debug:
                 for previous_rule, new_rule in overridden_rules:
                     print(
                         "      Override "
-                        f"'{new_rule.key}': '{previous_rule.name}' from {previous_rule.source} "
+                        f"'{new_rule.override}': '{previous_rule.name}' from {previous_rule.source} "
                         f"-> '{new_rule.name}' from {new_rule.source}"
                     )
 

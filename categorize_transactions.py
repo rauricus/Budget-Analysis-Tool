@@ -71,16 +71,22 @@ def main(argv: Optional[Sequence[str]] = None):
     metadata_dir = run_dir / "metadata"
     registry_path = metadata_dir / "transaction_id_registry.json"
 
-    # Base rules are always data/reference/rules.json
-    base_rules = Path("data/reference/rules.json")
+    # Resolve rules: read "base" field from dataset's rules.json
+    rules_file = run_dir / "rules.json"
+    if not rules_file.exists():
+        print(f"❌ Rules file not found: {rules_file}")
+        return 1
 
-    # Optional overlay: {run_dir}/rules.json, but only when run_dir is not data/reference itself
-    overlay_file = run_dir / "rules.json"
-    overlay_path = (
-        str(overlay_file)
-        if overlay_file.exists() and overlay_file.resolve() != base_rules.resolve()
-        else None
-    )
+    with open(rules_file, "r", encoding="utf-8") as f:
+        rules_data = json.load(f)
+
+    base_name = rules_data.get("base")
+    if base_name:
+        base_rules_path = str(Path("data") / base_name / "rules.json")
+        overlay_path: Optional[str] = str(rules_file)
+    else:
+        base_rules_path = str(rules_file)
+        overlay_path = None
     
     print("=" * 60)
     print("  Budget Tool - Categorization Pipeline")
@@ -101,7 +107,7 @@ def main(argv: Optional[Sequence[str]] = None):
     # 2. Load rules
     print("\n2. Loading Rules...")
     try:
-        engine = RuleEngine(str(base_rules), overlay_path=overlay_path, debug=debug)
+        engine = RuleEngine(base_rules_path, overlay_path=overlay_path, debug=debug)
     except FileNotFoundError as e:
         print(f"❌ {e}")
         return 1

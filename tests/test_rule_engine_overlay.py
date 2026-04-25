@@ -13,8 +13,8 @@ from models import Transaction
 from rule_engine import RuleEngine
 
 
-def _rule(key, category="Kategorie A", subcategory="", priority=5, merchant="TESTLADEN", name=None):
-    return {
+def _rule(key, category="Kategorie A", subcategory="", priority=5, merchant="TESTLADEN", name=None, override=None):
+    r = {
         "key": key,
         "name": name or f"Regel {key}",
         "transaction_category": "expense",
@@ -34,6 +34,9 @@ def _rule(key, category="Kategorie A", subcategory="", priority=5, merchant="TES
         },
         "priority": priority,
     }
+    if override is not None:
+        r["override"] = override
+    return r
 
 
 def _write(path, rules):
@@ -121,7 +124,7 @@ class TestOverlay:
         base = tmp_path / "base.json"
         overlay = tmp_path / "overlay.json"
         _write(base, [_rule("rule_1", category="Alt")])
-        _write(overlay, [_rule("rule_1", category="Neu")])
+        _write(overlay, [_rule("rule_1_overlay", category="Neu", override="rule_1")])
 
         engine = RuleEngine(str(base), overlay_path=str(overlay))
 
@@ -133,7 +136,7 @@ class TestOverlay:
         base = tmp_path / "base.json"
         overlay = tmp_path / "overlay.json"
         _write(base, [_rule("rule_1"), _rule("rule_2")])
-        _write(overlay, [_rule("rule_1", category="Übersteuert"), _rule("rule_3")])
+        _write(overlay, [_rule("rule_1_overlay", category="Übersteuert", override="rule_1"), _rule("rule_3")])
 
         engine = RuleEngine(str(base), overlay_path=str(overlay))
 
@@ -164,7 +167,7 @@ class TestOverlay:
         base = tmp_path / "base.json"
         overlay = tmp_path / "overlay.json"
         _write(base, [_rule("rule_1", category="Alt")])
-        _write(overlay, [_rule("rule_1", category="Neu")])
+        _write(overlay, [_rule("rule_1_overlay", category="Neu", override="rule_1")])
 
         engine = RuleEngine(str(base), overlay_path=str(overlay))
 
@@ -175,7 +178,7 @@ class TestOverlay:
         base = tmp_path / "base.json"
         overlay = tmp_path / "overlay.json"
         _write(base, [_rule("rule_1", category="Alt")])
-        _write(overlay, [_rule("rule_1", name="Neu", category="Neu")])
+        _write(overlay, [_rule("rule_1_overlay", name="Neu", category="Neu", override="rule_1")])
 
         RuleEngine(str(base), overlay_path=str(overlay), debug=True)
 
@@ -212,7 +215,7 @@ class TestOverlay:
         base = tmp_path / "base.json"
         overlay = tmp_path / "overlay.json"
         _write(base, [_rule("rule_1", category="Alt", merchant="MATCHSHOP")])
-        _write(overlay, [_rule("rule_1", name="Neu", category="Neu", merchant="MATCHSHOP")])
+        _write(overlay, [_rule("rule_1_overlay", name="Neu", category="Neu", merchant="MATCHSHOP", override="rule_1")])
 
         engine = RuleEngine(str(base), overlay_path=str(overlay), debug=False)
 
@@ -276,6 +279,31 @@ class TestOverlay:
 
         with pytest.raises(ValueError):
             RuleEngine(str(base))
+
+    def test_duplicate_key_in_same_file_raises(self, tmp_path):
+        base = tmp_path / "base.json"
+        _write(base, [_rule("rule_1"), _rule("rule_1", category="Duplikat")])
+
+        with pytest.raises(ValueError, match="Duplicate key 'rule_1'"):
+            RuleEngine(str(base))
+
+    def test_overlay_key_collision_without_override_raises(self, tmp_path):
+        base = tmp_path / "base.json"
+        overlay = tmp_path / "overlay.json"
+        _write(base, [_rule("rule_1")])
+        _write(overlay, [_rule("rule_1", category="Kollision")])
+
+        with pytest.raises(ValueError, match="override"):
+            RuleEngine(str(base), overlay_path=str(overlay))
+
+    def test_override_unknown_key_raises(self, tmp_path):
+        base = tmp_path / "base.json"
+        overlay = tmp_path / "overlay.json"
+        _write(base, [_rule("rule_1")])
+        _write(overlay, [_rule("rule_99_overlay", override="rule_99")])
+
+        with pytest.raises(ValueError, match="rule_99"):
+            RuleEngine(str(base), overlay_path=str(overlay))
 
     def test_sets_auto_transaction_category_on_match(self, tmp_path):
         base = tmp_path / "base.json"

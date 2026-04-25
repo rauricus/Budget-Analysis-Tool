@@ -10,20 +10,23 @@ class Rule:
 
     key: str
     name: str
+    override: Optional[str] = None  # Key of the base rule this rule replaces (overlay only)
     transaction_category: str  # One of: Income, Expense, Refund, Transfer
     category: str
     subcategory: str
     priority: int
+    
     transaction_type: str = ""  # Optional filter: "Credit" or "Debit"
     transaction_type_detail: Optional[str] = None  # Optional filter: e.g. "Send Money" or "Purchase/Service"
     services: list[str] = field(default_factory=list)  # Optional filter, e.g. ["Card Purchase", "Twint"]
+    providers: list[str] = field(default_factory=list)  # Optional filter, e.g. ["Apple Pay"]
     merchants: list[str] = field(default_factory=list)  # Optional filter, e.g. ["MIGROS", "COOP"]
     locations: list[str] = field(default_factory=list)  # Optional filter, e.g. ["AARAU", "ZURICH"]
     counterparties: list[str] = field(default_factory=list)  # Optional filter, e.g. ["DOCUTEAM"]
     counterparty_ibans: list[str] = field(default_factory=list)  # Optional filter, e.g. ["CH5600000000000000000"]
     include_keywords: list[str] = field(default_factory=list)  # Optional filter; all must be present
     exclude_keywords: list[str] = field(default_factory=list)  # Optional filter; none may be present
-    providers: list[str] = field(default_factory=list)  # Optional filter, e.g. ["Apple Pay"]
+    
     source: str = ""  # originating rules file (set by RuleEngine)
 
     def matches(self, transaction: Transaction) -> bool:
