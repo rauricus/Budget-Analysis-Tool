@@ -865,8 +865,8 @@
       "key": "income_example_counterparty_1",
       "name": "Beispiel: Gegenpartei Einkommen",
       "transaction_category": "Income",
-      "category": "Beispiel",
-      "subcategory": "Counterparty",
+      "category": "Einkommen",
+      "subcategory": "Lohn",
       "priority": 5,
       "scope": {
         "transaction_type": "Credit",
@@ -893,8 +893,8 @@
       "key": "expense_example_counterparty_iban_1",
       "name": "Beispiel: Gegenpartei IBAN Lastschrift",
       "transaction_category": "Expense",
-      "category": "Beispiel",
-      "subcategory": "Counterparty IBAN",
+      "category": "Finanzen",
+      "subcategory": "Spenden",
       "priority": 5,
       "scope": {
         "transaction_type": "Debit",

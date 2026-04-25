@@ -60,25 +60,26 @@ def test_example_dataset_contains_transfer_case():
 
 
 def test_example_counterparty_examples_in_input_are_categorized():
-    """Anonymized example input entries should be categorized as 'Beispiel'."""
+    """Anonymized example input entries should be categorized correctly."""
     txns = ImportHandler.load_csv('data/example/input/export.202504.csv')
     engine = RuleEngine('data/example/rules.json')
 
-    expected_fragments = {
-        'LOHNBEISPIEL APRIL 2025',
-        'DEMO-ZWECK JAHRESBEITRAG',
+    expected_categories = {
+        'LOHNBEISPIEL APRIL 2025': 'Einkommen',
+        'DEMO-ZWECK JAHRESBEITRAG': 'Finanzen',
     }
 
     categorized, _ = engine.categorize_batch(txns)
-    seen_fragments = set()
+    seen_fragments = {}
     for txn in categorized:
         text_upper = (txn.notification_text or '').upper()
-        for fragment in expected_fragments:
+        for fragment in expected_categories:
             if fragment in text_upper:
-                seen_fragments.add(fragment)
-                assert txn.auto_category == 'Beispiel'
+                seen_fragments[fragment] = txn.auto_category
+                assert txn.auto_category == expected_categories[fragment], \
+                    f"Transaction with '{fragment}' should be categorized as '{expected_categories[fragment]}', got '{txn.auto_category}'"
 
-    assert seen_fragments == expected_fragments
+    assert seen_fragments == expected_categories
 
 
 if __name__ == '__main__':
