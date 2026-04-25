@@ -232,7 +232,8 @@
         "providers": [],
         "notification_filters": {
           "merchants": [
-            "YOOJI'S"
+            "YOOJI'S",
+            "PEPPINO"
           ],
           "locations": [],
           "include_keywords": [],
