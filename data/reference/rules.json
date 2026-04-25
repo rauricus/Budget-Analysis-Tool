@@ -697,7 +697,8 @@
         ],
         "notification_filters": {
           "merchants": [
-            "KKIOSK"
+            "KKIOSK",
+            "KIOSK"
           ],
           "locations": [],
           "include_keywords": [],
@@ -707,37 +708,6 @@
     },
     {
       "key": "shopping_2",
-      "name": "Bahnhof-Kiosk: Sonstiges Einkaufen",
-      "transaction_category": "Expense",
-      "category": "Einkaufen",
-      "subcategory": "Sonstiges Einkaufen",
-      "priority": 30,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Card Purchase"
-        ],
-        "providers": [
-          "Apple Pay"
-        ],
-        "notification_filters": {
-          "merchants": [
-            "BAHNHOF"
-          ],
-          "locations": [],
-          "include_keywords": [
-            "BAHNHOF",
-            "KIOSK"
-          ],
-          "exclude_keywords": [
-            "APOTHEKE"
-          ]
-        }
-      }
-    },
-    {
-      "key": "shopping_3",
       "name": "Einkaufen: Bücher, Filme, Musik",
       "transaction_category": "Expense",
       "category": "Einkaufen",
