@@ -737,6 +737,32 @@
       }
     },
     {
+      "key": "shopping_3",
+      "name": "Einkaufen: Bücher, Filme, Musik",
+      "transaction_category": "Expense",
+      "category": "Einkaufen",
+      "subcategory": "Bücher/Filme/Musik",
+      "priority": 30,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [
+          "Apple Pay"
+        ],
+        "notification_filters": {
+          "merchants": [
+            "ORELL FÜSSLI THALIA"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
       "key": "supermarket_1",
       "name": "Supermarkt: Migros/Coop",
       "transaction_category": "Expense",
