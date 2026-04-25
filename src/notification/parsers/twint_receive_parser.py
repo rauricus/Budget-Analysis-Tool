@@ -13,6 +13,21 @@ class TwintReceiveParser(AbstractServiceParser):
     def supports(self, text: str) -> bool:
         return bool(self.TWINT_RECEIVE_PATTERN.match((text or "").strip()))
 
+    @staticmethod
+    def _build_counterparty_and_reference(sender_phone: str, rest: str) -> tuple[str, str]:
+        """Return parsed counterparty and optional reference from trailing text."""
+        normalized_rest = (rest or "").strip()
+        mitteilungen_idx = normalized_rest.upper().find("MITTEILUNGEN:")
+        if mitteilungen_idx >= 0:
+            name = normalized_rest[:mitteilungen_idx].strip()
+            message = normalized_rest[mitteilungen_idx + len("MITTEILUNGEN:"):].strip()
+            counterparty = " ".join(p for p in [sender_phone, name] if p)
+            reference = f"MITTEILUNGEN: {message}" if message else ""
+            return counterparty, reference
+
+        counterparty = " ".join(p for p in [sender_phone, normalized_rest] if p)
+        return counterparty, ""
+
     def parse(self, text: str) -> NotificationParseResult:
         t = (text or "").strip()
         match = self.TWINT_RECEIVE_PATTERN.match(t)
@@ -21,11 +36,12 @@ class TwintReceiveParser(AbstractServiceParser):
 
         sender_phone = match.group(1)
         rest = match.group(2).strip()
-        merchant = " ".join(p for p in [sender_phone, rest] if p)
+        counterparty, reference = self._build_counterparty_and_reference(sender_phone, rest)
 
         return NotificationParseResult(
             service_type="Twint",
             provider="Twint",
             transaction_type_detail="Receive Money",
-            merchant=merchant,
+            counterparty=counterparty,
+            reference=reference,
         )

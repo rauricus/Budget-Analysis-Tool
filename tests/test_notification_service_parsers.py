@@ -227,7 +227,7 @@ def test_twint_receive_parser_supports():
 
 
 def test_twint_receive_parser_parse():
-    """TwintReceiveParser should extract sender phone and remaining info."""
+    """TwintReceiveParser should extract sender into counterparty and message into reference."""
     parser = TwintReceiveParser()
     text = "TWINT GELD EMPFANGEN VOM 25.01.2025 VON TELEFON-NR. +41790000000 MAX MUSTER MITTEILUNGEN: TEST"
 
@@ -235,9 +235,10 @@ def test_twint_receive_parser_parse():
     assert result.service_type == "Twint"
     assert result.provider == "Twint"
     assert result.transaction_type_detail == "Receive Money"
-    assert "+41790000000" in result.merchant
-    assert "MAX MUSTER" in result.merchant
-    assert "MITTEILUNGEN: TEST" in result.merchant
+    assert result.merchant == ""
+    assert "+41790000000" in result.counterparty
+    assert "MAX MUSTER" in result.counterparty
+    assert result.reference == "MITTEILUNGEN: TEST"
 
 
 def test_twint_purchase_parser_parse():
