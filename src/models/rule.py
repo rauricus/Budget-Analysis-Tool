@@ -10,11 +10,11 @@ class Rule:
 
     key: str
     name: str
-    override: Optional[str] = None  # Key of the base rule this rule replaces (overlay only)
     transaction_category: str  # One of: Income, Expense, Refund, Transfer
     category: str
     subcategory: str
     priority: int
+    override: Optional[str] = None  # Key of the base rule this rule replaces (overlay only)
     
     transaction_type: str = ""  # Optional filter: "Credit" or "Debit"
     transaction_type_detail: Optional[str] = None  # Optional filter: e.g. "Send Money" or "Purchase/Service"
