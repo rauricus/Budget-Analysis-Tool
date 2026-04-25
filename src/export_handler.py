@@ -62,33 +62,20 @@ class ExportHandler:
         matching_rules: Optional[list] = None
     ) -> tuple[str, str]:
         """
-        Extract merchant and location from the transaction and matching rules.
+        Extract merchant and location from the transaction's parsed fields.
 
         Strategy:
-        1. If rules matched: use merchants/locations from rules
-        2. Otherwise: try to extract from notification text
+        1. Use parsed_merchant and parsed_location from the transaction
+        2. If empty, try to extract from notification text as fallback
+        
+        Rules are used for matching/categorization only, not for setting merchant/location.
         
         Returns:
             (merchant, location) tuple
         """
-        merchant = ""
-        location = ""
-
-        if transaction.parsed_merchant:
-            merchant = transaction.parsed_merchant
-        if transaction.parsed_location:
-            location = transaction.parsed_location
+        merchant = transaction.parsed_merchant or ""
+        location = transaction.parsed_location or ""
         
-        # If rules are present, extract merchant/location
-        if matching_rules:
-            # Merchants from highest-priority rule
-            if not merchant and matching_rules[0].merchants:
-                merchant = " / ".join(matching_rules[0].merchants)
-
-            # Locations from highest-priority rule
-            if not location and matching_rules[0].locations:
-                location = " / ".join(matching_rules[0].locations)
-
         # Fallback: try to extract from notification text
         # Format: "... MERCHANT LOCATION SCHWEIZ" or "MERCHANT (ZIP) LOCATION SCHWEIZ"
         if not merchant or not location:
@@ -104,7 +91,8 @@ class ExportHandler:
                 # Last token before SCHWEIZ is typically the city
                 last_word = before_country.split()[-1] if before_country else ""
                 if last_word and last_word not in ("VOM", "NR.", "KARTEN"):
-                    location = last_word
+                    if not location:
+                        location = last_word
         
         return merchant, location
     
