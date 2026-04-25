@@ -10,6 +10,7 @@ import pandas as pd
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from openpyxl import load_workbook
+from openpyxl.chart import BarChart
 from analyze_by_category import (
     load_categorized_csv,
     load_dataset_categorized_csvs,
@@ -153,6 +154,9 @@ def test_excel_report_creation():
         assert ws_summary['A11'].value == 'Total', "Should have total row"
         assert ws_summary['A13'].value == 'Transfer', "Should show transfer row with spacing"
         assert ws_summary['A15'].value == 'Grand Total', "Should have grand total row"
+        assert len(ws_summary._charts) >= 1, "Summary sheet should include a chart"
+        assert isinstance(ws_summary._charts[0], BarChart), "Summary chart should be a stacked bar chart"
+        assert ws_summary._charts[0].grouping == 'stacked', "Summary chart should use stacked grouping"
 
         # Verify first overview sheet has expected headers
         ws_overview = wb['Overviews by category']

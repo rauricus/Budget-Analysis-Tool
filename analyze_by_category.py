@@ -4,7 +4,7 @@ Budget Analysis by Category
 
 Analyzes categorized CSV files and generates an Excel report with:
 - Summary tables by category and subcategory
-- Pie charts for visual analysis
+- Charts for visual analysis
 - Flexibility for users to modify and customize
 
 Usage:
@@ -24,7 +24,7 @@ import numbers
 from typing import Optional, Sequence, Tuple
 import pandas as pd
 from openpyxl import Workbook
-from openpyxl.chart import PieChart, Reference
+from openpyxl.chart import PieChart, BarChart, Reference
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils.dataframe import dataframe_to_rows
 
@@ -331,28 +331,46 @@ def _create_summary_sheet(ws, df: pd.DataFrame, source_label: str):
     ws.cell(row=grand_total_row, column=2).font = Font(bold=True)
     ws.cell(row=grand_total_row, column=3).font = Font(bold=True)
 
-    # Helper block for contiguous chart data (all four transaction categories)
-    ws.cell(row=6, column=8, value='Transaction Category')
-    ws.cell(row=6, column=9, value='Amount (CHF)')
-    chart_rows = [
-        ('Income', income_credit + income_debit),
-        ('Expense', expense_credit + expense_debit),
-        ('Refund', refund_credit + refund_debit),
-        ('Transfer', transfer_credit + transfer_debit),
-    ]
-    for idx, (label, amount) in enumerate(chart_rows, start=7):
-        ws.cell(row=idx, column=8, value=label)
-        ws.cell(row=idx, column=9, value=amount).number_format = '#,##0.00'
+    # Helper block for contiguous chart data in stacked format.
+    # Use four explicit series so chart legend can represent all parts correctly.
+    ws.cell(row=6, column=5, value='Flow')
+    ws.cell(row=6, column=6, value='income')
+    ws.cell(row=6, column=7, value='refund (credit)')
+    ws.cell(row=6, column=8, value='expenses')
+    ws.cell(row=6, column=9, value='refund (debit)')
 
-    chart = PieChart()
-    chart.title = 'Transaction Categories Overview'
+    ws.cell(row=7, column=5, value='Income')
+    ws.cell(row=7, column=6, value=income_credit).number_format = '#,##0.00'
+    ws.cell(row=7, column=7, value=refund_credit).number_format = '#,##0.00'
+    ws.cell(row=7, column=8, value=0.0).number_format = '#,##0.00'
+    ws.cell(row=7, column=9, value=0.0).number_format = '#,##0.00'
+
+    ws.cell(row=8, column=5, value='Expenses')
+    ws.cell(row=8, column=6, value=0.0).number_format = '#,##0.00'
+    ws.cell(row=8, column=7, value=0.0).number_format = '#,##0.00'
+    ws.cell(row=8, column=8, value=expense_debit).number_format = '#,##0.00'
+    ws.cell(row=8, column=9, value=refund_debit).number_format = '#,##0.00'
+
+    chart = BarChart()
+    chart.type = 'col'
+    chart.grouping = 'stacked'
+    chart.overlap = 100
+    chart.title = 'Income vs. Expenses'
+    chart.y_axis.title = 'Amount (CHF)'
     chart.style = 10
     chart.height = 10
     chart.width = 14
-    labels = Reference(ws, min_col=8, min_row=7, max_row=10)
-    chart_data = Reference(ws, min_col=9, min_row=6, max_row=10)
+    labels = Reference(ws, min_col=8, min_row=7, max_row=8)
+    chart_data = Reference(ws, min_col=6, max_col=9, min_row=6, max_row=8)
     chart.add_data(chart_data, titles_from_data=True)
     chart.set_categories(labels)
+
+    # Color each series so legend and bar colors are consistent.
+    if len(chart.series) >= 4:
+        chart.series[0].graphicalProperties.solidFill = '2E7D32'
+        chart.series[1].graphicalProperties.solidFill = 'A5D6A7'
+        chart.series[2].graphicalProperties.solidFill = 'C62828'
+        chart.series[3].graphicalProperties.solidFill = 'EF9A9A'
 
     # Keep chart aligned with table header row.
     ws.add_chart(chart, 'E6')
