@@ -922,18 +922,78 @@
           "exclude_keywords": []
         }
       }
+    },
+    {
+      "key": "example_counterparty_1",
+      "name": "Beispiel: Gegenpartei Einkommen",
+      "transaction_category": "Income",
+      "category": "Beispiel",
+      "subcategory": "Counterparty",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Credit",
+        "transaction_type_detail": null,
+        "services": [
+          "Credit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "counterparties": [
+            "FIKTIVE LOHN AG"
+          ],
+          "counterparty_ibans": [],
+          "include_keywords": [
+            "LOHNBEISPIEL"
+          ],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "example_counterparty_iban_1",
+      "name": "Beispiel: Gegenpartei IBAN Lastschrift",
+      "transaction_category": "Expense",
+      "category": "Beispiel",
+      "subcategory": "Counterparty IBAN",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "counterparties": [
+            "ANONYMISIERTER VEREIN"
+          ],
+          "counterparty_ibans": [
+            "CH11 2222 3333 4444 5555 6"
+          ],
+          "include_keywords": [
+            "DEMO-ZWECK"
+          ],
+          "exclude_keywords": []
+        }
+      }
     }
   ],
   "comments": {
     "required_fields": "Rule fields that should always be set: key, name, transaction_category, priority, scope.transaction_type.",
     "priority": "Required integer from 1 to 10. Use 5 as the default medium value.",
-    "optional_fields": "Optional scope filters: scope.transaction_type_detail, scope.services, scope.providers, scope.notification_filters.{merchants,locations,include_keywords,exclude_keywords}. Empty list means 'do not filter by this field'.",
+    "optional_fields": "Optional scope filters: scope.transaction_type_detail, scope.services, scope.providers, scope.notification_filters.{merchants,locations,counterparties,counterparty_ibans,include_keywords,exclude_keywords}. Empty list means 'do not filter by this field'.",
     "scope.transaction_type": "Required filter by money direction: 'credit' or 'debit'.",
     "scope.transaction_type_detail": "Optional exact detail filter (e.g. 'Geld senden', 'Kauf/Dienstleistung'). Use null to disable.",
     "scope.services": "Optional filter on parsed generic service type (e.g. Karteneinkauf, Twint, Lastschrift).",
     "scope.providers": "Optional filter on payment provider (e.g. Apple Pay). Provider must NOT be encoded in services.",
     "scope.notification_filters.merchants": "Optional merchant filter (case-insensitive). OR logic (at least one must match).",
     "scope.notification_filters.locations": "Optional location filter (case-insensitive). AND logic (all listed locations must match).",
+    "scope.notification_filters.counterparties": "Optional counterparty filter (case-insensitive). OR logic (at least one must match the parsed counterparty).",
+    "scope.notification_filters.counterparty_ibans": "Optional IBAN filter. OR logic with exact match after removing spaces.",
     "scope.notification_filters.include_keywords": "Optional keywords that MUST be present. AND logic.",
     "scope.notification_filters.exclude_keywords": "Optional keywords that must NOT be present. NONE may be present.",
     "matching": "A rule matches only if all active (non-empty) filters are satisfied. Higher priority wins.",

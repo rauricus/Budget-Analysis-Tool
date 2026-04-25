@@ -75,6 +75,8 @@ class RuleEngine:
                 providers=scope.get("providers", rule_data.get("providers", [])),
                 merchants=filters.get("merchants", []),
                 locations=filters.get("locations", []),
+                counterparties=filters.get("counterparties", []),
+                counterparty_ibans=filters.get("counterparty_ibans", []),
                 include_keywords=filters.get("include_keywords", []),
                 exclude_keywords=filters.get("exclude_keywords", []),
                 source=source,

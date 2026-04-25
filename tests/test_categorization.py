@@ -59,9 +59,32 @@ def test_reference_dataset_contains_transfer_case():
     assert transfer_count > 0, "Expected at least one transfer transaction in reference dataset"
 
 
+def test_reference_counterparty_examples_in_input_are_categorized():
+    """Anonymized reference input examples should be categorized as 'Beispiel'."""
+    txns = ImportHandler.load_csv('data/reference/input/export.202504.csv')
+    engine = RuleEngine('data/reference/rules.json')
+
+    expected_fragments = {
+        'LOHNBEISPIEL APRIL 2025',
+        'DEMO-ZWECK JAHRESBEITRAG',
+    }
+
+    categorized, _ = engine.categorize_batch(txns)
+    seen_fragments = set()
+    for txn in categorized:
+        text_upper = (txn.notification_text or '').upper()
+        for fragment in expected_fragments:
+            if fragment in text_upper:
+                seen_fragments.add(fragment)
+                assert txn.auto_category == 'Beispiel'
+
+    assert seen_fragments == expected_fragments
+
+
 if __name__ == '__main__':
     test_categorization()
     test_reference_dataset_contains_uncategorized_cases()
     test_reference_dataset_contains_transfer_case()
+    test_reference_counterparty_examples_in_input_are_categorized()
     print("✓ All categorization tests passed")
 

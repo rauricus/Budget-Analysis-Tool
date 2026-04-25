@@ -19,6 +19,8 @@ class Rule:
     services: list[str] = field(default_factory=list)  # Optional filter, e.g. ["Card Purchase", "Twint"]
     merchants: list[str] = field(default_factory=list)  # Optional filter, e.g. ["MIGROS", "COOP"]
     locations: list[str] = field(default_factory=list)  # Optional filter, e.g. ["AARAU", "ZURICH"]
+    counterparties: list[str] = field(default_factory=list)  # Optional filter, e.g. ["DOCUTEAM"]
+    counterparty_ibans: list[str] = field(default_factory=list)  # Optional filter, e.g. ["CH5600000000000000000"]
     include_keywords: list[str] = field(default_factory=list)  # Optional filter; all must be present
     exclude_keywords: list[str] = field(default_factory=list)  # Optional filter; none may be present
     providers: list[str] = field(default_factory=list)  # Optional filter, e.g. ["Apple Pay"]
@@ -34,6 +36,7 @@ class Rule:
         merchant_text = (transaction.parsed_merchant or "").upper()
         location_text = (transaction.parsed_location or "").upper()
         counterparty_text = (transaction.counterparty or "").upper()
+        counterparty_iban_text = (transaction.counterparty_iban or "").replace(" ", "").upper()
         reference_text = (transaction.reference or "").upper()
         detail_text = (transaction.transaction_type_detail or "").upper()
 
@@ -70,6 +73,16 @@ class Rule:
 
         # 3. All locations must appear in parsed location (if defined)
         if self.locations and not all(loc.upper() in location_text for loc in self.locations):
+            return False
+
+        # 3a. At least one counterparty must appear in parsed counterparty
+        if self.counterparties and not any(cp.upper() in counterparty_text for cp in self.counterparties):
+            return False
+
+        # 3b. At least one counterparty IBAN must match exactly (ignoring spaces)
+        if self.counterparty_ibans and counterparty_iban_text not in {
+            iban.replace(" ", "").upper() for iban in self.counterparty_ibans
+        }:
             return False
 
         # 4. All include keywords must appear in parsed fields

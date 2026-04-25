@@ -74,6 +74,29 @@ class TestOverlay:
         rule = next(r for r in engine.rules if r.key == "rule_1")
         assert rule.transaction_type_detail == "Send Money"
 
+    def test_loads_counterparty_filters(self, tmp_path):
+        base = tmp_path / "base.json"
+        _write(
+            base,
+            [{
+                **_rule("rule_1"),
+                "scope": {
+                    **_rule("rule_1")["scope"],
+                    "notification_filters": {
+                        **_rule("rule_1")["scope"]["notification_filters"],
+                        "counterparties": ["DOCUTEAM AG"],
+                        "counterparty_ibans": ["CH6709000000400025000"],
+                    },
+                },
+            }],
+        )
+
+        engine = RuleEngine(str(base))
+
+        rule = next(r for r in engine.rules if r.key == "rule_1")
+        assert rule.counterparties == ["DOCUTEAM AG"]
+        assert rule.counterparty_ibans == ["CH6709000000400025000"]
+
     def test_null_transaction_type_detail_is_supported(self, tmp_path):
         base = tmp_path / "base.json"
         _write(base, [{**_rule("rule_1"), "scope": {**_rule("rule_1")["scope"], "transaction_type_detail": None}}])

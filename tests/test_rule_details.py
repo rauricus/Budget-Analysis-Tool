@@ -80,6 +80,34 @@ def test_rule_service_filtering():
     assert not rule.matches(txn), "Rule should not match when provider filter excludes Apple Pay"
 
 
+def test_rule_counterparty_filtering():
+    """Rule should optionally filter by counterparty and counterparty IBAN."""
+    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
+    engine = RuleEngine('data/reference/rules.json')
+
+    txn = next(t for t in txns if t.counterparty and t.counterparty_iban)
+    rule = [r for r in engine.rules if r.key == "supermarket_1"][0]
+
+    rule.services = [txn.service_type] if txn.service_type else []
+    rule.providers = [txn.provider] if txn.provider else []
+    rule.transaction_type = txn.transaction_type
+    rule.merchants = []
+    rule.locations = []
+    rule.include_keywords = []
+    rule.exclude_keywords = []
+    rule.counterparties = [txn.counterparty]
+    rule.counterparty_ibans = [txn.counterparty_iban]
+
+    assert rule.matches(txn), "Rule should match when counterparty and IBAN filters match the transaction"
+
+    rule.counterparties = ["NO MATCH"]
+    assert not rule.matches(txn), "Rule should not match when counterparty filter differs"
+
+    rule.counterparties = [txn.counterparty]
+    rule.counterparty_ibans = ["CH0000000000000000000"]
+    assert not rule.matches(txn), "Rule should not match when counterparty IBAN filter differs"
+
+
 def test_rule_without_service_filter_can_match():
     """A rule without services filter should rely on other criteria."""
     txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')

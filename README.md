@@ -172,6 +172,8 @@ Example:
         "notification_filters": {
           "merchants": ["MIGROS"],
           "locations": [],
+          "counterparties": [],
+          "counterparty_ibans": [],
           "include_keywords": ["TAKE AWAY"],
           "exclude_keywords": []
         }
@@ -191,10 +193,12 @@ Example:
 - `scope.transaction_type` filters on money direction: `Credit` or `Debit`.
 - `scope.transaction_type_detail` can optionally filter on parsed detail (for example `Send Money`, `Purchase/Service`, `Standing Order`). Use `null` (or empty) to disable this filter.
 - `scope.services` filters by parsed `service_type` and `scope.providers` optionally by payment provider.
-- `scope.notification_filters` contains text-based matching criteria (`merchants`, `locations`, `include_keywords`, `exclude_keywords`).
+- `scope.notification_filters` contains parsed-field matching criteria (`merchants`, `locations`, `counterparties`, `counterparty_ibans`, `include_keywords`, `exclude_keywords`).
 - A rule matches only if all configured conditions match.
 - `merchants`: OR logic (at least one must match).
 - `locations`: AND logic (all must match).
+- `counterparties`: OR logic (at least one must match the parsed counterparty).
+- `counterparty_ibans`: OR logic with exact IBAN match (spaces ignored).
 - `include_keywords`: AND logic (all must match).
 - `exclude_keywords`: none may match.
 
