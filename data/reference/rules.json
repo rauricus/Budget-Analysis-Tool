@@ -240,7 +240,8 @@
         "providers": [],
         "notification_filters": {
           "merchants": [
-            "COFFEE AND PLANTS"
+            "COFFEE AND PLANTS",
+            "OMBAK"
           ],
           "locations": [],
           "include_keywords": [],
