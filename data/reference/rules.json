@@ -6,7 +6,7 @@
       "transaction_category": "Expense",
       "category": "Wohnen",
       "subcategory": "Kommunikation",
-      "priority": 70,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -30,7 +30,7 @@
       "transaction_category": "Expense",
       "category": "Wohnen",
       "subcategory": "Kommunikation",
-      "priority": 60,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -54,7 +54,7 @@
       "transaction_category": "Expense",
       "category": "Wohnen",
       "subcategory": "Kommunikation",
-      "priority": 60,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -79,7 +79,7 @@
       "transaction_category": "Expense",
       "category": "Leben",
       "subcategory": "Familie",
-      "priority": 72,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -131,7 +131,7 @@
       "transaction_category": "Expense",
       "category": "Finanzen",
       "subcategory": "Bargeldbezug",
-      "priority": 80,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -153,7 +153,7 @@
       "transaction_category": "Expense",
       "category": "Finanzen",
       "subcategory": "Fees",
-      "priority": 85,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -177,7 +177,7 @@
       "transaction_category": "Expense",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
-      "priority": 100,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -206,7 +206,7 @@
       "transaction_category": "Expense",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
-      "priority": 60,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -231,7 +231,7 @@
       "transaction_category": "Expense",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
-      "priority": 60,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -256,7 +256,7 @@
       "transaction_category": "Expense",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
-      "priority": 56,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": "Send Money",
@@ -281,7 +281,7 @@
       "transaction_category": "Expense",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
-      "priority": 60,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": "Send Money",
@@ -303,7 +303,7 @@
       "transaction_category": "Expense",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
-      "priority": 60,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -327,7 +327,7 @@
       "transaction_category": "Expense",
       "category": "Einkaufen",
       "subcategory": "Detail-Lebensmittel",
-      "priority": 40,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -359,7 +359,7 @@
       "transaction_category": "Expense",
       "category": "Einkaufen",
       "subcategory": "Detail-Lebensmittel",
-      "priority": 40,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -387,7 +387,7 @@
       "transaction_category": "Expense",
       "category": "Einkaufen",
       "subcategory": "Detail-Lebensmittel",
-      "priority": 45,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -413,7 +413,7 @@
       "transaction_category": "Expense",
       "category": "Leben",
       "subcategory": "Gesundheit",
-      "priority": 45,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -439,7 +439,7 @@
       "transaction_category": "Expense",
       "category": "Leben",
       "subcategory": "Gesundheit",
-      "priority": 70,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -464,7 +464,7 @@
       "transaction_category": "Expense",
       "category": "Wohnen",
       "subcategory": "Handwerk und Garten",
-      "priority": 50,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -490,7 +490,7 @@
       "transaction_category": "Expense",
       "category": "Wohnen",
       "subcategory": "Haushalt",
-      "priority": 50,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -517,7 +517,7 @@
       "transaction_category": "Expense",
       "category": "Wohnen",
       "subcategory": "Haushalt",
-      "priority": 75,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -546,7 +546,7 @@
       "transaction_category": "Expense",
       "category": "Wohnen",
       "subcategory": "Haushalt",
-      "priority": 75,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -570,7 +570,7 @@
       "transaction_category": "Expense",
       "category": "Wohnen",
       "subcategory": "Miete und Hypothek",
-      "priority": 60,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -594,7 +594,7 @@
       "transaction_category": "Income",
       "category": "Einkommen",
       "subcategory": "Lohn",
-      "priority": 80,
+      "priority": 5,
       "scope": {
         "transaction_type": "Credit",
         "transaction_type_detail": null,
@@ -620,7 +620,7 @@
       "transaction_category": "Expense",
       "category": "Leben",
       "subcategory": "Sonstiges Leben",
-      "priority": 35,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -646,7 +646,7 @@
       "transaction_category": "Refund",
       "category": "Rückerstattungen",
       "subcategory": "",
-      "priority": 50,
+      "priority": 5,
       "scope": {
         "transaction_type": "Credit",
         "transaction_type_detail": "Receive Money",
@@ -668,7 +668,7 @@
       "transaction_category": "Refund",
       "category": "Leben",
       "subcategory": "Gesundheit",
-      "priority": 75,
+      "priority": 5,
       "scope": {
         "transaction_type": "Credit",
         "transaction_type_detail": null,
@@ -692,7 +692,7 @@
       "transaction_category": "Refund",
       "category": "Freizeit",
       "subcategory": "Reisen und Erleben",
-      "priority": 80,
+      "priority": 5,
       "scope": {
         "transaction_type": "Credit",
         "transaction_type_detail": "Refund",
@@ -716,7 +716,7 @@
       "transaction_category": "Expense",
       "category": "Einkaufen",
       "subcategory": "Sonstiges Einkaufen",
-      "priority": 30,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -743,7 +743,7 @@
       "transaction_category": "Expense",
       "category": "Einkaufen",
       "subcategory": "Bücher/Filme/Musik",
-      "priority": 30,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -769,7 +769,7 @@
       "transaction_category": "Expense",
       "category": "Einkaufen",
       "subcategory": "Supermärkte",
-      "priority": 50,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -799,7 +799,7 @@
       "transaction_category": "Transfer",
       "category": "Überträge",
       "subcategory": "Account Transfer",
-      "priority": 95,
+      "priority": 5,
       "scope": {
         "transaction_type": "Credit",
         "transaction_type_detail": null,
@@ -825,7 +825,7 @@
       "transaction_category": "Expense",
       "category": "Mobilität",
       "subcategory": "Öffentlicher Verkehr",
-      "priority": 70,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -850,7 +850,7 @@
       "transaction_category": "Expense",
       "category": "Mobilität",
       "subcategory": "Privater Verkehr",
-      "priority": 72,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -874,7 +874,7 @@
       "transaction_category": "Expense",
       "category": "Leben",
       "subcategory": "Styling und Wellness",
-      "priority": 45,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -900,7 +900,7 @@
       "transaction_category": "Expense",
       "category": "Leben",
       "subcategory": "Styling und Wellness",
-      "priority": 45,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -926,6 +926,7 @@
   ],
   "comments": {
     "required_fields": "Rule fields that should always be set: key, name, transaction_category, priority, scope.transaction_type.",
+    "priority": "Required integer from 1 to 10. Use 5 as the default medium value.",
     "optional_fields": "Optional scope filters: scope.transaction_type_detail, scope.services, scope.providers, scope.notification_filters.{merchants,locations,include_keywords,exclude_keywords}. Empty list means 'do not filter by this field'.",
     "scope.transaction_type": "Required filter by money direction: 'credit' or 'debit'.",
     "scope.transaction_type_detail": "Optional exact detail filter (e.g. 'Geld senden', 'Kauf/Dienstleistung'). Use null to disable.",
@@ -935,7 +936,7 @@
     "scope.notification_filters.locations": "Optional location filter (case-insensitive). AND logic (all listed locations must match).",
     "scope.notification_filters.include_keywords": "Optional keywords that MUST be present. AND logic.",
     "scope.notification_filters.exclude_keywords": "Optional keywords that must NOT be present. NONE may be present.",
-    "matching": "A rule matches only if all active (non-empty) filters are satisfied. Highest priority wins.",
+    "matching": "A rule matches only if all active (non-empty) filters are satisfied. Higher priority wins.",
     "fallback": "No fallback category. If no rule matches, transaction stays uncategorized.",
     "subcategory": "Optional subcategory for fine-grained classification (e.g. 'Gastronomie' within 'Freizeit'). Empty string if not applicable.",
     "category": "Optional high-level category mapping. Empty string if not applicable.",

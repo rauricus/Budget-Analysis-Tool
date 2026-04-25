@@ -8,6 +8,8 @@ from models import Rule, Transaction
 logger = logging.getLogger(__name__)
 
 VALID_TRANSACTION_CATEGORIES = {"Income", "Expense", "Refund", "Transfer"}
+MIN_RULE_PRIORITY = 1
+MAX_RULE_PRIORITY = 10
 
 
 class RuleEngine:
@@ -49,13 +51,21 @@ class RuleEngine:
                     f"'{transaction_category_normalized}'. Allowed: {sorted(VALID_TRANSACTION_CATEGORIES)}"
                 )
 
+            priority = rule_data.get("priority")
+            if not isinstance(priority, int) or not (MIN_RULE_PRIORITY <= priority <= MAX_RULE_PRIORITY):
+                raise ValueError(
+                    "Invalid or missing 'priority' for rule "
+                    f"'{rule_data.get('key', '?')}' ('{rule_data.get('name', '')}') in {source}: "
+                    f"'{priority}'. Allowed: integer {MIN_RULE_PRIORITY}-{MAX_RULE_PRIORITY}"
+                )
+
             rule = Rule(
                 key=rule_data["key"],
                 name=rule_data["name"],
                 transaction_category=transaction_category_normalized,
                 category=rule_data.get("category", ""),
                 subcategory=rule_data.get("subcategory", ""),
-                priority=rule_data["priority"],
+                priority=priority,
                 transaction_type=scope.get("transaction_type", rule_data.get("transaction_type", "")),
                 transaction_type_detail=(
                     scope.get("transaction_type_detail", rule_data.get("transaction_type_detail"))

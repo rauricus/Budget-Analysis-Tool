@@ -13,7 +13,7 @@ from models import Transaction
 from rule_engine import RuleEngine
 
 
-def _rule(key, category="Kategorie A", subcategory="", priority=50, merchant="TESTLADEN", name=None):
+def _rule(key, category="Kategorie A", subcategory="", priority=5, merchant="TESTLADEN", name=None):
     return {
         "key": key,
         "name": name or f"Regel {key}",
@@ -52,7 +52,7 @@ class TestBaseRulesOnly:
 
     def test_rules_sorted_by_priority_descending(self, tmp_path):
         base = tmp_path / "rules.json"
-        _write(base, [_rule("rule_1", priority=10), _rule("rule_2", priority=90), _rule("rule_3", priority=50)])
+        _write(base, [_rule("rule_1", priority=1), _rule("rule_2", priority=10), _rule("rule_3", priority=5)])
 
         engine = RuleEngine(str(base))
 
@@ -232,13 +232,20 @@ class TestOverlay:
     def test_priority_sorting_preserved_after_overlay(self, tmp_path):
         base = tmp_path / "base.json"
         overlay = tmp_path / "overlay.json"
-        _write(base, [_rule("rule_1", priority=10), _rule("rule_2", priority=50)])
-        _write(overlay, [_rule("rule_3", priority=30)])
+        _write(base, [_rule("rule_1", priority=1), _rule("rule_2", priority=5)])
+        _write(overlay, [_rule("rule_3", priority=3)])
 
         engine = RuleEngine(str(base), overlay_path=str(overlay))
 
         priorities = [r.priority for r in engine.rules]
         assert priorities == sorted(priorities, reverse=True)
+
+    def test_invalid_priority_raises(self, tmp_path):
+        base = tmp_path / "base.json"
+        _write(base, [{**_rule("rule_1"), "priority": 11}])
+
+        with pytest.raises(ValueError):
+            RuleEngine(str(base))
 
     def test_invalid_transaction_category_raises(self, tmp_path):
         base = tmp_path / "base.json"

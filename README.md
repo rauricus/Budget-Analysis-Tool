@@ -6,7 +6,7 @@ Automatic categorization of bank transactions using configurable JSON rules.
 
 - CSV import (PostFinance format)
 - Service-specific parser registry (card purchases incl. provider, cash withdrawals, credit transfers, Twint, Lastschrift variants, bank fees)
-- Rule engine with priority-based matching
+- Rule engine with priority-based matching (1-10; 1:lowest, 10:highest)
 - Stable transaction IDs via persistent fingerprint registry
 - Service/provider-scoped rule selection (`services` + optional `providers` in rules)
 - Merchant, location, include/exclude keyword matching
@@ -163,7 +163,7 @@ Example:
       "transaction_category": "Expense",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
-      "priority": 100,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": "Purchase/Service",
@@ -184,10 +184,10 @@ Example:
 ### Matching behavior
 
 - Rules in `rules.json` can be kept sorted by `key` for readability; at runtime the engine evaluates them by descending `priority`.
-- Rules are sorted by descending `priority`.
 - `transaction_category` is required and must be one of: `Income`, `Expense`, `Refund`, `Transfer`.
 - Category assignment uses two levels: `category` and `subcategory`.
 - `category`/`subcategory` mapping is optional per rule (empty values are allowed).
+- `priority` is a required integer from 1 to 10. Use `5` as the default "medium" value.
 - `scope.transaction_type` filters on money direction: `Credit` or `Debit`.
 - `scope.transaction_type_detail` can optionally filter on parsed detail (for example `Send Money`, `Purchase/Service`, `Standing Order`). Use `null` (or empty) to disable this filter.
 - `scope.services` filters by parsed `service_type` and `scope.providers` optionally by payment provider.
