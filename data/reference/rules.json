@@ -105,7 +105,7 @@
       "transaction_category": "Expense",
       "category": "Leben",
       "subcategory": "Familie",
-      "priority": 73,
+      "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
@@ -344,7 +344,8 @@
             "BRANKOVIC",
             "CONFISERIE",
             "SPRÜNGLI",
-            "JAISLI"
+            "JAISLI",
+            "MOSER'S BACKPARADIES"
           ],
           "locations": [],
           "include_keywords": [],
@@ -485,7 +486,7 @@
     },
     {
       "key": "home_2",
-      "name": "Einkauf Haushalt: Manor",
+      "name": "Einkauf Haushalt: Manor, Interdiscount & Co",
       "transaction_category": "Expense",
       "category": "Wohnen",
       "subcategory": "Haushalt",
@@ -501,7 +502,8 @@
         ],
         "notification_filters": {
           "merchants": [
-            "MANOR"
+            "MANOR",
+            "INTERDISCOUNT"
           ],
           "locations": [],
           "include_keywords": [],
@@ -511,7 +513,7 @@
     },
     {
       "key": "home_3",
-      "name": "Einkauf Haushalt: Online Haushalt AG",
+      "name": "Einkauf Haushalt: Online-Käufe",
       "transaction_category": "Expense",
       "category": "Wohnen",
       "subcategory": "Haushalt",
@@ -525,13 +527,39 @@
         "providers": [],
         "notification_filters": {
           "merchants": [
-            "ONLINE HAUSHALT AG"
+            "ONLINE HAUSHALT AG",
+            "DIGITEC",
+            "GALAXUS"
           ],
           "locations": [],
           "include_keywords": [
             "PAYMENT ID",
             "BESTELLNUMMER"
           ],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "home_3",
+      "name": "Einkauf Haushalt: Online-Käufe Second-Hand",
+      "transaction_category": "Expense",
+      "category": "Wohnen",
+      "subcategory": "Haushalt",
+      "priority": 75,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "RICARDO"
+          ],
+          "locations": [],
+          "include_keywords": [],
           "exclude_keywords": []
         }
       }
