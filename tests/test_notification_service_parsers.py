@@ -167,7 +167,7 @@ def test_twint_send_parser_supports():
 
 
 def test_twint_send_parser_parse():
-    """TwintSendParser should extract merchant and transaction type"""
+    """TwintSendParser should extract counterparty and transaction type."""
     parser = TwintSendParser()
     text = "TWINT GELD SENDEN VOM 26.03.2025 VON TELEFON-NR. +41795555111 AN TELEFON-NR. +41796666222 KEBAB, IMBISS MITTEILUNGEN: KEBAB"
 
@@ -175,7 +175,9 @@ def test_twint_send_parser_parse():
     assert result.service_type == "Twint"
     assert result.provider == "Twint"
     assert result.transaction_type_detail == "Send Money"
-    assert "+41796666222 KEBAB, IMBISS" in result.merchant
+    assert result.merchant == ""
+    assert "+41796666222 KEBAB, IMBISS" in result.counterparty
+    assert result.reference == "MITTEILUNGEN: KEBAB"
 
 
 def test_twint_send_parser_direct_supports():
@@ -195,9 +197,10 @@ def test_twint_send_parser_direct_parse():
     assert result.service_type == "Twint"
     assert result.provider == "Twint"
     assert result.transaction_type_detail == "Send Money"
-    assert "+41790000000" in result.merchant
-    assert "MAX MUSTER" in result.merchant
-    assert "ESSEN GESTERN ABEND" in result.merchant
+    assert result.merchant == ""
+    assert "+41790000000" in result.counterparty
+    assert "MAX MUSTER" in result.counterparty
+    assert result.reference == "MITTEILUNGEN: ESSEN GESTERN ABEND"
 
 
 def test_twint_send_parser_direct_parse_without_mitteilungen():
@@ -209,8 +212,10 @@ def test_twint_send_parser_direct_parse_without_mitteilungen():
     assert result.service_type == "Twint"
     assert result.provider == "Twint"
     assert result.transaction_type_detail == "Send Money"
-    assert "+41790000000" in result.merchant
-    assert "MAX MUSTER" in result.merchant
+    assert result.merchant == ""
+    assert "+41790000000" in result.counterparty
+    assert "MAX MUSTER" in result.counterparty
+    assert result.reference == ""
 
 
 def test_twint_receive_parser_supports():

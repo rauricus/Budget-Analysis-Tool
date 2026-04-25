@@ -19,6 +19,24 @@ class TwintSendParser(AbstractServiceParser):
         t = (text or "").strip()
         return bool(self.TWINT_PATTERN.match(t) or self.TWINT_DIRECT_PATTERN.match(t))
 
+    @staticmethod
+    def _build_counterparty_and_reference(recipient_phone: str, rest: str) -> tuple[str, str]:
+        """Return parsed counterparty and optional reference from trailing text."""
+        normalized_rest = (rest or "").strip()
+        if normalized_rest.startswith(","):
+            normalized_rest = normalized_rest[1:].strip()
+
+        mitteilungen_idx = normalized_rest.upper().find("MITTEILUNGEN:")
+        if mitteilungen_idx >= 0:
+            name = normalized_rest[:mitteilungen_idx].strip()
+            message = normalized_rest[mitteilungen_idx + len("MITTEILUNGEN:"):].strip()
+            counterparty = " ".join(p for p in [recipient_phone, name] if p)
+            reference = f"MITTEILUNGEN: {message}" if message else ""
+            return counterparty, reference
+
+        counterparty = " ".join(p for p in [recipient_phone, normalized_rest] if p)
+        return counterparty, ""
+
     def parse(self, text: str) -> NotificationParseResult:
         t = (text or "").strip()
 
@@ -26,36 +44,26 @@ class TwintSendParser(AbstractServiceParser):
         if match:
             recipient_phone = match.group(2)
             rest = match.group(3).strip()
-            merchant = recipient_phone
-            if rest:
-                merchant = f"{recipient_phone} {rest}".strip()
+            counterparty, reference = self._build_counterparty_and_reference(recipient_phone, rest)
             return NotificationParseResult(
                 service_type="Twint",
                 provider="Twint",
                 transaction_type_detail="Send Money",
-                merchant=merchant,
+                counterparty=counterparty,
+                reference=reference,
             )
 
         match = self.TWINT_DIRECT_PATTERN.match(t)
         if match:
             recipient_phone = match.group(1)
             rest = match.group(2).strip()
-            # Strip optional leading comma (format: ", NAME MITTEILUNGEN: ...")
-            if rest.startswith(","):
-                rest = rest[1:].strip()
-            # Split off MITTEILUNGEN section
-            mitteilungen_idx = rest.upper().find("MITTEILUNGEN:")
-            if mitteilungen_idx >= 0:
-                name = rest[:mitteilungen_idx].strip()
-                message = rest[mitteilungen_idx + len("MITTEILUNGEN:"):].strip()
-                merchant_parts = [p for p in [recipient_phone, name, f"MITTEILUNGEN: {message}"] if p]
-            else:
-                merchant_parts = [p for p in [recipient_phone, rest] if p]
+            counterparty, reference = self._build_counterparty_and_reference(recipient_phone, rest)
             return NotificationParseResult(
                 service_type="Twint",
                 provider="Twint",
                 transaction_type_detail="Send Money",
-                merchant=" ".join(merchant_parts),
+                counterparty=counterparty,
+                reference=reference,
             )
 
         return NotificationParseResult()

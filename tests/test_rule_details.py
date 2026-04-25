@@ -130,7 +130,7 @@ def test_rule_transaction_type_detail_filtering_for_twint_send():
         t for t in txns
         if t.service_type == 'Twint'
         and t.transaction_type_detail == 'Send Money'
-        and 'ESSEN' in (t.parsed_merchant or '').upper()
+        and 'ESSEN' in f"{t.counterparty or ''} {t.reference or ''}".upper()
     )
     rule = [r for r in engine.rules if r.key == "gastronomy_5"][0]
 
