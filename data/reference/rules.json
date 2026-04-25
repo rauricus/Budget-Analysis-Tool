@@ -101,7 +101,7 @@
     },
     {
       "key": "family_2",
-      "name": "Familie: Geld für Essen",
+      "name": "Familie: Auslagen für Kinder",
       "transaction_category": "Expense",
       "category": "Leben",
       "subcategory": "Familie",
@@ -116,7 +116,8 @@
         "notification_filters": {
           "merchants": [
             "ZMITTAG",
-            "ESSEN"
+            "ESSEN",
+            "TICKETS"
           ],
           "locations": [],
           "include_keywords": [],
