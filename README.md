@@ -30,14 +30,11 @@ uv sync
 # Optional: activate the local virtual environment in your shell
 source .venv/bin/activate
 
-# If you activate `.venv` via `source .venv/bin/activate`, you can run # the same commands without `uv run`, for example `python categorize_transactions.py example`
-or `pytest -q`.
+# If `.venv` is active, you can run commands without `uv run`
+# e.g. `python categorize_transactions.py example` or `pytest -q`
 
 # Run pipeline for the example dataset (used by tests/docs)
 uv run python categorize_transactions.py example
-
-# Optional: run pipeline for the global reference baseline dataset
-uv run python categorize_transactions.py reference
 
 # Optional: run pipeline for your own local dataset/overlay setup
 # I use a dataset in `data/private` only as an example here. If you choose to use that, however, note that it is already gitignored.
@@ -95,8 +92,8 @@ data/
 │ └── output/                      # Expected/known categorized outputs for examples
 ├── reference/                     # Global base rules for overlays (shared baseline)
 │ └── rules.json                   # Base rule definitions (service-scoped matching)
-└── private/                       # Example for local-only data + optional rule overrides (gitignored)
-  ├── rules.json                   # Overlay rules (same key overrides base, new key adds)
+└── private/                       # Example for local-only data + optional rule overlay (gitignored)
+  ├── rules.json                   # Optional overlay; can declare "base": "reference"
   ├── metadata/                    # Persistent metadata (transaction registry + months)
   │ ├── transaction_id_registry.json # Local persistent transaction fingerprint -> ID mapping
   │ └── months.json                # Processed month periods
@@ -295,7 +292,7 @@ The structured export currently uses these columns:
 
 ### Private override rules with version control
 
-If you keep personal data and overrides in `data/private`, there are two practical ways to version them without storing them in the public repository.
+If you keep personal data and local overlays in `data/private`, there are two practical ways to version them without storing them in the public repository.
 
 Approach A (recommended): nested private Git repository in `data/private`
 
@@ -321,6 +318,6 @@ Approach B (alternative): separate private repository outside this project
 
 Both approaches work with the current overlay mechanism:
 
-- Base rules are always loaded from `data/reference/rules.json`.
-- Optional overlay rules are loaded from `{run_dir}/rules.json` (for example `data/private/rules.json`).
-- Same rule key overrides base; new rule key adds a new rule.
+- If `rules.json` has no `base`, it is a standalone ruleset.
+- If `rules.json` contains `"base": "reference"`, `data/reference/rules.json` is loaded first.
+- Replacements are explicit via `"override": "<base_key>"`; rules without `override` are additions.
