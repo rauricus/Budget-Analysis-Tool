@@ -1,7 +1,7 @@
 Transaction ID;Date;Transaction Type;Transaction Type Detail;Service;Provider;Card Number;Merchant;Location;Counterparty;Counterparty IBAN;Reference;Credit in CHF;Debit in CHF;Label;Transaction Category;Category;Subcategory
 TX-000003;31.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;CITY TANKSTELLE;OLTEN;;;;;10.34;;Expense;Einkaufen;Detail-Lebensmittel
 TX-000004;31.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;CITY TANKSTELLE;OLTEN;;;;;6.55;;Expense;Einkaufen;Detail-Lebensmittel
-TX-000005;31.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;SUMUP *DELIAS HAIRSTY;LUZERN;;;;;50.0;;Expense;Leben;Styling und Wellness
+TX-000064;31.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;SUMUP *COIFFEUR HAIRCUT;LUZERN;;;;;50.0;;Expense;Leben;Styling und Wellness
 TX-000006;31.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;KKIOSK 45810;BERN;;;;;7.55;;Expense;Einkaufen;Sonstiges Einkaufen
 TX-000007;31.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;MIGROS MARKTHALLE (8812);SOLOTHURN;;;;;22.2;;Expense;Einkaufen;Supermärkte
 TX-000008;31.03.2025;Debit;Bank Package Fee;Fees;;;;;;;PREIS FÜR BANKPAKET SMART 02.2025;;5.0;;Expense;Finanzen;Fees
@@ -47,7 +47,7 @@ TX-000046;24.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;THE
 TX-000047;24.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;COOP-5510 RIVERSIDE REST.;LUZERN;;;;;44.0;;Expense;Einkaufen;Supermärkte
 TX-000048;24.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;MIGROS MARKTHALLE (8812);SOLOTHURN;;;;;53.5;;Expense;Einkaufen;Supermärkte
 TX-000049;24.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;MIGROS CITY TAKE AWAY (6624);BASEL;;;;;6.8;;Expense;Freizeit;Gastronomie
-TX-000050;24.03.2025;Debit;Payment;Direct Debit;;;MEDICURA / SYMPANY;;MEDICURA PLUS AG GESUNDHEITSWEG 8 4052 BASEL;CH1830000001400099001;;;77.45;;Expense;Leben;Gesundheit
+TX-000050;24.03.2025;Debit;Payment;Direct Debit;;;MEDICURA;;MEDICURA PLUS AG GESUNDHEITSWEG 8 4052 BASEL;CH1830000001400099001;;;77.45;;Expense;Leben;Gesundheit
 TX-000051;23.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;BÄCKEREI HUG;OLTEN;;;;;17.3;;Expense;Einkaufen;Detail-Lebensmittel
 TX-000052;23.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;MANOR AG - 771 (CENTRA);BERN;;;;;23.95;;Expense;Wohnen;Haushalt
 TX-000053;23.03.2025;Debit;Send Money;Twint;Twint;;+41796666222 KEBAB, IMBISS;;;;;;13.5;;Expense;Freizeit;Gastronomie

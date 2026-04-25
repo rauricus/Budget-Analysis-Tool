@@ -12,8 +12,8 @@ from rule_engine import RuleEngine
 
 def test_migros_supermarket_rule():
     """Test that migros_supermarket rule matches correctly"""
-    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
-    engine = RuleEngine('data/reference/rules.json')
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
+    engine = RuleEngine('data/example/rules.json')
     
     # Get transaction 4 (MIGROS transaction)
     txn = txns[4]
@@ -22,7 +22,7 @@ def test_migros_supermarket_rule():
     rule = [r for r in engine.rules if r.key == "supermarket_1"][0]
 
     # Verify rule properties
-    assert rule.merchants == ['MIGROS', 'COOP', 'VOI']
+    assert rule.merchants == ['MIGROS', 'COOP']
     assert rule.exclude_keywords == ['TAKE AWAY']
     assert rule.transaction_category == 'Expense'
     
@@ -39,8 +39,8 @@ def test_migros_supermarket_rule():
 
 def test_rule_matching_order():
     """Test that rules are applied in priority order"""
-    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
-    engine = RuleEngine('data/reference/rules.json')
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
+    engine = RuleEngine('data/example/rules.json')
     
     # Find a transaction that matches at least one rule
     txn = None
@@ -62,8 +62,8 @@ def test_rule_matching_order():
 
 def test_rule_service_filtering():
     """Test that optional service/provider filters in rules work"""
-    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
-    engine = RuleEngine('data/reference/rules.json')
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
+    engine = RuleEngine('data/example/rules.json')
 
     txn = txns[4]
     rule = [r for r in engine.rules if r.key == "supermarket_1"][0]
@@ -82,8 +82,8 @@ def test_rule_service_filtering():
 
 def test_rule_counterparty_filtering():
     """Rule should optionally filter by counterparty and counterparty IBAN."""
-    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
-    engine = RuleEngine('data/reference/rules.json')
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
+    engine = RuleEngine('data/example/rules.json')
 
     txn = next(t for t in txns if t.counterparty and t.counterparty_iban)
     rule = [r for r in engine.rules if r.key == "supermarket_1"][0]
@@ -110,8 +110,8 @@ def test_rule_counterparty_filtering():
 
 def test_rule_without_service_filter_can_match():
     """A rule without services filter should rely on other criteria."""
-    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
-    engine = RuleEngine('data/reference/rules.json')
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
+    engine = RuleEngine('data/example/rules.json')
 
     txn = txns[4]
     rule = [r for r in engine.rules if r.key == "supermarket_1"][0]
@@ -123,8 +123,8 @@ def test_rule_without_service_filter_can_match():
 
 def test_rule_transaction_type_detail_filtering_for_twint_send():
     """Rule should optionally filter by transaction_type_detail."""
-    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
-    engine = RuleEngine('data/reference/rules.json')
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
+    engine = RuleEngine('data/example/rules.json')
 
     txn = next(
         t for t in txns

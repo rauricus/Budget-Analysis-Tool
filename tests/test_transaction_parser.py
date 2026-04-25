@@ -13,7 +13,7 @@ from transaction_parser import TransactionParser
 
 def test_parse_row_apple_pay():
     """Test parsing of an Apple Pay CSV row"""
-    df = pd.read_csv('data/reference/input/export.202503.csv', sep=';', skiprows=5, encoding='utf-8')
+    df = pd.read_csv('data/example/input/export.202503.csv', sep=';', skiprows=5, encoding='utf-8')
     row = df.iloc[0]
 
     txn = TransactionParser.parse_row(row)
@@ -46,9 +46,9 @@ def test_parse_row_skips_empty_date():
 
 def test_parse_row_credit_transaction_type():
     """Credit rows should be normalized to transaction_type='credit'."""
-    df = pd.read_csv('data/reference/input/export.202503.csv', sep=';', skiprows=5, encoding='utf-8')
+    df = pd.read_csv('data/example/input/export.202503.csv', sep=';', skiprows=5, encoding='utf-8')
     credit_rows = df[pd.to_numeric(df['Gutschrift in CHF'], errors='coerce').fillna(0) > 0]
-    assert not credit_rows.empty, "Reference dataset should contain at least one credit transaction"
+    assert not credit_rows.empty, "Example dataset should contain at least one credit transaction"
     row = credit_rows.iloc[0]
 
     txn = TransactionParser.parse_row(row)

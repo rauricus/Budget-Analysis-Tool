@@ -30,10 +30,13 @@ uv sync
 # Optional: activate the local virtual environment in your shell
 source .venv/bin/activate
 
-# If you activate `.venv` via `source .venv/bin/activate`, you can run # the same commands without `uv run`, for example `python categorize_transactions.py reference`
+# If you activate `.venv` via `source .venv/bin/activate`, you can run # the same commands without `uv run`, for example `python categorize_transactions.py example`
 or `pytest -q`.
 
-# Run pipeline for reference dataset
+# Run pipeline for the example dataset (used by tests/docs)
+uv run python categorize_transactions.py example
+
+# Optional: run pipeline for the global reference baseline dataset
 uv run python categorize_transactions.py reference
 
 # Optional: run pipeline for your own local dataset/overlay setup
@@ -41,7 +44,7 @@ uv run python categorize_transactions.py reference
 uv run python categorize_transactions.py private
 
 # Optional: reuse original input CSV categories for otherwise uncategorized rows
-uv run python categorize_transactions.py reference --use-input-category-fallback
+uv run python categorize_transactions.py example --use-input-category-fallback
 ```
 
 
@@ -53,7 +56,7 @@ The analysis script discovers all `*.categorized.csv` files in the dataset outpu
 
 ```bash
 # Generate aggregated analysis for all categorized CSV files in a dataset
-uv run python analyze_by_category.py reference
+uv run python analyze_by_category.py example
 
 # Specify a custom output file
 uv run python analyze_by_category.py private my_analysis.xlsx
@@ -83,13 +86,15 @@ uv run pytest tests/test_rule_matching.py
 
 ```text
 data/
-├── reference/                     # Base rules + stable sample dataset
-│ ├── rules.json                   # Base rule definitions (service-scoped matching)
-│ ├── metadata/                    # Persistent metadata (transaction registry + months)
+├── example/                       # Stable example dataset for tests/docs
+│ ├── rules.json                   # Example rule set used by tests and docs
+│ ├── metadata/                    # Example metadata (transaction registry + months)
 │ │ ├── transaction_id_registry.json # Persistent transaction fingerprint -> ID mapping
 │ │ └── months.json                # Processed month periods
-│ ├── input/                       # Stable sample input CSV files
-│ └── output/                      # Expected/known categorized outputs
+│ ├── input/                       # Stable example input CSV files
+│ └── output/                      # Expected/known categorized outputs for examples
+├── reference/                     # Global base rules for overlays (shared baseline)
+│ └── rules.json                   # Base rule definitions (service-scoped matching)
 └── private/                       # Example for local-only data + optional rule overrides (gitignored)
   ├── rules.json                   # Overlay rules (same key overrides base, new key adds)
   ├── metadata/                    # Persistent metadata (transaction registry + months)
@@ -128,24 +133,45 @@ tests/                             # Unit/integration-style tests for pipeline c
 ## Data flow
 
 ```text
-data/{reference|private}/input/*.csv
+data/{example|private}/input/*.csv
    -> ImportHandler.load_csv
    -> TransactionParser.parse_row
    -> NotificationTextParser.parse (via parser registry)
   -> TransactionIdRegistry.assign_batch
    -> RuleEngine.categorize_batch
    -> ExportHandler.export_csv
-  -> data/{reference|private}/output/*.categorized.csv
+  -> data/{example|private}/output/*.categorized.csv
 
 During the categorize run, transaction IDs are assigned and persisted in
-`data/{reference|private}/metadata/transaction_id_registry.json`.
-Months metadata is written to `data/{reference|private}/metadata/months.json`.
+`data/{example|private}/metadata/transaction_id_registry.json`.
+Months metadata is written to `data/{example|private}/metadata/months.json`.
 IDs remain stable across reruns as long as the normalized transaction content (date, type, notification text, credit/debit) and duplicate occurrence order remain unchanged.
 ```
 
+## Dataset convention
+
+Use the datasets with clearly separated responsibilities:
+
+- `data/example`: canonical examples for tests and documentation. May contain synthetic/fictive merchants and counterparties. Keep this dataset stable and reproducible.
+- `data/reference`: global baseline rules for overlays (`data/reference/rules.json`). This is the shared rule foundation for local/private datasets.
+- `data/private`: local, personal data and private overrides. Usually gitignored and not committed to the public repository.
+
+Decision guide for changes:
+
+- New parser behavior examples, test fixtures, and documentation examples: change `data/example`.
+- Generic rule improvements intended for everyone: change `data/reference/rules.json`.
+- Personal or sensitive categorization logic: change `data/private/rules.json`.
+
+Repository policy:
+
+- Tests and docs should depend on `data/example`, not on `data/reference`.
+- Overlay workflows should continue to use `data/reference/rules.json` as base and `{run_dir}/rules.json` as optional overlay.
+- Never commit personal data from `data/private` to the public repository.
+
 ## Rules
 
-`data/reference/rules.json` is the shared base configuration.
+`data/reference/rules.json` is the shared global base configuration for overlays.
+`data/example/rules.json` is the stable example rule set used for tests and documentation examples.
 `data/private/rules.json` is an optional local overlay example for personal rules and is typically not committed.
 
 Each rule has a stable string `key` instead of a numeric rule ID.
@@ -234,12 +260,13 @@ The structured export currently uses these columns:
 
 ## Iterative workflow
 
-1. Put a new CSV into `data/reference/input/` (shared) or into your local `data/private/input/` setup.
-2. Run `uv run python categorize_transactions.py reference` or, for your local setup, `uv run python categorize_transactions.py private`.
-3. Inspect `data/reference/output/*.categorized.csv` or your local `data/private/output/*.categorized.csv`.
+1. Put a new CSV into `data/private/input/`.
+2. Run `uv run python categorize_transactions.py private --debug` to process the private dataset and see detailed matching diagnostics.
+3. Inspect `data/private/output/*.categorized.csv`.
 4. Add/refine parser(s) in `src/notification/parsers/` if needed.
-5. Add/refine matching rules in `data/reference/rules.json` (base) and/or optional personal overrides in `data/private/rules.json`.
-6. Repeat until categorization quality is acceptable.
+5. Add/refine private rules in `data/private/rules.json`.
+6. Decide explicitly for each new/changed rule whether it should stay private or be added/updated in `data/reference/rules.json` as a generic baseline improvement.
+7. Repeat until categorization quality is acceptable.
 
 ### Private override rules with version control
 

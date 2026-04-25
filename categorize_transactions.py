@@ -20,8 +20,8 @@ from transaction_id_registry import TransactionIdRegistry
 def _resolve_run_directory(arg: str) -> Path:
     """Resolve run directory from CLI argument.
 
-    Supports either a direct path (e.g. "data/reference") or shorthand
-    folder names under data/ (e.g. "reference" -> "data/reference").
+    Supports either a direct path (e.g. "data/example") or shorthand
+    folder names under data/ (e.g. "example" -> "data/example").
     """
     direct = Path(arg)
     if direct.exists() and direct.is_dir():
@@ -43,7 +43,7 @@ def main(argv: Optional[Sequence[str]] = None):
         python categorize_transactions.py <run_dir> [--debug] [--use-input-category-fallback]
 
     Example:
-        python categorize_transactions.py reference --debug
+        python categorize_transactions.py example --debug
     """
     argv = argv if argv is not None else sys.argv[1:]
     debug = False
@@ -57,7 +57,7 @@ def main(argv: Optional[Sequence[str]] = None):
 
     if len(argv) != 1:
         print("Usage: python categorize_transactions.py <run_dir> [--debug] [--use-input-category-fallback]")
-        print("Example: python categorize_transactions.py reference --debug")
+        print("Example: python categorize_transactions.py example --debug")
         return 2
 
     try:

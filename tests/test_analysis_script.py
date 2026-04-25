@@ -22,7 +22,7 @@ from analyze_by_category import (
 
 def test_load_categorized_csv():
     """Test that categorized CSV is loaded correctly."""
-    csv_path = 'data/reference/output/export.202503.categorized.csv'
+    csv_path = 'data/example/output/export.202503.categorized.csv'
 
     df = load_categorized_csv(csv_path)
 
@@ -36,7 +36,7 @@ def test_load_categorized_csv():
 
 def test_analyze_by_category():
     """Test category analysis."""
-    csv_path = 'data/reference/output/export.202503.categorized.csv'
+    csv_path = 'data/example/output/export.202503.categorized.csv'
     df = load_categorized_csv(csv_path)
 
     category_stats = analyze_by_category(df)
@@ -58,7 +58,7 @@ def test_analyze_by_category():
 
 def test_analyze_by_subcategory():
     """Test subcategory analysis."""
-    csv_path = 'data/reference/output/export.202503.categorized.csv'
+    csv_path = 'data/example/output/export.202503.categorized.csv'
     df = load_categorized_csv(csv_path)
 
     subcategory_stats = analyze_by_subcategory(df)
@@ -76,7 +76,7 @@ def test_analyze_by_subcategory():
 
 def test_category_uncategorized_handling():
     """Test that uncategorized transactions are properly handled."""
-    csv_path = 'data/reference/output/export.202503.categorized.csv'
+    csv_path = 'data/example/output/export.202503.categorized.csv'
     df = load_categorized_csv(csv_path)
 
     # Check if there are any uncategorized transactions
@@ -92,7 +92,7 @@ def test_category_uncategorized_handling():
 
 def test_numerical_calculations():
     """Test that numerical calculations are correct."""
-    csv_path = 'data/reference/output/export.202503.categorized.csv'
+    csv_path = 'data/example/output/export.202503.categorized.csv'
     df = load_categorized_csv(csv_path)
 
     category_stats = analyze_by_category(df)
@@ -106,7 +106,7 @@ def test_numerical_calculations():
 
 def test_excel_report_creation():
     """Integration test for Excel report generation."""
-    csv_path = 'data/reference/output/export.202503.categorized.csv'
+    csv_path = 'data/example/output/export.202503.categorized.csv'
     df = load_categorized_csv(csv_path)
 
     category_stats = analyze_by_category(df)
@@ -250,7 +250,7 @@ def test_analysis_sheets_exclude_transfer_transactions():
 
 def test_load_dataset_categorized_csvs_merges_all_files_and_adds_source():
     """Should merge all categorized CSV files from dataset output and add Source File column."""
-    run_dir = Path('data/reference')
+    run_dir = Path('data/example')
 
     df, file_count = load_dataset_categorized_csvs(run_dir)
 

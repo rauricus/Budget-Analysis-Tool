@@ -12,8 +12,8 @@ from rule_engine import RuleEngine
 
 def test_categorization():
     """Test that sample transactions are categorized correctly"""
-    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
-    engine = RuleEngine('data/reference/rules.json')
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
+    engine = RuleEngine('data/example/rules.json')
     
     # Test transactions 3 (KKIOSK), 10 (BYRO), 43 (COOP)
     test_indices = [3, 10, 43]
@@ -35,34 +35,34 @@ def test_categorization():
                 f"Transaction {idx} should be categorized as {top_priority_rule.category}"
 
 
-def test_reference_dataset_contains_uncategorized_cases():
-    """Reference dataset should keep at least one intentionally uncategorized case."""
-    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
-    engine = RuleEngine('data/reference/rules.json')
+def test_example_dataset_contains_uncategorized_cases():
+    """Example dataset should keep at least one intentionally uncategorized case."""
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
+    engine = RuleEngine('data/example/rules.json')
 
     categories = [engine.categorize(txn) for txn in txns]
     categorized_count = sum(1 for c in categories if c)
     uncategorized_count = sum(1 for c in categories if not c)
 
     assert categorized_count > 0, "There should be categorized transactions"
-    assert uncategorized_count > 0, "Reference dataset should contain uncategorized transactions"
+    assert uncategorized_count > 0, "Example dataset should contain uncategorized transactions"
 
 
-def test_reference_dataset_contains_transfer_case():
-    """Reference dataset should contain at least one transaction categorized as transfer."""
-    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
-    engine = RuleEngine('data/reference/rules.json')
+def test_example_dataset_contains_transfer_case():
+    """Example dataset should contain at least one transaction categorized as transfer."""
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
+    engine = RuleEngine('data/example/rules.json')
 
     categorized, _ = engine.categorize_batch(txns)
     transfer_count = sum(1 for txn in categorized if txn.auto_transaction_category == 'Transfer')
 
-    assert transfer_count > 0, "Expected at least one transfer transaction in reference dataset"
+    assert transfer_count > 0, "Expected at least one transfer transaction in example dataset"
 
 
-def test_reference_counterparty_examples_in_input_are_categorized():
-    """Anonymized reference input examples should be categorized as 'Beispiel'."""
-    txns = ImportHandler.load_csv('data/reference/input/export.202504.csv')
-    engine = RuleEngine('data/reference/rules.json')
+def test_example_counterparty_examples_in_input_are_categorized():
+    """Anonymized example input entries should be categorized as 'Beispiel'."""
+    txns = ImportHandler.load_csv('data/example/input/export.202504.csv')
+    engine = RuleEngine('data/example/rules.json')
 
     expected_fragments = {
         'LOHNBEISPIEL APRIL 2025',
@@ -83,8 +83,8 @@ def test_reference_counterparty_examples_in_input_are_categorized():
 
 if __name__ == '__main__':
     test_categorization()
-    test_reference_dataset_contains_uncategorized_cases()
-    test_reference_dataset_contains_transfer_case()
-    test_reference_counterparty_examples_in_input_are_categorized()
+    test_example_dataset_contains_uncategorized_cases()
+    test_example_dataset_contains_transfer_case()
+    test_example_counterparty_examples_in_input_are_categorized()
     print("✓ All categorization tests passed")
 

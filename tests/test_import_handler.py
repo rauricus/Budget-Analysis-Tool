@@ -12,7 +12,7 @@ from models import Transaction
 
 def test_csv_loading():
     """Test that CSV file is loaded correctly"""
-    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
     
     assert txns is not None, "CSV should be loaded"
     assert len(txns) > 0, "CSV should contain transactions"
@@ -28,7 +28,7 @@ def test_csv_loading():
 
 def test_transaction_text_upper():
     """Test that notification_text_upper is properly calculated"""
-    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
     
     for txn in txns:
         # notification_text_upper should be the uppercase version of notification_text
@@ -38,7 +38,7 @@ def test_transaction_text_upper():
 
 def test_apple_pay_notification_parsing():
     """Test that Apple Pay fields are parsed from notification text"""
-    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
 
     apple_pay_txn = txns[0]
     assert apple_pay_txn.service_type == 'Card Purchase', "Service type should be Card Purchase"

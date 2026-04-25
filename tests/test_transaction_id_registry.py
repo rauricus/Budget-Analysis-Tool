@@ -15,7 +15,7 @@ from transaction_id_registry import TransactionIdRegistry
 
 def test_assigns_ids_and_persists_registry():
     """Assigned IDs should be stable across registry reloads."""
-    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
 
     with tempfile.TemporaryDirectory() as tmpdir:
         registry_path = Path(tmpdir) / 'transaction_id_registry.json'
@@ -25,7 +25,7 @@ def test_assigns_ids_and_persists_registry():
         first_run_ids = [txn.transaction_id for txn in txns]
         registry.save()
 
-        txns_again = ImportHandler.load_csv('data/reference/input/export.202503.csv')
+        txns_again = ImportHandler.load_csv('data/example/input/export.202503.csv')
         registry_reloaded = TransactionIdRegistry(registry_path)
         registry_reloaded.assign_batch(txns_again)
         second_run_ids = [txn.transaction_id for txn in txns_again]
@@ -36,7 +36,7 @@ def test_assigns_ids_and_persists_registry():
 
 def test_duplicate_transactions_get_distinct_ids():
     """Exact duplicates in one batch should still receive different IDs."""
-    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
 
     with tempfile.TemporaryDirectory() as tmpdir:
         registry_path = Path(tmpdir) / 'transaction_id_registry.json'

@@ -14,8 +14,8 @@ from rule_engine import RuleEngine
 
 def test_rule_matching_highest_priority():
     """Test that the highest priority matching rule is applied"""
-    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
-    engine = RuleEngine('data/reference/rules.json')
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
+    engine = RuleEngine('data/example/rules.json')
     
     # Find a transaction that matches at least one rule
     txn = None
@@ -41,8 +41,8 @@ def test_rule_matching_highest_priority():
 
 def test_multiple_rules_per_transaction():
     """Test that transactions can match multiple rules"""
-    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
-    engine = RuleEngine('data/reference/rules.json')
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
+    engine = RuleEngine('data/example/rules.json')
     
     # Test different transaction types
     matched_count = 0
@@ -56,29 +56,29 @@ def test_multiple_rules_per_transaction():
     assert matched_count > 0, "Should find transactions that match rules"
 
 
-def test_reference_dataset_has_uncategorized_matches():
-    """Reference dataset should contain at least one unmatched transaction."""
-    engine = RuleEngine('data/reference/rules.json')
+def test_example_dataset_has_uncategorized_matches():
+    """Example dataset should contain at least one unmatched transaction."""
+    engine = RuleEngine('data/example/rules.json')
 
-    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
     has_uncategorized = any(engine.categorize(txn) is None for txn in txns)
     assert has_uncategorized, "Expected at least one uncategorized transaction"
 
 
-def test_reference_dataset_contains_counterparty_example_rules():
-    """Reference rules should contain anonymized examples for counterparty-based matching."""
-    engine = RuleEngine('data/reference/rules.json')
+def test_example_dataset_contains_counterparty_example_rules():
+    """Example rules should contain anonymized examples for counterparty-based matching."""
+    engine = RuleEngine('data/example/rules.json')
 
     by_key = {rule.key: rule for rule in engine.rules}
-    assert "example_counterparty_1" in by_key
-    assert "example_counterparty_iban_1" in by_key
-    assert by_key["example_counterparty_1"].counterparties == ["FIKTIVE LOHN AG"]
-    assert by_key["example_counterparty_iban_1"].counterparty_ibans == ["CH11 2222 3333 4444 5555 6"]
+    assert "income_example_counterparty_1" in by_key
+    assert "expense_example_counterparty_iban_1" in by_key
+    assert by_key["income_example_counterparty_1"].counterparties == ["FIKTIVE LOHN AG"]
+    assert by_key["expense_example_counterparty_iban_1"].counterparty_ibans == ["CH11 2222 3333 4444 5555 6"]
 
 
-def test_reference_dataset_counterparty_examples_match_synthetic_transactions():
+def test_example_dataset_counterparty_examples_match_synthetic_transactions():
     """Anonymized example rules should match synthetic transactions using counterparty fields."""
-    engine = RuleEngine('data/reference/rules.json')
+    engine = RuleEngine('data/example/rules.json')
     by_key = {rule.key: rule for rule in engine.rules}
 
     income_txn = Transaction(
@@ -106,14 +106,14 @@ def test_reference_dataset_counterparty_examples_match_synthetic_transactions():
         reference="Demo-Zweck Jahresbeitrag",
     )
 
-    assert by_key["example_counterparty_1"].matches(income_txn)
-    assert by_key["example_counterparty_iban_1"].matches(debit_txn)
+    assert by_key["income_example_counterparty_1"].matches(income_txn)
+    assert by_key["expense_example_counterparty_iban_1"].matches(debit_txn)
 
 
 if __name__ == '__main__':
     test_rule_matching_highest_priority()
     test_multiple_rules_per_transaction()
-    test_reference_dataset_has_uncategorized_matches()
-    test_reference_dataset_contains_counterparty_example_rules()
-    test_reference_dataset_counterparty_examples_match_synthetic_transactions()
+    test_example_dataset_has_uncategorized_matches()
+    test_example_dataset_contains_counterparty_example_rules()
+    test_example_dataset_counterparty_examples_match_synthetic_transactions()
     print("✓ All rule matching tests passed")

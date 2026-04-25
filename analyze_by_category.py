@@ -11,8 +11,8 @@ Usage:
     python analyze_by_category.py <run_dir> [output_excel_file]
 
 Example:
-    python analyze_by_category.py reference
-    python analyze_by_category.py data/reference
+    python analyze_by_category.py example
+    python analyze_by_category.py data/example
     python analyze_by_category.py private my_analysis.xlsx
 """
 
@@ -50,8 +50,8 @@ def _month_label(month_str: str) -> str:
 def _resolve_run_directory(arg: str) -> Path:
     """Resolve run directory from CLI argument.
 
-    Supports either a direct path (for example data/reference) or shorthand
-    folder names under data/ (for example reference -> data/reference).
+    Supports either a direct path (for example data/example) or shorthand
+    folder names under data/ (for example example -> data/example).
     """
     direct = Path(arg)
     if direct.exists() and direct.is_dir():
@@ -95,7 +95,7 @@ def load_dataset_categorized_csvs(run_dir: Path) -> Tuple[pd.DataFrame, int]:
     """Load and merge all categorized CSV files from a run directory.
 
     Args:
-        run_dir: Dataset run directory (for example data/reference)
+        run_dir: Dataset run directory (for example data/example)
 
     Returns:
         A tuple of merged DataFrame and number of loaded files
@@ -138,7 +138,7 @@ def load_months_metadata(run_dir: Path) -> list[str]:
     """Load the months metadata written by categorize_transactions.py.
 
     Args:
-        run_dir: Dataset run directory (e.g. data/reference)
+        run_dir: Dataset run directory (e.g. data/example)
 
     Returns:
         Sorted list of month strings in 'YYYY-MM' format
@@ -615,8 +615,8 @@ def main(argv: Optional[Sequence[str]] = None):
     if len(argv) < 1 or len(argv) > 2:
         print("Usage: python analyze_by_category.py <run_dir> [output_excel_file]")
         print("\nExample:")
-        print("  python analyze_by_category.py reference")
-        print("  python analyze_by_category.py data/reference")
+        print("  python analyze_by_category.py example")
+        print("  python analyze_by_category.py data/example")
         print("  python analyze_by_category.py private my_analysis.xlsx")
         return 2
 

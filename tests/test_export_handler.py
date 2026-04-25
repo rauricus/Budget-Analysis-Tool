@@ -18,8 +18,8 @@ from datetime import datetime
 
 def test_export_format():
     """Test that export creates correct format with all columns"""
-    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
-    engine = RuleEngine('data/reference/rules.json')
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
+    engine = RuleEngine('data/example/rules.json')
     
     # Categorize
     txns, matching_rules = engine.categorize_batch(txns)
@@ -46,8 +46,8 @@ def test_export_format():
 
 def test_merchant_location_extraction():
     """Test that merchant and location are extracted correctly"""
-    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
-    engine = RuleEngine('data/reference/rules.json')
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
+    engine = RuleEngine('data/example/rules.json')
     
     # Categorize
     txns, matching_rules = engine.categorize_batch(txns)
@@ -64,8 +64,8 @@ def test_merchant_location_extraction():
 
 def test_export_includes_service_fields():
     """Test that service and card number are exported"""
-    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
-    engine = RuleEngine('data/reference/rules.json')
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
+    engine = RuleEngine('data/example/rules.json')
 
     txns, matching_rules = engine.categorize_batch(txns)
 
@@ -89,8 +89,8 @@ def test_export_includes_service_fields():
 
 def test_export_preserves_amounts():
     """Test that credit/debit amounts are correctly formatted"""
-    txns = ImportHandler.load_csv('data/reference/input/export.202503.csv')
-    engine = RuleEngine('data/reference/rules.json')
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
+    engine = RuleEngine('data/example/rules.json')
     
     txns, matching_rules = engine.categorize_batch(txns)
     
