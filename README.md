@@ -152,9 +152,9 @@ IDs remain stable across reruns as long as the normalized transaction content (d
 
 Use the datasets with clearly separated responsibilities:
 
-- `data/example`: canonical examples for tests and documentation. May contain synthetic/fictive merchants and counterparties. Keep this dataset stable and reproducible.
-- `data/reference`: global baseline rules for overlays (`data/reference/rules.json`). This is the shared rule foundation for local/private datasets.
-- `data/private`: local, personal data and private overrides. Usually gitignored and not committed to the public repository.
+- `data/example`: canonical examples for tests and documentation. May contain synthetic/fictive merchants and counterparties. Keep this dataset stable and reproducible. Standalone dataset.
+- `data/reference`: global baseline rules for overlay-based datasets (`data/reference/rules.json`). Not a runnable dataset on its own (no input files).
+- `data/private`: local, personal data and optional rule overlay. Usually gitignored and not committed to the public repository.
 
 Decision guide for changes:
 
@@ -165,18 +165,43 @@ Decision guide for changes:
 Repository policy:
 
 - Tests and docs should depend on `data/example`, not on `data/reference`.
-- Overlay workflows should continue to use `data/reference/rules.json` as base and `{run_dir}/rules.json` as optional overlay.
 - Never commit personal data from `data/private` to the public repository.
 
 ## Rules
 
-`data/reference/rules.json` is the shared global base configuration for overlays.
-`data/example/rules.json` is the stable example rule set used for tests and documentation examples.
-`data/private/rules.json` is an optional local overlay example for personal rules and is typically not committed.
+`data/example/rules.json` is the standalone example rule set used for tests and documentation.
+`data/reference/rules.json` is the shared baseline for overlay-based datasets.
+`data/private/rules.json` is an optional local overlay for personal rules and is typically not committed.
 
-Each rule has a stable string `key` instead of a numeric rule ID.
+Each rule has a required string `key`. Keys must be unique within a file.
 Recommended format: `group_number` (for example `gastronomy_1`, `transport_2`).
-The key is the rule identity used for overlay matching.
+
+### Standalone vs. overlay datasets
+
+A `rules.json` file can optionally declare a dependency on another dataset's rules via a top-level `"base"` field:
+
+```json
+{ "base": "reference", "rules": [...] }
+```
+
+When `"base"` is set, the named dataset's `rules.json` is loaded first as the base, and the current file is applied as an overlay on top. Without `"base"`, the file is treated as a complete standalone rule set.
+
+### Overriding a base rule
+
+An overlay rule that replaces a base rule must declare `"override": "<base_key>"` and carry its own unique `key`. At runtime, the engine stores the overlay rule under the base rule's key, so the original identity is preserved for matching and debug output.
+
+```json
+{
+  "key": "income_1_dev",
+  "override": "income_1",
+  "name": "Lohn: Meine Firma",
+  ...
+}
+```
+
+Rules that do not set `"override"` are treated as new additions. A key collision with a base rule without `"override"` is an error.
+
+Referencing an unknown base key in `"override"` is also an error.
 
 Example:
 
