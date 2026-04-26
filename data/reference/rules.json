@@ -1,6 +1,33 @@
 {
   "rules": [
     {
+      "key": "income_1",
+      "name": "Lohn / Salär",
+      "transaction_category": "Income",
+      "category": "Einkommen",
+      "subcategory": "Lohn",
+      "priority": 1,
+      "scope": {
+        "transaction_type": "Credit",
+        "transaction_type_detail": null,
+        "services": [
+          "Credit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [
+            "SALAER",
+            "LOHN"
+          ],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
       "key": "communication_1",
       "name": "Kommunikation: Sunrise",
       "transaction_category": "Expense",
@@ -136,56 +163,6 @@
       }
     },
     {
-      "key": "finance_1",
-      "name": "Cash Withdrawal",
-      "transaction_category": "Expense",
-      "category": "Finanzen",
-      "subcategory": "Bargeldbezug",
-      "priority": 5,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Cash Withdrawal"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [],
-          "locations": [],
-          "include_keywords": [],
-          "exclude_keywords": [],
-          "counterparties": [],
-          "counterparty_ibans": []
-        }
-      }
-    },
-    {
-      "key": "finance_2",
-      "name": "Bankgebühren: Paketpreis",
-      "transaction_category": "Expense",
-      "category": "Finanzen",
-      "subcategory": "Fees",
-      "priority": 5,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Fees"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [],
-          "locations": [],
-          "include_keywords": [
-            "BANKPAKET SMART"
-          ],
-          "exclude_keywords": [],
-          "counterparties": [],
-          "counterparty_ibans": []
-        }
-      }
-    },
-    {
       "key": "gastronomy_1",
       "name": "Take Away: Gastronomie",
       "transaction_category": "Expense",
@@ -261,7 +238,9 @@
           "merchants": [
             "SPETTACOLO",
             "VI-CAFE",
-            "OMBAK"
+            "OMBAK",
+            "OHNE.CH GMBH",
+            "HOME BARISTA SHOP AARAU"
           ],
           "locations": [],
           "include_keywords": [],
@@ -342,6 +321,32 @@
           "include_keywords": [
             "CAFE"
           ],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+        {
+      "key": "gastronomy_7",
+      "name": "Kantine, Mensa: Gastronomie",
+      "transaction_category": "Expense",
+      "category": "Leben",
+      "subcategory": "Arbeiten und Lernen",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "SV (SCHWEIZ) AG"
+          ],
+          "locations": [],
+          "include_keywords": [],
           "exclude_keywords": [],
           "counterparties": [],
           "counterparty_ibans": []
@@ -441,8 +446,40 @@
       }
     },
     {
+      "key": "grocery_4",
+      "name": "Supermarkt: Migros/Coop",
+      "transaction_category": "Expense",
+      "category": "Einkaufen",
+      "subcategory": "Supermärkte",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [
+          "Apple Pay"
+        ],
+        "notification_filters": {
+          "merchants": [
+            "MIGROS",
+            "COOP",
+            "VOI"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [
+            "TAKE AWAY"
+          ],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
       "key": "health_1",
-      "name": "Einkauf Apotheke",
+      "name": "Einkauf Apotheke/Drogerie",
       "transaction_category": "Expense",
       "category": "Leben",
       "subcategory": "Gesundheit",
@@ -458,7 +495,8 @@
         ],
         "notification_filters": {
           "merchants": [
-            "APOTHEKE"
+            "APOTHEKE",
+            "CARELAND AG"
           ],
           "locations": [],
           "include_keywords": [],
@@ -555,6 +593,34 @@
     },
     {
       "key": "home_3",
+      "name": "Einkauf Wohnen: Möbel",
+      "transaction_category": "Expense",
+      "category": "Wohnen",
+      "subcategory": "Möbel",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [
+          "Apple Pay"
+        ],
+        "notification_filters": {
+          "merchants": [
+            "IKEA"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "home_4",
       "name": "Einkauf Haushalt: Online-Käufe",
       "transaction_category": "Expense",
       "category": "Wohnen",
@@ -584,7 +650,7 @@
       }
     },
     {
-      "key": "home_4",
+      "key": "home_5",
       "name": "Einkauf Haushalt: Online-Käufe Second-Hand",
       "transaction_category": "Expense",
       "category": "Wohnen",
@@ -636,35 +702,7 @@
       }
     },
     {
-      "key": "income_1",
-      "name": "Lohn: Alpenwerk",
-      "transaction_category": "Income",
-      "category": "Einkommen",
-      "subcategory": "Lohn",
-      "priority": 5,
-      "scope": {
-        "transaction_type": "Credit",
-        "transaction_type_detail": null,
-        "services": [
-          "Credit"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [
-            "ALPENWERK"
-          ],
-          "locations": [],
-          "include_keywords": [
-            "SALAER"
-          ],
-          "exclude_keywords": [],
-          "counterparties": [],
-          "counterparty_ibans": []
-        }
-      }
-    },
-    {
-      "key": "life_1",
+      "key": "work-study_1",
       "name": "Co-Working",
       "transaction_category": "Expense",
       "category": "Leben",
@@ -683,58 +721,6 @@
           "merchants": [
             "COWORKING",
             "CO-WORKING"
-          ],
-          "locations": [],
-          "include_keywords": [],
-          "exclude_keywords": [],
-          "counterparties": [],
-          "counterparty_ibans": []
-        }
-      }
-    },
-    {
-      "key": "refund_1",
-      "name": "Twint empfangen: Rückerstattung",
-      "transaction_category": "Refund",
-      "category": "Rückerstattungen",
-      "subcategory": "",
-      "priority": 5,
-      "scope": {
-        "transaction_type": "Credit",
-        "transaction_type_detail": "Receive Money",
-        "services": [
-          "Twint"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [],
-          "locations": [],
-          "include_keywords": [],
-          "exclude_keywords": [],
-          "counterparties": [],
-          "counterparty_ibans": []
-        }
-      }
-    },
-    {
-      "key": "refund_2",
-      "name": "Rückerstattung: Krankenkasse",
-      "transaction_category": "Refund",
-      "category": "Leben",
-      "subcategory": "Gesundheit",
-      "priority": 5,
-      "scope": {
-        "transaction_type": "Credit",
-        "transaction_type_detail": null,
-        "services": [
-          "Credit"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [
-            "SANITAS",
-            "CSS",
-            "SYMPANY"
           ],
           "locations": [],
           "include_keywords": [],
@@ -791,7 +777,8 @@
         ],
         "notification_filters": {
           "merchants": [
-            "ORELL FÜSSLI THALIA"
+            "ORELL FÜSSLI THALIA",
+            "ORELL FUSSLI"
           ],
           "locations": [],
           "include_keywords": [],
@@ -802,59 +789,23 @@
       }
     },
     {
-      "key": "supermarket_1",
-      "name": "Supermarkt: Migros/Coop",
+      "key": "shopping_online_other_1",
+      "name": "Shopping: Andere Online-Käufe",
       "transaction_category": "Expense",
       "category": "Einkaufen",
-      "subcategory": "Supermärkte",
-      "priority": 5,
+      "subcategory": "Onlinehandel",
+      "priority": 1,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
         "services": [
           "Card Purchase"
         ],
-        "providers": [
-          "Apple Pay"
-        ],
-        "notification_filters": {
-          "merchants": [
-            "MIGROS",
-            "COOP",
-            "VOI"
-          ],
-          "locations": [],
-          "include_keywords": [],
-          "exclude_keywords": [
-            "TAKE AWAY"
-          ],
-          "counterparties": [],
-          "counterparty_ibans": []
-        }
-      }
-    },
-    {
-      "key": "transfer_1",
-      "name": "Kontoübertrag: Eigenes Sparkonto",
-      "transaction_category": "Transfer",
-      "category": "Überträge",
-      "subcategory": "Account Transfer",
-      "priority": 5,
-      "scope": {
-        "transaction_type": "Credit",
-        "transaction_type_detail": null,
-        "services": [
-          "Account Transfer"
-        ],
         "providers": [],
         "notification_filters": {
-          "merchants": [
-            "EIGENES SPARKONTO"
-          ],
+          "merchants": [],
           "locations": [],
-          "include_keywords": [
-            "KONTOUEBERTRAG"
-          ],
+          "include_keywords": [],
           "exclude_keywords": [],
           "counterparties": [],
           "counterparty_ibans": []
@@ -877,6 +828,7 @@
         "providers": [],
         "notification_filters": {
           "merchants": [
+            "SBB",
             "TRANSPORTS PUBLICS",
             "FAIRTIQ"
           ],
@@ -904,7 +856,8 @@
         "providers": [],
         "notification_filters": {
           "merchants": [
-            "MOBILITY"
+            "MOBILITY",
+            "PARKING"
           ],
           "locations": [],
           "include_keywords": [],
@@ -961,6 +914,220 @@
         "notification_filters": {
           "merchants": [
             "COIFFEUR"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "sport_1",
+      "name": "Freizeit: Fitness",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Sport",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [
+          "Apple Pay"
+        ],
+        "notification_filters": {
+          "merchants": [
+            "UPDATE FITNESS"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "leisure_1",
+      "name": "Freizeit: Kino",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Kultur",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [
+          "Apple Pay"
+        ],
+        "notification_filters": {
+          "merchants": [
+            "KULTURHAUS ODEON BRUGG"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "leisure_2",
+      "name": "Freizeit: Theater",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Kultur",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [
+          "Apple Pay"
+        ],
+        "notification_filters": {
+          "merchants": [
+            "CASINO THEATER AG WINTERTHUR"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "finance_1",
+      "name": "Cash Withdrawal",
+      "transaction_category": "Expense",
+      "category": "Finanzen",
+      "subcategory": "Bargeldbezug",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Cash Withdrawal"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "finance_2",
+      "name": "Bankgebühren: Paketpreis",
+      "transaction_category": "Expense",
+      "category": "Finanzen",
+      "subcategory": "Fees",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Fees"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [
+            "BANKPAKET SMART"
+          ],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "savings_1",
+      "name": "Kontoübertrag: Eigenes Sparkonto",
+      "transaction_category": "Transfer",
+      "category": "Überträge",
+      "subcategory": "Account Transfer",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Credit",
+        "transaction_type_detail": null,
+        "services": [
+          "Account Transfer"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "EIGENES SPARKONTO"
+          ],
+          "locations": [],
+          "include_keywords": [
+            "KONTOUEBERTRAG"
+          ],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "refund_1",
+      "name": "Twint empfangen: Rückerstattung",
+      "transaction_category": "Refund",
+      "category": "Rückerstattungen",
+      "subcategory": "",
+      "priority": 1,
+      "scope": {
+        "transaction_type": "Credit",
+        "transaction_type_detail": "Receive Money",
+        "services": [
+          "Twint"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "refund_2",
+      "name": "Rückerstattung: Krankenkasse",
+      "transaction_category": "Refund",
+      "category": "Leben",
+      "subcategory": "Gesundheit",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Credit",
+        "transaction_type_detail": null,
+        "services": [
+          "Credit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "SANITAS",
+            "CSS",
+            "SYMPANY"
           ],
           "locations": [],
           "include_keywords": [],
