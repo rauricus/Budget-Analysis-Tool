@@ -42,6 +42,10 @@ uv run python categorize_transactions.py private
 
 # Optional: reuse original input CSV categories for otherwise uncategorized rows
 uv run python categorize_transactions.py example --use-input-category-fallback
+
+# Optional: suggest old->new transaction ID remapping for transaction_overrides.json
+# (useful after resetting/regenerating transaction IDs)
+uv run python suggest_override_ids.py example
 ```
 
 
@@ -108,11 +112,12 @@ src/
 │ └── rule.py                      # Rule dataclass + matching logic
 ├── rule_engine.py                 # Rule loading + service/provider-filtered categorization
 ├── transaction_id_registry.py     # Stable transaction ID assignment + registry persistence
+├── transaction_overrides.py       # transaction_overrides.json loading + validation + apply
+├── override_id_remap.py           # old->new ID suggestion logic for override migration
 ├── transaction_parser.py          # Row-to-Transaction conversion
 └── notification/
   ├── base.py                    # Parser interface + parse result model
   ├── facade.py                  # Public facade to parser registry
-  ├── registry.py                # Parser dispatch (first supporting parser wins)
   └── parsers/
     ├── card_purchase_parser.py  # Card purchase parser (Purchase/Service + Purchase/Online Shopping, optional provider)
     ├── cash_withdrawal_parser.py# Cash withdrawal parser (Bargeldbezug)
@@ -124,6 +129,7 @@ src/
     └── standing_order_parser.py # Lastschrift standing-order parser
 
 categorize_transactions.py                # Pipeline entry point
+suggest_override_ids.py                  # CLI helper for override ID remapping
 tests/                             # Unit/integration-style tests for pipeline components
 ```
 
@@ -135,7 +141,9 @@ data/{example|private}/input/*.csv
    -> TransactionParser.parse_row
    -> NotificationTextParser.parse (via parser registry)
   -> TransactionIdRegistry.assign_batch
+  -> optional strict validation of transaction_overrides.json IDs
    -> RuleEngine.categorize_batch
+  -> optional TransactionOverrides.apply (hidden/category overrides)
    -> ExportHandler.export_csv
   -> data/{example|private}/output/*.categorized.csv
 
@@ -143,6 +151,42 @@ During the categorize run, transaction IDs are assigned and persisted in
 `data/{example|private}/metadata/transaction_id_registry.json`.
 Months metadata is written to `data/{example|private}/metadata/months.json`.
 IDs remain stable across reruns as long as the normalized transaction content (date, type, notification text, credit/debit) and duplicate occurrence order remain unchanged.
+
+## Transaction Overrides
+
+You can define transaction-level overrides in `transaction_overrides.json` in the run dataset directory
+(for example `data/example/transaction_overrides.json` or `data/private/dev/transaction_overrides.json`).
+
+Supported fields per transaction ID entry:
+
+```json
+{
+  "TX-000042": {
+    "hidden": true,
+    "transaction_category": "Expense",
+    "category": "Freizeit",
+    "subcategory": "Kultur",
+    "_row": "optional raw row hint for future ID remapping"
+  }
+}
+```
+
+Behavior and constraints:
+
+- `hidden: true` removes the transaction from export.
+- `transaction_category`, `category`, `subcategory` override automatic categorization values.
+- `_row` is optional metadata to help remap old IDs after registry resets; it does not affect categorization.
+- A `transaction_overrides.json` file is only valid in the top-level run dataset.
+- A `transaction_overrides.json` in a referenced base dataset (declared via `"base"`) is rejected.
+- If an override references an unknown transaction ID, `categorize_transactions.py` fails fast.
+
+When unknown override IDs are detected, use the helper:
+
+```bash
+uv run python suggest_override_ids.py <run_dir>
+```
+
+It suggests old->new ID mappings based on `_row` hints and current input files.
 ```
 
 ## Dataset convention

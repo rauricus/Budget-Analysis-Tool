@@ -1,0 +1,29 @@
+{
+	"TX-000031": {
+		"hidden": true,
+		"_row": "27.03.2025;Bargeldbezug Einkaufszentrum Metropole Biel"
+	},
+	"TX-000013": {
+		"transaction_category": "Expense",
+		"category": "Freizeit",
+		"subcategory": "Kultur",
+		"_row": "30.03.2025;Karteneinkauf BYRO BASEL"
+	},
+	"TX-999999": {
+		"hidden": true,
+		"_row": "Unknown former transaction"
+	},
+	"TX-910001": {
+		"category": "Mobilität",
+		"subcategory": "Bahn",
+		"_row": "31.03.2025;Buchung;\"APPLE PAY KAUF/DIENSTLEISTUNG VOM 31.03.2025 KARTEN NR. XXXX4821 KKIOSK 45810 BERN SCHWEIZ\";;-7.55;;Einkaufen // Sonstiges Einkaufen"
+	},
+	"TX-910002": {
+		"category": "Freizeit",
+		"subcategory": "Gastronomie",
+		"_row": "30.03.2025;Buchung;\"APPLE PAY KAUF/DIENSTLEISTUNG VOM 30.03.2025 KARTEN NR. XXXX4821 BYRO BASEL SCHWEIZ\""
+	},
+	"TX-910003": {
+		"category": "Wohnen"
+	}
+}
