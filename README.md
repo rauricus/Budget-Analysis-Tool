@@ -46,6 +46,18 @@ uv run python categorize_transactions.py example --use-input-category-fallback
 # Optional: suggest old->new transaction ID remapping for transaction_overrides.json
 # (useful after resetting/regenerating transaction IDs)
 uv run python suggest_override_ids.py example
+
+# Explain rule matching for one transaction (select by source CSV line)
+uv run python explain_rule_match.py example --input-file export.202503.csv --line-number 42
+
+# Optional: explain a specific rule in detail for the same transaction
+uv run python explain_rule_match.py example --input-file export.202503.csv --line-number 42 --rule-id groceries_1
+
+# Optional: select by transaction ID and get JSON output
+uv run python explain_rule_match.py example --transaction-id TX-000123 --json
+
+# Optional: ignore overlay rules and evaluate only base rules
+uv run python explain_rule_match.py private/dev --input-file privates_konto.202501.csv --line-number 9 --no-overlays
 ```
 
 
@@ -130,6 +142,7 @@ src/
 
 categorize_transactions.py                # Pipeline entry point
 suggest_override_ids.py                  # CLI helper for override ID remapping
+explain_rule_match.py                    # CLI helper to explain rule matching per transaction
 tests/                             # Unit/integration-style tests for pipeline components
 ```
 
@@ -143,7 +156,7 @@ data/{example|private}/input/*.csv
   -> TransactionIdRegistry.assign_batch
   -> optional strict validation of transaction_overrides.json IDs
    -> RuleEngine.categorize_batch
-  -> optional TransactionOverrides.apply (hidden/category overrides)
+  -> optional TransactionOverrides.apply (hidden/category transaction overrides)
    -> ExportHandler.export_csv
   -> data/{example|private}/output/*.categorized.csv
 
@@ -156,6 +169,10 @@ IDs remain stable across reruns as long as the normalized transaction content (d
 
 You can define transaction-level overrides in `transaction_overrides.json` in the run dataset directory
 (for example `data/example/transaction_overrides.json` or `data/private/dev/transaction_overrides.json`).
+
+This mechanism is separate from rule overlays in `rules.json`.
+- Transaction overrides: post-process one specific transaction by transaction ID.
+- Rule overlays: extend or replace rules from a base dataset.
 
 Supported fields per transaction ID entry:
 
@@ -174,7 +191,7 @@ Supported fields per transaction ID entry:
 Behavior and constraints:
 
 - `hidden: true` removes the transaction from export.
-- `transaction_category`, `category`, `subcategory` override automatic categorization values.
+- `transaction_category`, `category`, `subcategory` override automatic categorization values for that transaction ID.
 - `_row` is optional metadata to help remap old IDs after registry resets; it does not affect categorization.
 - A `transaction_overrides.json` file is only valid in the top-level run dataset.
 - A `transaction_overrides.json` in a referenced base dataset (declared via `"base"`) is rejected.
@@ -227,22 +244,22 @@ A `rules.json` file can optionally declare a dependency on another dataset's rul
 
 When `"base"` is set, the named dataset's `rules.json` is loaded first as the base, and the current file is applied as an overlay on top. Without `"base"`, the file is treated as a complete standalone rule set.
 
-### Overriding a base rule
+### Replacing a base rule via overlay
 
-An overlay rule that replaces a base rule must declare `"override": "<base_key>"` and carry its own unique `key`. At runtime, the engine stores the overlay rule under the base rule's key, so the original identity is preserved for matching and debug output.
+An overlay rule that replaces a base rule must declare `"overlay_of": "<base_key>"` and carry its own unique `key`. At runtime, the engine matches by the base key internally while retaining the overlay rule's declared key and source for explain/debug output.
 
 ```json
 {
   "key": "income_1_dev",
-  "override": "income_1",
+  "overlay_of": "income_1",
   "name": "Lohn: Meine Firma",
   ...
 }
 ```
 
-Rules that do not set `"override"` are treated as new additions. A key collision with a base rule without `"override"` is an error.
+Rules that do not set `"overlay_of"` are treated as new overlay additions. A key collision with a base rule without `"overlay_of"` is an error.
 
-Referencing an unknown base key in `"override"` is also an error.
+Referencing an unknown base key in `"overlay_of"` is also an error.
 
 Example:
 
@@ -334,7 +351,7 @@ The structured export currently uses these columns:
 6. Decide explicitly for each new/changed rule whether it should stay private or be added/updated in `data/reference/rules.json` as a generic baseline improvement.
 7. Repeat until categorization quality is acceptable.
 
-### Private override rules with version control
+### Private overlay rules with version control
 
 If you keep personal data and local overlays in `data/private`, there are two practical ways to version them without storing them in the public repository.
 
@@ -364,4 +381,4 @@ Both approaches work with the current overlay mechanism:
 
 - If `rules.json` has no `base`, it is a standalone ruleset.
 - If `rules.json` contains `"base": "reference"`, `data/reference/rules.json` is loaded first.
-- Replacements are explicit via `"override": "<base_key>"`; rules without `override` are additions.
+- Replacements are explicit via `"overlay_of": "<base_key>"`; rules without `overlay_of` are overlay additions.

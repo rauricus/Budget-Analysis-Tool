@@ -13,7 +13,7 @@ from models import Transaction
 from rule_engine import RuleEngine
 
 
-def _rule(key, category="Kategorie A", subcategory="", priority=5, merchant="TESTLADEN", name=None, override=None):
+def _rule(key, category="Kategorie A", subcategory="", priority=5, merchant="TESTLADEN", name=None, overlay_of=None):
     r = {
         "key": key,
         "name": name or f"Regel {key}",
@@ -34,8 +34,8 @@ def _rule(key, category="Kategorie A", subcategory="", priority=5, merchant="TES
         },
         "priority": priority,
     }
-    if override is not None:
-        r["override"] = override
+    if overlay_of is not None:
+        r["overlay_of"] = overlay_of
     return r
 
 
@@ -124,7 +124,7 @@ class TestOverlay:
         base = tmp_path / "base.json"
         overlay = tmp_path / "overlay.json"
         _write(base, [_rule("rule_1", category="Alt")])
-        _write(overlay, [_rule("rule_1_overlay", category="Neu", override="rule_1")])
+        _write(overlay, [_rule("rule_1_overlay", category="Neu", overlay_of="rule_1")])
 
         engine = RuleEngine(str(base), overlay_path=str(overlay))
 
@@ -136,11 +136,11 @@ class TestOverlay:
         base = tmp_path / "base.json"
         overlay = tmp_path / "overlay.json"
         _write(base, [_rule("rule_1"), _rule("rule_2")])
-        _write(overlay, [_rule("rule_1_overlay", category="Übersteuert", override="rule_1"), _rule("rule_3")])
+        _write(overlay, [_rule("rule_1_overlay", category="Übersteuert", overlay_of="rule_1"), _rule("rule_3")])
 
         engine = RuleEngine(str(base), overlay_path=str(overlay))
 
-        assert len(engine.rules) == 3  # rule_1 (overridden) + rule_2 (base) + rule_3 (new)
+        assert len(engine.rules) == 3  # rule_1 (replaced via overlay) + rule_2 (base) + rule_3 (new)
 
     def test_source_attribute_set_from_base(self, tmp_path):
         base = tmp_path / "base.json"
@@ -167,24 +167,24 @@ class TestOverlay:
         base = tmp_path / "base.json"
         overlay = tmp_path / "overlay.json"
         _write(base, [_rule("rule_1", category="Alt")])
-        _write(overlay, [_rule("rule_1_overlay", category="Neu", override="rule_1")])
+        _write(overlay, [_rule("rule_1_overlay", category="Neu", overlay_of="rule_1")])
 
         engine = RuleEngine(str(base), overlay_path=str(overlay))
 
         rule = next(r for r in engine.rules if r.key == "rule_1")
         assert rule.source == str(overlay)
 
-    def test_debug_output_lists_overridden_rules(self, tmp_path, capsys):
+    def test_debug_output_lists_overlay_replacements(self, tmp_path, capsys):
         base = tmp_path / "base.json"
         overlay = tmp_path / "overlay.json"
         _write(base, [_rule("rule_1", category="Alt")])
-        _write(overlay, [_rule("rule_1_overlay", name="Neu", category="Neu", override="rule_1")])
+        _write(overlay, [_rule("rule_1_overlay", name="Neu", category="Neu", overlay_of="rule_1")])
 
         RuleEngine(str(base), overlay_path=str(overlay), debug=True)
 
         captured = capsys.readouterr()
-        assert f"Applied overlay {overlay}: 1 overridden, 0 added" in captured.out
-        assert f"Override 'rule_1': 'Regel rule_1' from {base} -> 'Neu' from {overlay}" in captured.out
+        assert f"Applied overlay {overlay}: 1 replaced, 0 added" in captured.out
+        assert f"Overlay replacement 'rule_1': 'Regel rule_1' from {base} -> 'Neu' from {overlay}" in captured.out
 
     def test_debug_output_lists_matched_rule_and_source(self, tmp_path, capsys):
         base = tmp_path / "base.json"
@@ -215,7 +215,7 @@ class TestOverlay:
         base = tmp_path / "base.json"
         overlay = tmp_path / "overlay.json"
         _write(base, [_rule("rule_1", category="Alt", merchant="MATCHSHOP")])
-        _write(overlay, [_rule("rule_1_overlay", name="Neu", category="Neu", merchant="MATCHSHOP", override="rule_1")])
+        _write(overlay, [_rule("rule_1_overlay", name="Neu", category="Neu", merchant="MATCHSHOP", overlay_of="rule_1")])
 
         engine = RuleEngine(str(base), overlay_path=str(overlay), debug=False)
 
@@ -236,7 +236,7 @@ class TestOverlay:
         engine.categorize_batch([transaction])
 
         captured = capsys.readouterr()
-        assert "Override 'rule_1':" not in captured.out
+        assert "Overlay replacement 'rule_1':" not in captured.out
         assert "Rule matched:" not in captured.out
 
     def test_overlay_missing_is_silently_skipped(self, tmp_path):
@@ -287,20 +287,20 @@ class TestOverlay:
         with pytest.raises(ValueError, match="Duplicate key 'rule_1'"):
             RuleEngine(str(base))
 
-    def test_overlay_key_collision_without_override_raises(self, tmp_path):
+    def test_overlay_key_collision_without_overlay_field_raises(self, tmp_path):
         base = tmp_path / "base.json"
         overlay = tmp_path / "overlay.json"
         _write(base, [_rule("rule_1")])
         _write(overlay, [_rule("rule_1", category="Kollision")])
 
-        with pytest.raises(ValueError, match="override"):
+        with pytest.raises(ValueError, match="overlay_of"):
             RuleEngine(str(base), overlay_path=str(overlay))
 
-    def test_override_unknown_key_raises(self, tmp_path):
+    def test_overlay_unknown_key_raises(self, tmp_path):
         base = tmp_path / "base.json"
         overlay = tmp_path / "overlay.json"
         _write(base, [_rule("rule_1")])
-        _write(overlay, [_rule("rule_99_overlay", override="rule_99")])
+        _write(overlay, [_rule("rule_99_overlay", overlay_of="rule_99")])
 
         with pytest.raises(ValueError, match="rule_99"):
             RuleEngine(str(base), overlay_path=str(overlay))

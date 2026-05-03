@@ -82,15 +82,15 @@ def main(argv: Optional[Sequence[str]] = None):
         rules_data = json.load(f)
 
     base_name = rules_data.get("base")
-    overrides_file = run_dir / "transaction_overrides.json"
+    transaction_overrides_file = run_dir / "transaction_overrides.json"
     if base_name:
         base_rules_path = str(Path("data") / base_name / "rules.json")
         overlay_path: Optional[str] = str(rules_file)
-        base_overrides_file = Path("data") / base_name / "transaction_overrides.json"
-        if base_overrides_file.exists():
+        base_transaction_overrides_file = Path("data") / base_name / "transaction_overrides.json"
+        if base_transaction_overrides_file.exists():
             print(
                 f"❌ transaction_overrides.json is not allowed in a base dataset ('{base_name}'). "
-                f"Place overrides in the top-level dataset only."
+                f"Place transaction overrides in the top-level dataset only."
             )
             return 1
     else:
@@ -113,7 +113,7 @@ def main(argv: Optional[Sequence[str]] = None):
         return 1
     print(f"   Found {len(input_files)} input file(s) in {input_dir}")
 
-    # 2. Load rules + overrides
+    # 2. Load rules (plus optional overlay) and transaction overrides
     print("\n2. Loading Rules...")
     try:
         engine = RuleEngine(base_rules_path, overlay_path=overlay_path, debug=debug)
@@ -121,9 +121,11 @@ def main(argv: Optional[Sequence[str]] = None):
         print(f"❌ {e}")
         return 1
 
-    overrides_path: Optional[str] = str(overrides_file) if overrides_file.exists() else None
+    transaction_overrides_path: Optional[str] = (
+        str(transaction_overrides_file) if transaction_overrides_file.exists() else None
+    )
     try:
-        transaction_overrides = load_overrides_if_present(overrides_path)
+        transaction_overrides = load_overrides_if_present(transaction_overrides_path)
     except (ValueError, json.JSONDecodeError) as e:
         print(f"❌ Failed to load transaction_overrides.json: {e}")
         return 1
@@ -135,7 +137,7 @@ def main(argv: Optional[Sequence[str]] = None):
     all_months: set[str] = set()
     id_registry = TransactionIdRegistry(registry_path)
 
-    # 3. Load all transactions and assign IDs first (needed for strict override validation)
+    # 3. Load all transactions and assign IDs first (needed for strict transaction override validation)
     print("\n3. Loading Files and Assigning IDs...")
     preloaded_transactions: dict[Path, list] = {}
     known_transaction_ids: set[str] = set()
@@ -174,7 +176,7 @@ def main(argv: Optional[Sequence[str]] = None):
         transactions, matching_rules_map = engine.categorize_batch(transactions)
 
         if transaction_overrides:
-            # Build a lookup from transaction_id → matching rules before filtering
+            # Build a lookup from transaction_id → matched rules before applying transaction overrides
             id_to_rules = {
                 t.transaction_id: matching_rules_map.get(i)
                 for i, t in enumerate(transactions)

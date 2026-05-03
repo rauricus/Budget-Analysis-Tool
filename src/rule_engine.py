@@ -67,8 +67,9 @@ class RuleEngine:
 
             rule = Rule(
                 key=key,
+                declared_key=key,
                 name=rule_data["name"],
-                override=rule_data.get("override") or None,
+                overlay_of=rule_data.get("overlay_of") or None,
                 
                 transaction_category=transaction_category_normalized,
                 category=rule_data.get("category", ""),
@@ -109,7 +110,7 @@ class RuleEngine:
         )
 
     def load_rules(self):
-        """Load base rules, then apply overlay rules (same key overrides, new key appends)."""
+        """Load base rules, then apply overlay rules (replacements plus additions)."""
         if not self.rules_path.exists():
             raise FileNotFoundError(f"Rules file not found: {self.rules_path}")
         
@@ -121,41 +122,41 @@ class RuleEngine:
             with open(self.overlay_path, "r", encoding="utf-8") as f:
                 overlay_rules = self._parse_rules(json.load(f), source=self.overlay_path.as_posix())
 
-            overridden_rules: list[tuple[Rule, Rule]] = []
+            replacing_overlay_rules: list[tuple[Rule, Rule]] = []
             for overlay_rule in overlay_rules.values():
-                if overlay_rule.override is not None:
-                    # Explicit override: must target an existing base key
-                    target_key = overlay_rule.override
+                if overlay_rule.overlay_of is not None:
+                    # Explicit overlay replacement: must target an existing base key
+                    target_key = overlay_rule.overlay_of
                     if target_key not in base_rules:
                         raise ValueError(
                             f"Rule '{overlay_rule.key}' in {self.overlay_path} declares "
-                            f"override: '{target_key}', but no such key exists in base rules."
+                            f"overlay_of: '{target_key}', but no such key exists in base rules."
                         )
-                    overridden_rules.append((base_rules[target_key], overlay_rule))
+                    replacing_overlay_rules.append((base_rules[target_key], overlay_rule))
                 else:
                     # New rule: must not collide with an existing base key
                     if overlay_rule.key in base_rules:
                         raise ValueError(
                             f"Rule '{overlay_rule.key}' in {self.overlay_path} uses a key that already "
-                            f"exists in base rules. Use 'override: \"{overlay_rule.key}\"' to replace it explicitly."
+                            f"exists in base rules. Use 'overlay_of: \"{overlay_rule.key}\"' to replace it explicitly."
                         )
 
-            # Apply overrides: store the overlay rule under the target (base) key
-            for base_rule, overlay_rule in overridden_rules:
-                overlay_rule.key = overlay_rule.override  # adopt base key as effective identity
-                base_rules[overlay_rule.override] = overlay_rule
+            # Apply overlay replacements: store the overlay rule under the target base key
+            for base_rule, overlay_rule in replacing_overlay_rules:
+                overlay_rule.key = overlay_rule.overlay_of  # adopt base key as effective identity
+                base_rules[overlay_rule.overlay_of] = overlay_rule
             # Add new rules
-            new_rules = {r.key: r for r in overlay_rules.values() if r.override is None}
+            new_rules = {r.key: r for r in overlay_rules.values() if r.overlay_of is None}
             base_rules.update(new_rules)
 
-            overridden = len(overridden_rules)
+            replaced = len(replacing_overlay_rules)
             added = len(new_rules)
-            print(f"   Applied overlay {self.overlay_path}: {overridden} overridden, {added} added")
+            print(f"   Applied overlay {self.overlay_path}: {replaced} replaced, {added} added")
             if self.debug:
-                for previous_rule, new_rule in overridden_rules:
+                for previous_rule, new_rule in replacing_overlay_rules:
                     print(
-                        "      Override "
-                        f"'{new_rule.override}': '{previous_rule.name}' from {previous_rule.source} "
+                        "      Overlay replacement "
+                        f"'{new_rule.overlay_of}': '{previous_rule.name}' from {previous_rule.source} "
                         f"-> '{new_rule.name}' from {new_rule.source}"
                     )
 
