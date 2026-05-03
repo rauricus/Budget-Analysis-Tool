@@ -486,6 +486,40 @@ class TestExampleDatasetOverrides:
         assert by_id["TX-000013"]["Category"] == "Freizeit"
         assert by_id["TX-000013"]["Subcategory"] == "Kultur"
 
+
+class TestOverrideDebugOutput:
+    def test_debug_logs_applied_override_for_transaction(self, tmp_path, capsys):
+        """Debug output should include explicit override application details."""
+        from categorize_transactions import main
+
+        run_dir = tmp_path / "run"
+        (run_dir / "input").mkdir(parents=True)
+        (run_dir / "output").mkdir(parents=True)
+        (run_dir / "metadata").mkdir(parents=True)
+
+        shutil.copy(
+            Path("data/example/input/export.202503.csv"),
+            run_dir / "input" / "export.202503.csv",
+        )
+        shutil.copy(Path("data/example/rules.json"), run_dir / "rules.json")
+        _write(
+            run_dir / "transaction_overrides.json",
+            {
+                "TX-000001": {
+                    "transaction_category": "Expense",
+                    "category": "Debug Kategorie",
+                    "subcategory": "Debug Sub",
+                }
+            },
+        )
+
+        result = main([str(run_dir), "--debug", "--input-file", "export.202503.csv"])
+
+        assert result == 0
+        out = capsys.readouterr().out
+        assert "Override applied: 'TX-000001'" in out
+        assert "Debug Kategorie" in out
+
     def test_known_overrides_are_applied_successfully(self, tmp_path):
         """Overrides should still be applied when all override IDs exist."""
         from categorize_transactions import main

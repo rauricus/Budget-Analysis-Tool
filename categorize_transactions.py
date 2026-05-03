@@ -67,6 +67,77 @@ def _resolve_input_file(run_dir: Path, arg: str) -> Path:
     return candidate
 
 
+def _transaction_debug_label(txn) -> str:
+    """Render a compact transaction label for debug output."""
+    date_text = txn.date.strftime("%Y-%m-%d") if txn.date else "?"
+    service = txn.service_type or ""
+    merchant_or_counterparty = txn.parsed_merchant or txn.counterparty or ""
+    return f"{date_text} | {service} | {merchant_or_counterparty}".strip()
+
+
+def _print_debug_report(
+    transactions_before_apply: list,
+    matching_rules_map_before_apply: dict,
+    overrides: Optional[dict[str, dict]],
+) -> None:
+    """Print one final debug line per source row, including override effects."""
+    before_state = {
+        t.transaction_id: (t.auto_transaction_category, t.auto_category, t.auto_subcategory)
+        for t in transactions_before_apply
+    }
+
+    for idx, txn in enumerate(transactions_before_apply):
+        row_label = (
+            f"Row {txn.source_line_number}: "
+            if txn.source_line_number is not None
+            else "Row ?: "
+        )
+        matching = matching_rules_map_before_apply.get(idx) or []
+        best_match = matching[0] if matching else None
+
+        if best_match:
+            category_label = (
+                f"{best_match.category} / {best_match.subcategory}"
+                if best_match.subcategory
+                else best_match.category
+            )
+            base_message = (
+                f"Rule matched: '{best_match.key}' '{best_match.name}' from {best_match.source} "
+                f"-> {category_label} | {_transaction_debug_label(txn)}"
+            )
+        else:
+            row_text = txn.source_row_text or _transaction_debug_label(txn)
+            base_message = f"No matching rule | {row_text}"
+
+        entry = overrides.get(txn.transaction_id) if overrides else None
+        if entry is not None:
+            pre_override_summary = (
+                f"Rule matched: '{best_match.key}' '{best_match.name}'"
+                if best_match
+                else "No matching rule"
+            )
+            if entry.get("hidden"):
+                print(
+                    f"      {row_label}Override applied: '{txn.transaction_id}' "
+                    f"from transaction_overrides.json -> hidden=True (excluded from output) "
+                    f"| {_transaction_debug_label(txn)} "
+                    f"| pre-override: {pre_override_summary}"
+                )
+            else:
+                before_tc, before_cat, before_sub = before_state[txn.transaction_id]
+                print(
+                    f"      {row_label}Override applied: '{txn.transaction_id}' "
+                    f"from transaction_overrides.json -> "
+                    f"{txn.auto_transaction_category} / {txn.auto_category} / {txn.auto_subcategory} "
+                    f"| {_transaction_debug_label(txn)} "
+                    f"| pre-override: {pre_override_summary} "
+                    f"(was: {before_tc} / {before_cat} / {before_sub})"
+                )
+            continue
+
+        print(f"      {row_label}{base_message}")
+
+
 def main(argv: Optional[Sequence[str]] = None):
     """Main pipeline.
 
@@ -234,6 +305,9 @@ def main(argv: Optional[Sequence[str]] = None):
 
         transactions, matching_rules_map = engine.categorize_batch(transactions)
 
+        transactions_before_apply = list(transactions)
+        matching_rules_map_before_apply = dict(matching_rules_map)
+
         if transaction_overrides:
             # Build a lookup from transaction_id → matched rules before applying transaction overrides
             id_to_rules = {
@@ -247,6 +321,13 @@ def main(argv: Optional[Sequence[str]] = None):
                 for i, t in enumerate(transactions)
                 if id_to_rules.get(t.transaction_id) is not None
             }
+
+        if debug:
+            _print_debug_report(
+                transactions_before_apply,
+                matching_rules_map_before_apply,
+                transaction_overrides.overrides if transaction_overrides else None,
+            )
 
         for t in transactions:
             all_months.add(t.date.strftime("%Y-%m"))

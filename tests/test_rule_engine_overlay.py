@@ -186,7 +186,7 @@ class TestOverlay:
         assert f"Applied overlay {overlay}: 1 replaced, 0 added" in captured.out
         assert f"Overlay replacement 'rule_1': 'Regel rule_1' from {base} -> 'Neu' from {overlay}" in captured.out
 
-    def test_debug_output_lists_matched_rule_and_source(self, tmp_path, capsys):
+    def test_categorize_batch_emits_no_per_row_debug_output(self, tmp_path, capsys):
         base = tmp_path / "base.json"
         _write(base, [_rule("rule_1", category="Kategorie Test", merchant="MATCHSHOP")])
         engine = RuleEngine(str(base), debug=True)
@@ -207,9 +207,8 @@ class TestOverlay:
         engine.categorize_batch([transaction])
 
         captured = capsys.readouterr()
-        assert "Rule matched: 'rule_1' 'Regel rule_1'" in captured.out
-        assert f"from {base}" in captured.out
-        assert "-> Kategorie Test" in captured.out
+        assert "Rule matched:" not in captured.out
+        assert "No matching rule" not in captured.out
 
     def test_debug_output_suppressed_without_debug_flag(self, tmp_path, capsys):
         base = tmp_path / "base.json"
