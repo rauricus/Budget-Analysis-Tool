@@ -18,7 +18,6 @@
           "merchants": [],
           "locations": [],
           "include_keywords": [
-            "SALAER",
             "LOHN"
           ],
           "exclude_keywords": [],
@@ -55,32 +54,6 @@
     },
     {
       "key": "communication_2",
-      "name": "Kommunikation: Apple Services",
-      "transaction_category": "Expense",
-      "category": "Wohnen",
-      "subcategory": "Kommunikation",
-      "priority": 5,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Card Purchase"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [
-            "APPLE.COM"
-          ],
-          "locations": [],
-          "include_keywords": [],
-          "exclude_keywords": [],
-          "counterparties": [],
-          "counterparty_ibans": []
-        }
-      }
-    },
-    {
-      "key": "communication_3",
       "name": "Subscription: Cloud Services",
       "transaction_category": "Expense",
       "category": "Wohnen",
@@ -95,6 +68,7 @@
         "providers": [],
         "notification_filters": {
           "merchants": [
+            "APPLE.COM",
             "NETFLIX",
             "OPENAI *CHATGPT SUBSCR"
           ],
@@ -237,10 +211,10 @@
         "notification_filters": {
           "merchants": [
             "SPETTACOLO",
-            "VI-CAFE",
+            "CAFE",
             "OMBAK",
-            "OHNE.CH GMBH",
-            "HOME BARISTA SHOP AARAU"
+            "OHNE.CH",
+            "BARISTA"
           ],
           "locations": [],
           "include_keywords": [],
@@ -252,17 +226,40 @@
     },
     {
       "key": "gastronomy_4",
-      "name": "Twint: Fastfood",
+      "name": "Gastronomie: Pizza, Pasta",
       "transaction_category": "Expense",
       "category": "Freizeit",
       "subcategory": "Gastronomie",
       "priority": 5,
       "scope": {
         "transaction_type": "Debit",
-        "transaction_type_detail": "Send Money",
-        "services": [
-          "Twint"
-        ],
+        "transaction_type_detail": "",
+        "services": [],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "PIZZA",
+            "PASTA"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "gastronomy_5",
+      "name": "Gastronomie: Fastfood",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": "",
+        "services": [],
         "providers": [],
         "notification_filters": {
           "merchants": [
@@ -278,57 +275,7 @@
       }
     },
     {
-      "key": "gastronomy_5",
-      "name": "Twint senden: Essensanteil",
-      "transaction_category": "Expense",
-      "category": "Freizeit",
-      "subcategory": "Gastronomie",
-      "priority": 5,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": "Send Money",
-        "services": [],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [],
-          "locations": [],
-          "include_keywords": [
-            "ESSEN"
-          ],
-          "exclude_keywords": [],
-          "counterparties": [],
-          "counterparty_ibans": []
-        }
-      }
-    },
-    {
       "key": "gastronomy_6",
-      "name": "Twint: Cafés",
-      "transaction_category": "Expense",
-      "category": "Freizeit",
-      "subcategory": "Gastronomie",
-      "priority": 5,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Twint"
-        ],
-        "providers": [],
-        "notification_filters": {
-          "merchants": [],
-          "locations": [],
-          "include_keywords": [
-            "CAFE"
-          ],
-          "exclude_keywords": [],
-          "counterparties": [],
-          "counterparty_ibans": []
-        }
-      }
-    },
-        {
-      "key": "gastronomy_7",
       "name": "Kantine, Mensa: Gastronomie",
       "transaction_category": "Expense",
       "category": "Leben",
@@ -447,7 +394,7 @@
     },
     {
       "key": "grocery_4",
-      "name": "Supermarkt: Migros/Coop",
+      "name": "Einkauf Supermarkt",
       "transaction_category": "Expense",
       "category": "Einkaufen",
       "subcategory": "Supermärkte",
@@ -604,9 +551,7 @@
         "services": [
           "Card Purchase"
         ],
-        "providers": [
-          "Apple Pay"
-        ],
+        "providers": [],
         "notification_filters": {
           "merchants": [
             "IKEA"
@@ -732,7 +677,7 @@
     },
     {
       "key": "shopping_1",
-      "name": "Kiosk: Sonstiges Einkaufen",
+      "name": "Kiosk, Automaten: Sonstiges Einkaufen",
       "transaction_category": "Expense",
       "category": "Einkaufen",
       "subcategory": "Sonstiges Einkaufen",
@@ -749,7 +694,8 @@
         "notification_filters": {
           "merchants": [
             "KKIOSK",
-            "KIOSK"
+            "KIOSK",
+            "SELECTA"
           ],
           "locations": [],
           "include_keywords": [],
@@ -868,6 +814,32 @@
       }
     },
     {
+      "key": "transport_3",
+      "name": "Parking",
+      "transaction_category": "Expense",
+      "category": "Mobilität",
+      "subcategory": "Privater Verkehr",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": ["PARKING"],
+          "locations": [],
+          "include_keywords": [
+            
+          ],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
       "key": "wellness_1",
       "name": "Einkauf Styling/Wellness",
       "transaction_category": "Expense",
@@ -936,12 +908,10 @@
         "services": [
           "Card Purchase"
         ],
-        "providers": [
-          "Apple Pay"
-        ],
+        "providers": [],
         "notification_filters": {
           "merchants": [
-            "UPDATE FITNESS"
+            "FITNESS"
           ],
           "locations": [],
           "include_keywords": [],
@@ -1129,6 +1099,30 @@
             "CSS",
             "SYMPANY"
           ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "refund_3",
+      "name": "Rückerstattung PostFinance Card",
+      "transaction_category": "Refund",
+      "category": "",
+      "subcategory": "",
+      "priority": 1,
+      "scope": {
+        "transaction_type": "Credit",
+        "transaction_type_detail": "Refund",
+        "services": [
+          "PostFinance Card Refund"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
           "locations": [],
           "include_keywords": [],
           "exclude_keywords": [],
