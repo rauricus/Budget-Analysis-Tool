@@ -46,6 +46,10 @@ uv run python categorize_transactions.py example --use-input-category-fallback
 # Optional: continue even if transaction_overrides.json contains unknown IDs
 uv run python categorize_transactions.py example --ignore-unknown-overrides
 
+# Optional: process only one CSV file from the dataset input/ folder
+# (if no --input-file is provided, all input/*.csv files are processed)
+uv run python categorize_transactions.py example --input-file export.202503.csv
+
 # Optional: suggest old->new transaction ID remapping for transaction_overrides.json
 # (useful after resetting/regenerating transaction IDs)
 uv run python suggest_override_ids.py example

@@ -366,6 +366,56 @@ class TestMainWithOverrides:
 
         assert result == 0
 
+    def test_main_processes_only_selected_input_file(self, tmp_path):
+        """With --input-file, main() must only process the selected file."""
+        from categorize_transactions import main
+
+        run_dir = tmp_path / "run"
+        (run_dir / "input").mkdir(parents=True)
+        (run_dir / "output").mkdir(parents=True)
+        (run_dir / "metadata").mkdir(parents=True)
+
+        shutil.copy(
+            Path("data/example/input/export.202503.csv"),
+            run_dir / "input" / "export.202503.csv",
+        )
+        shutil.copy(
+            Path("data/example/input/export.202504.csv"),
+            run_dir / "input" / "export.202504.csv",
+        )
+        shutil.copy(Path("data/example/rules.json"), run_dir / "rules.json")
+
+        result = main([str(run_dir), "--input-file", "export.202503.csv"])
+
+        assert result == 0
+        assert (run_dir / "output" / "export.202503.categorized.csv").exists()
+        assert not (run_dir / "output" / "export.202504.categorized.csv").exists()
+
+    def test_main_accepts_input_file_path_with_input_prefix(self, tmp_path):
+        """--input-file should accept paths that already include input/."""
+        from categorize_transactions import main
+
+        run_dir = tmp_path / "run"
+        (run_dir / "input").mkdir(parents=True)
+        (run_dir / "output").mkdir(parents=True)
+        (run_dir / "metadata").mkdir(parents=True)
+
+        shutil.copy(
+            Path("data/example/input/export.202503.csv"),
+            run_dir / "input" / "export.202503.csv",
+        )
+        shutil.copy(
+            Path("data/example/input/export.202504.csv"),
+            run_dir / "input" / "export.202504.csv",
+        )
+        shutil.copy(Path("data/example/rules.json"), run_dir / "rules.json")
+
+        result = main([str(run_dir), "--input-file", "input/export.202504.csv"])
+
+        assert result == 0
+        assert (run_dir / "output" / "export.202504.categorized.csv").exists()
+        assert not (run_dir / "output" / "export.202503.categorized.csv").exists()
+
 
 class TestExampleDatasetOverrides:
     def test_example_overrides_fail_on_unknown_ids_with_help_hint(self, tmp_path, capsys):

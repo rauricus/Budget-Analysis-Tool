@@ -37,11 +37,41 @@ def _resolve_run_directory(arg: str) -> Path:
     )
 
 
+def _resolve_input_file(run_dir: Path, arg: str) -> Path:
+    """Resolve a single input CSV file inside run_dir.
+
+    Supports either a bare filename (e.g. "export.202503.csv") or a path
+    relative to run_dir that already starts with "input/".
+    """
+    provided = Path(arg)
+    relative = provided if provided.parts[:1] == ("input",) else Path("input") / provided
+    candidate = run_dir / relative
+
+    try:
+        candidate.relative_to(run_dir / "input")
+    except ValueError as exc:
+        raise FileNotFoundError(
+            f"Input file must be inside '{run_dir / 'input'}': '{arg}'"
+        ) from exc
+
+    if not candidate.exists() or not candidate.is_file():
+        raise FileNotFoundError(
+            f"Input file not found: '{arg}' (resolved to '{candidate}')"
+        )
+
+    if candidate.suffix.lower() != ".csv":
+        raise FileNotFoundError(
+            f"Input file must be a CSV file: '{candidate.name}'"
+        )
+
+    return candidate
+
+
 def main(argv: Optional[Sequence[str]] = None):
     """Main pipeline.
 
     Usage:
-        python categorize_transactions.py <run_dir> [--debug] [--use-input-category-fallback] [--ignore-unknown-overrides]
+        python categorize_transactions.py <run_dir> [--debug] [--use-input-category-fallback] [--ignore-unknown-overrides] [--input-file <file>]
 
     Example:
         python categorize_transactions.py example --debug
@@ -50,6 +80,7 @@ def main(argv: Optional[Sequence[str]] = None):
     debug = False
     use_input_category_fallback = False
     ignore_unknown_overrides = False
+    input_file_arg: Optional[str] = None
     if "--debug" in argv:
         debug = True
         argv = [arg for arg in argv if arg != "--debug"]
@@ -59,10 +90,17 @@ def main(argv: Optional[Sequence[str]] = None):
     if "--ignore-unknown-overrides" in argv:
         ignore_unknown_overrides = True
         argv = [arg for arg in argv if arg != "--ignore-unknown-overrides"]
+    if "--input-file" in argv:
+        idx = argv.index("--input-file")
+        if idx == len(argv) - 1:
+            print("❌ Missing value for --input-file")
+            return 2
+        input_file_arg = argv[idx + 1]
+        argv = argv[:idx] + argv[idx + 2 :]
 
     if len(argv) != 1:
         print(
-            "Usage: python categorize_transactions.py <run_dir> [--debug] [--use-input-category-fallback] [--ignore-unknown-overrides]"
+            "Usage: python categorize_transactions.py <run_dir> [--debug] [--use-input-category-fallback] [--ignore-unknown-overrides] [--input-file <file>]"
         )
         print("Example: python categorize_transactions.py example --debug")
         return 2
@@ -113,11 +151,20 @@ def main(argv: Optional[Sequence[str]] = None):
         print(f"❌ Input directory not found: {input_dir}")
         return 1
 
-    input_files = sorted(input_dir.glob("*.csv"))
-    if not input_files:
-        print(f"❌ No CSV files found in: {input_dir}")
-        return 1
-    print(f"   Found {len(input_files)} input file(s) in {input_dir}")
+    if input_file_arg:
+        try:
+            selected_input_file = _resolve_input_file(run_dir, input_file_arg)
+        except FileNotFoundError as e:
+            print(f"❌ {e}")
+            return 1
+        input_files = [selected_input_file]
+        print(f"   Processing selected input file: {selected_input_file.name}")
+    else:
+        input_files = sorted(input_dir.glob("*.csv"))
+        if not input_files:
+            print(f"❌ No CSV files found in: {input_dir}")
+            return 1
+        print(f"   Found {len(input_files)} input file(s) in {input_dir}")
 
     # 2. Load rules (plus optional overlay) and transaction overrides
     print("\n2. Loading Rules...")
