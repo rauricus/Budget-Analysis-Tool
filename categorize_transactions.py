@@ -41,7 +41,7 @@ def main(argv: Optional[Sequence[str]] = None):
     """Main pipeline.
 
     Usage:
-        python categorize_transactions.py <run_dir> [--debug] [--use-input-category-fallback]
+        python categorize_transactions.py <run_dir> [--debug] [--use-input-category-fallback] [--ignore-unknown-overrides]
 
     Example:
         python categorize_transactions.py example --debug
@@ -49,15 +49,21 @@ def main(argv: Optional[Sequence[str]] = None):
     argv = argv if argv is not None else sys.argv[1:]
     debug = False
     use_input_category_fallback = False
+    ignore_unknown_overrides = False
     if "--debug" in argv:
         debug = True
         argv = [arg for arg in argv if arg != "--debug"]
     if "--use-input-category-fallback" in argv:
         use_input_category_fallback = True
         argv = [arg for arg in argv if arg != "--use-input-category-fallback"]
+    if "--ignore-unknown-overrides" in argv:
+        ignore_unknown_overrides = True
+        argv = [arg for arg in argv if arg != "--ignore-unknown-overrides"]
 
     if len(argv) != 1:
-        print("Usage: python categorize_transactions.py <run_dir> [--debug] [--use-input-category-fallback]")
+        print(
+            "Usage: python categorize_transactions.py <run_dir> [--debug] [--use-input-category-fallback] [--ignore-unknown-overrides]"
+        )
         print("Example: python categorize_transactions.py example --debug")
         return 2
 
@@ -156,14 +162,20 @@ def main(argv: Optional[Sequence[str]] = None):
     if transaction_overrides:
         unknown_override_ids = transaction_overrides.unknown_ids(known_transaction_ids)
         if unknown_override_ids:
-            print("\n❌ transaction_overrides.json contains unknown transaction ID(s):")
+            prefix = "⚠️" if ignore_unknown_overrides else "❌"
+            print(f"\n{prefix} transaction_overrides.json contains unknown transaction ID(s):")
             for tx_id in unknown_override_ids[:20]:
                 print(f"   - {tx_id}")
             if len(unknown_override_ids) > 20:
                 print(f"   ... and {len(unknown_override_ids) - 20} more")
-            print("\n   If transaction IDs were regenerated, use the remap helper to find the new IDs:")
-            print(f"   uv run python suggest_override_ids.py {run_dir}")
-            return 1
+            if ignore_unknown_overrides:
+                print("\n   Continuing because --ignore-unknown-overrides is set.")
+                print("   Unknown override IDs will be ignored for this run.")
+            else:
+                print("\n   If transaction IDs were regenerated, use the remap helper to find the new IDs:")
+                print(f"   uv run python suggest_override_ids.py {run_dir}")
+                print("\n   To continue anyway, rerun with --ignore-unknown-overrides.")
+                return 1
 
     # 4. Categorize and export each preloaded input file
     print("\n4. Categorizing and Exporting...")

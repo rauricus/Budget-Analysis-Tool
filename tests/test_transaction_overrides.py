@@ -396,6 +396,46 @@ class TestExampleDatasetOverrides:
         assert "TX-999999" in captured
         assert "suggest_override_ids.py" in captured
 
+    def test_example_overrides_can_ignore_unknown_ids_with_switch(self, tmp_path, capsys):
+        """With --ignore-unknown-overrides, unknown IDs are logged but do not fail the run."""
+        from categorize_transactions import main
+
+        run_dir = tmp_path / "example"
+        (run_dir / "input").mkdir(parents=True)
+        (run_dir / "output").mkdir(parents=True)
+        (run_dir / "metadata").mkdir(parents=True)
+
+        shutil.copy(
+            Path("data/example/input/export.202503.csv"),
+            run_dir / "input" / "export.202503.csv",
+        )
+        shutil.copy(Path("data/example/rules.json"), run_dir / "rules.json")
+        shutil.copy(
+            Path("data/example/transaction_overrides.json"),
+            run_dir / "transaction_overrides.json",
+        )
+
+        result = main([str(run_dir), "--ignore-unknown-overrides"])
+
+        assert result == 0
+        captured = capsys.readouterr().out
+        assert "unknown transaction ID" in captured
+        assert "TX-999999" in captured
+        assert "Continuing because --ignore-unknown-overrides is set." in captured
+
+        output_csv = run_dir / "output" / "export.202503.categorized.csv"
+        assert output_csv.exists()
+
+        with open(output_csv, "r", encoding="utf-8") as f:
+            rows = list(csv.DictReader(f, delimiter=";"))
+
+        by_id = {row["Transaction ID"]: row for row in rows}
+        # Known overrides from example fixture should still apply.
+        assert "TX-000031" not in by_id
+        assert "TX-000013" in by_id
+        assert by_id["TX-000013"]["Category"] == "Freizeit"
+        assert by_id["TX-000013"]["Subcategory"] == "Kultur"
+
     def test_known_overrides_are_applied_successfully(self, tmp_path):
         """Overrides should still be applied when all override IDs exist."""
         from categorize_transactions import main

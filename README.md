@@ -43,6 +43,9 @@ uv run python categorize_transactions.py private
 # Optional: reuse original input CSV categories for otherwise uncategorized rows
 uv run python categorize_transactions.py example --use-input-category-fallback
 
+# Optional: continue even if transaction_overrides.json contains unknown IDs
+uv run python categorize_transactions.py example --ignore-unknown-overrides
+
 # Optional: suggest old->new transaction ID remapping for transaction_overrides.json
 # (useful after resetting/regenerating transaction IDs)
 uv run python suggest_override_ids.py example
@@ -195,7 +198,8 @@ Behavior and constraints:
 - `_row` is optional metadata to help remap old IDs after registry resets; it does not affect categorization.
 - A `transaction_overrides.json` file is only valid in the top-level run dataset.
 - A `transaction_overrides.json` in a referenced base dataset (declared via `"base"`) is rejected.
-- If an override references an unknown transaction ID, `categorize_transactions.py` fails fast.
+- If an override references an unknown transaction ID, `categorize_transactions.py` fails fast by default.
+- You can opt into warning-only behavior with `--ignore-unknown-overrides`; unknown IDs are then ignored for that run.
 
 When unknown override IDs are detected, use the helper:
 
