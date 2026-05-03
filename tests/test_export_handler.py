@@ -146,6 +146,39 @@ def test_export_splits_legacy_category_into_subcategory():
         assert df.iloc[0]["Subcategory"] == "Detail-Lebensmittel"
 
 
+def test_export_includes_matched_rule_metadata():
+    """Test that export includes matched rule metadata columns"""
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
+    engine = RuleEngine('data/example/rules.json')
+    
+    txns, matching_rules = engine.categorize_batch(txns)
+    
+    with tempfile.TemporaryDirectory() as tmpdir:
+        output_path = os.path.join(tmpdir, "test_matched_rules.csv")
+        ExportHandler.export_csv(txns, output_path, matching_rules)
+        
+        df = pd.read_csv(output_path, sep=";", encoding="utf-8")
+        
+        # Verify columns exist
+        assert "Matched Rule Key" in df.columns, "Matched Rule Key column should exist"
+        assert "Matched Rule Source" in df.columns, "Matched Rule Source column should exist"
+        
+        # Verify that categorized transactions have rule metadata
+        categorized_rows = df[df["Category"] != "?"]
+        assert len(categorized_rows) > 0, "Should have categorized transactions"
+        
+        for _, row in categorized_rows.iterrows():
+            # Matched rule columns should have values (not "-")
+            assert row["Matched Rule Key"] != "-", "Categorized row should have matched rule key"
+            assert row["Matched Rule Source"] != "-", "Categorized row should have matched rule source"
+        
+        # Verify uncategorized transactions show "-"
+        uncategorized_rows = df[df["Category"] == "?"]
+        for _, row in uncategorized_rows.iterrows():
+            assert row["Matched Rule Key"] == "-", "Uncategorized row should show - for rule key"
+            assert row["Matched Rule Source"] == "-", "Uncategorized row should show - for rule source"
+
+
 if __name__ == '__main__':
     test_export_format()
     test_merchant_location_extraction()

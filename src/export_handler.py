@@ -31,6 +31,8 @@ class ExportHandler:
         "Transaction Category",
         "Category",
         "Subcategory",
+        "Matched Rule Key",
+        "Matched Rule Source",
     ]
 
     @staticmethod
@@ -130,6 +132,15 @@ class ExportHandler:
             credit = txn.credit if txn.credit > 0 else math.nan
             debit = txn.debit if txn.debit > 0 else math.nan
             
+            # Extract matched rule metadata
+            # Use the first (highest-priority) matching rule if available
+            matched_rule_key = "-"
+            matched_rule_source = "-"
+            if rules and len(rules) > 0:
+                first_rule = rules[0]
+                matched_rule_key = first_rule.declared_key
+                matched_rule_source = first_rule.source
+            
             rows.append({
                 "Transaction ID": txn.transaction_id,
                 "Date": txn.date.strftime("%d.%m.%Y"),
@@ -149,6 +160,8 @@ class ExportHandler:
                 "Transaction Category": txn.auto_transaction_category or "",
                 "Category": category,
                 "Subcategory": subcategory,
+                "Matched Rule Key": matched_rule_key,
+                "Matched Rule Source": matched_rule_source,
             })
         
         df = pd.DataFrame(rows, columns=ExportHandler.EXPORT_COLUMNS)

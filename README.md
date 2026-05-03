@@ -340,6 +340,8 @@ The structured export currently uses these columns:
 - Transaction Category
 - Category
 - Subcategory
+- Matched Rule Key
+- Matched Rule Source
 
 ## Iterative workflow
 
