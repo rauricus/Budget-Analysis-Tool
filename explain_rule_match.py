@@ -392,7 +392,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Explain which rules match a single transaction and why. "
-            "Select by --transaction-id or by --line-number (with optional --input-file). "
+            "Select by --transaction-id or by --line-number (optionally constrained by --input-file). "
             "Any reported override refers to transaction_overrides.json, not to rule overlay overrides."
         )
     )
@@ -401,7 +401,6 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser.add_argument("--line-number", type=int, help="1-based source CSV line number")
     parser.add_argument(
         "--input-file",
-        "--input",
         dest="input_file",
         help="Input CSV file name (required when line number is ambiguous)",
     )

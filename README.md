@@ -55,6 +55,7 @@ uv run python categorize_transactions.py example --input-file export.202503.csv
 uv run python suggest_override_ids.py example
 
 # Explain rule matching for one transaction (select by source CSV line)
+# Use --input-file to scope line lookup to one specific input CSV when needed.
 uv run python explain_rule_match.py example --input-file export.202503.csv --line-number 42
 
 # Optional: explain a specific rule in detail for the same transaction
