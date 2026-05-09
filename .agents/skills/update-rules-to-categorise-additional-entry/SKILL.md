@@ -30,6 +30,7 @@ Prerequisites:
 	- Choose **extending/private ruleset** when the transaction appears personal, local, or contributor-specific. This includes family members, personal account transfers, apartment-specific rent/utility counterparties, explicit place-specific merchants/providers, and companies that are strongly tied to one place or contributor context.
 	- If classification is still ambiguous after applying this policy, **ask the user explicitly** before editing rules.
 5. **Extend or add a rule**: If you've found a rule to extend, present the user with the option to extend the rule. If they choose to extend, update the rule's matching patterns to also match the new transaction. If they choose not to extend or if no matching rule is found, create a new rule in the selected ruleset (base or extending) with matching patterns that match the new transaction's `Bewegungstyp` and `Avisierungstext`.
-	- Before writing changes, confirm with the user in one short decision line: `Target ruleset: base|private` and `Action: extend|new`.
+	- If the decision is clear after applying step 4, proceed without asking the user again.
+	- Ask the user only if either of these remains ambiguous: `Target ruleset: base|private` or `Action: extend|new`.
 6. **Verify**: Run the "Categorize" script again with the debug flag to verify that the new or extended rule correctly categorizes the transaction without any warnings.
 7. **Iterate**: If the introduced changes do not match, refine the rule matching until it matches successfully. Give up after 3 tries and inform the user that the transaction could not be categorized with the current ruleset, suggesting to analyze if the transaction has unique characteristics that require a different approach.
