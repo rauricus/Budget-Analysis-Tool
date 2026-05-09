@@ -1006,6 +1006,35 @@
       }
     },
     {
+      "key": "insurance_reise_zurich",
+      "name": "Versicherung: Reiseversicherung Zürich",
+      "transaction_category": "Expense",
+      "category": "Finanzen",
+      "subcategory": "Versicherungen",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [
+            "REISE",
+            "PRÄMIE"
+          ],
+          "exclude_keywords": [],
+          "counterparties": [
+            "ZÜRICH VERSICHERUNGS-GESELLSCHAFT"
+          ],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
       "key": "finance_1",
       "name": "Cash Withdrawal",
       "transaction_category": "Expense",
