@@ -81,6 +81,32 @@
       }
     },
     {
+      "key": "communication_3",
+      "name": "Kommunikation: Serafe",
+      "transaction_category": "Expense",
+      "category": "Wohnen",
+      "subcategory": "Kommunikation",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [
+            "SERAFE AG"
+          ],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
       "key": "family_1",
       "name": "Dauerauftrag: Familienkasse",
       "transaction_category": "Expense",
