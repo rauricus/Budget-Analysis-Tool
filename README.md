@@ -313,12 +313,26 @@ Example:
 - `scope.services` filters by parsed `service_type` and `scope.providers` optionally by payment provider.
 - `scope.notification_filters` contains parsed-field matching criteria (`merchants`, `locations`, `counterparties`, `counterparty_ibans`, `include_keywords`, `exclude_keywords`).
 - A rule matches only if all configured conditions match.
+- Empty filters behave like wildcards: if a field is unset, `null`, `""`, or `[]` (depending on the field), that field does not restrict matching.
+- `scope.transaction_type`: exact match.
+- `scope.transaction_type_detail`: exact match.
+- `scope.services`: OR logic within the list. If the list is non-empty, at least one listed service must match exactly.
+- `scope.providers`: OR logic within the list. If the list is non-empty, at least one listed provider must match exactly.
+- `scope.services` and `scope.providers` are combined with AND logic across fields. If both are configured, both checks must pass.
 - `merchants`: OR logic (at least one must match).
 - `locations`: AND logic (all must match).
 - `counterparties`: OR logic (at least one must match the parsed counterparty).
 - `counterparty_ibans`: OR logic with exact IBAN match (spaces ignored).
 - `include_keywords`: AND logic (all must match).
 - `exclude_keywords`: none may match.
+
+Short overview:
+
+- Exact-match fields: `transaction_type`, `transaction_type_detail`, `services`, `providers`, `counterparty_ibans`.
+- OR fields: `services`, `providers`, `merchants`, `counterparties`, `counterparty_ibans`.
+- AND fields: `locations`, `include_keywords`.
+- Negative filter: `exclude_keywords`.
+- Across different fields, rule checks are cumulative: every configured field must pass for the rule to match.
 
 ### No fallback category
 
