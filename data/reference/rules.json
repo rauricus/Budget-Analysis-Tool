@@ -683,10 +683,12 @@
         "transaction_type": "Debit",
         "transaction_type_detail": null,
         "services": [
-          "Card Purchase"
+          "Card Purchase",
+          "Twint"
         ],
         "providers": [
-          "Apple Pay"
+          "Apple Pay",
+          "Twint"
         ],
         "notification_filters": {
           "merchants": [
