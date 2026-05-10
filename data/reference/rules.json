@@ -28,7 +28,7 @@
     },
     {
       "key": "communication_1",
-      "name": "Kommunikation: Sunrise",
+      "name": "Kommunikation: Internet, Telefon, TV",
       "transaction_category": "Expense",
       "category": "Wohnen",
       "subcategory": "Kommunikation",
@@ -42,7 +42,10 @@
         "providers": [],
         "notification_filters": {
           "merchants": [
-            "SUNRISE"
+            "SUNRISE",
+            "SWISSCOM",
+            "SALT",
+            "CYON"
           ],
           "locations": [],
           "include_keywords": [],
@@ -70,7 +73,8 @@
           "merchants": [
             "APPLE.COM",
             "NETFLIX",
-            "OPENAI *CHATGPT SUBSCR"
+            "OPENAI *CHATGPT SUBSCR",
+            "RMILK.COM"
           ],
           "locations": [],
           "include_keywords": [],
@@ -173,10 +177,10 @@
         "transaction_type": "Debit",
         "transaction_type_detail": null,
         "services": [
-          "Card Purchase"
+          "Card Purchase",
+          "Twint"
         ],
         "providers": [
-          "Apple Pay"
         ],
         "notification_filters": {
           "merchants": [
@@ -209,6 +213,8 @@
         "providers": [],
         "notification_filters": {
           "merchants": [
+            "RESTAURANT",
+            "BISTRO",
             "YOOJI'S",
             "PEPPINO"
           ],
@@ -238,8 +244,6 @@
           "merchants": [
             "SPETTACOLO",
             "CAFE",
-            "OMBAK",
-            "OHNE.CH",
             "BARISTA"
           ],
           "locations": [],
@@ -289,6 +293,7 @@
         "providers": [],
         "notification_filters": {
           "merchants": [
+            "MCDONALD",
             "KEBAB",
             "IMBISS"
           ],
@@ -346,10 +351,10 @@
           "merchants": [
             "BÄCKEREI",
             "BACKEREI",
+            "BACK",
             "CONFISERIE",
             "SPRÜNGLI",
-            "JAISLI",
-            "MOSER'S BACKPARADIES"
+            "JAISLI"            
           ],
           "locations": [],
           "include_keywords": [],
@@ -372,9 +377,7 @@
         "services": [
           "Card Purchase"
         ],
-        "providers": [
-          "Apple Pay"
-        ],
+        "providers": [],
         "notification_filters": {
           "merchants": [
             "YUMIHANA",
@@ -389,37 +392,7 @@
       }
     },
     {
-      "key": "grocery_3",
-      "name": "Einkauf Tankstellen-Shop",
-      "transaction_category": "Expense",
-      "category": "Einkaufen",
-      "subcategory": "Detail-Lebensmittel",
-      "priority": 5,
-      "scope": {
-        "transaction_type": "Debit",
-        "transaction_type_detail": null,
-        "services": [
-          "Card Purchase"
-        ],
-        "providers": [
-          "Apple Pay"
-        ],
-        "notification_filters": {
-          "merchants": [
-            "TANKSTELLE"
-          ],
-          "locations": [],
-          "include_keywords": [
-            "SHOP"
-          ],
-          "exclude_keywords": [],
-          "counterparties": [],
-          "counterparty_ibans": []
-        }
-      }
-    },
-    {
-      "key": "grocery_4",
+      "key": "grocery_supermarket",
       "name": "Einkauf Supermarkt",
       "transaction_category": "Expense",
       "category": "Einkaufen",
@@ -429,14 +402,14 @@
         "transaction_type": "Debit",
         "transaction_type_detail": null,
         "services": [
-          "Card Purchase"
+          "Card Purchase",
+          "Twint"
         ],
-        "providers": [
-          "Apple Pay"
-        ],
+        "providers": [],
         "notification_filters": {
           "merchants": [
-            "MIGROS",
+            "MIGROS", "MM ",
+            "MIGROLINO",
             "COOP",
             "VOI"
           ],
@@ -622,7 +595,7 @@
     },
     {
       "key": "home_5",
-      "name": "Einkauf Haushalt: Online-Käufe Second-Hand",
+      "name": "Einkauf Haushalt: Online Second-Hand",
       "transaction_category": "Expense",
       "category": "Wohnen",
       "subcategory": "Haushalt",
@@ -636,7 +609,8 @@
         "providers": [],
         "notification_filters": {
           "merchants": [
-            "RICARDO"
+            "RICARDO",
+            "EBAY"
           ],
           "locations": [],
           "include_keywords": [],
@@ -763,11 +737,66 @@
       }
     },
     {
-      "key": "shopping_online_other_1",
-      "name": "Shopping: Andere Online-Käufe",
+      "key": "shopping_3",
+      "name": "Einkauf Tankstellen-Shop",
       "transaction_category": "Expense",
       "category": "Einkaufen",
-      "subcategory": "Onlinehandel",
+      "subcategory": "Detailhandel",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [
+          "Apple Pay"
+        ],
+        "notification_filters": {
+          "merchants": [
+            "TANKSTELLE"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "shopping_4",
+      "name": "Shopping: Detailhandel",
+      "transaction_category": "Expense",
+      "category": "Einkaufen",
+      "subcategory": "Detailhandel",
+      "priority": 3,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Twint"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "SUMUP"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "shopping_other_1",
+      "name": "Shopping: Sonstiges Einkaufen",
+      "transaction_category": "Expense",
+      "category": "Einkaufen",
+      "subcategory": "Sonstiges Einkaufen",
       "priority": 1,
       "scope": {
         "transaction_type": "Debit",
@@ -788,7 +817,7 @@
     },
     {
       "key": "transport_1",
-      "name": "Öffentlicher Verkehr",
+      "name": "Mobilität: Öffentlicher Verkehr",
       "transaction_category": "Expense",
       "category": "Mobilität",
       "subcategory": "Öffentlicher Verkehr",
@@ -803,6 +832,7 @@
         "notification_filters": {
           "merchants": [
             "SBB",
+            "BLS",
             "TRANSPORTS PUBLICS",
             "FAIRTIQ"
           ],
@@ -816,7 +846,7 @@
     },
     {
       "key": "transport_2",
-      "name": "Mobility",
+      "name": "Mobilität: Mobility",
       "transaction_category": "Expense",
       "category": "Mobilität",
       "subcategory": "Privater Verkehr",
@@ -843,7 +873,7 @@
     },
     {
       "key": "transport_3",
-      "name": "Parking",
+      "name": "Mobilität: Parking",
       "transaction_category": "Expense",
       "category": "Mobilität",
       "subcategory": "Privater Verkehr",
@@ -856,11 +886,38 @@
         ],
         "providers": [],
         "notification_filters": {
-          "merchants": ["PARKING"],
-          "locations": [],
-          "include_keywords": [
-            
+          "merchants": [
+            "PARKING"
           ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "transport_4",
+      "name": "Mobilität: Velo",
+      "transaction_category": "Expense",
+      "category": "Mobilität",
+      "subcategory": "Privater Verkehr",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "BIKE",
+            "VELO"
+          ],
+          "locations": [],
+          "include_keywords": [],
           "exclude_keywords": [],
           "counterparties": [],
           "counterparty_ibans": []
@@ -995,8 +1052,67 @@
         ],
         "notification_filters": {
           "merchants": [
-            "CASINO THEATER AG WINTERTHUR"
-          ],
+            "THEATER",
+            "CINEMA",
+            "KINO",
+            "KULTUR"
+            ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "leisure_3",
+      "name": "Freizeit: Bar, Club",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Bar, Club",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "PICKWICK",
+            "PUB",
+            "BAR "
+            ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "vacation_2",
+      "name": "Ferien: Unterkunft",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Reisen und Erleben",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "AIRBNB",
+            "HOTEL",
+            "BOOKING.COM"
+            ],
           "locations": [],
           "include_keywords": [],
           "exclude_keywords": [],
