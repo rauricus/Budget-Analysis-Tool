@@ -2,3 +2,4 @@ Transaction ID;Date;Transaction Type;Transaction Type Detail;Service;Provider;Ca
 TX-000061;04.04.2025;Credit;Refund;PostFinance Card Refund;;XXXX1384;UEFA WOMEN'S EURO 2025 NYON;CH;;;;100.0;;;Refund;Freizeit;Reisen und Erleben;refund_3;data/example/rules.json
 TX-000062;16.04.2025;Credit;Credit;Credit;;;;;FIKTIVE LOHN AG PERSONALABTEILUNG;CH9300762011623852957;LOHNBEISPIEL APRIL 2025 | DEMO REF 001;4200.0;;;Income;Einkommen;Lohn;income_example_counterparty_1;data/example/rules.json
 TX-000063;17.04.2025;Debit;Payment;Direct Debit;;;;;ANONYMISIERTER VEREIN MITTEILUNGEN: DEMO-ZWECK JAHRESBEITRAG;CH1122223333444455556;;;25.0;;Expense;Finanzen;Spenden;expense_example_counterparty_iban_1;data/example/rules.json
+TX-000065;18.04.2025;Debit;Purchase/Online Shopping;Card Purchase;Pf Pay;;FIKTIVE DIGITAL GMBH;;;;PAYMENT ID 000A00D0 BESTELLNUMMER AB00CD00;;33.7;;;?;;-;-

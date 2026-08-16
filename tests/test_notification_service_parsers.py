@@ -86,6 +86,26 @@ def test_efinance_purchase_parser_without_card_number():
     assert result.reference == "PAYMENT ID 250119000000000000 BESTELLNUMMER DP-P-00000000"
 
 
+def test_efinance_purchase_parser_with_billing_descriptor_and_provider():
+    """EFinancePurchaseParser should accept a billing domain instead of 'N/A' and keep the provider."""
+    parser = EFinancePurchaseParser()
+    text = (
+        "PF PAY KAUF/ONLINE-SHOPPING VOM 18.04.2025 FIKTIVE DIGITAL GMBH "
+        "BILLING.PAY.DEMO.CH PAYMENT ID 000A00D0 BESTELLNUMMER AB00CD00"
+    )
+
+    assert parser.supports(text), "Online shopping parser should support a billing descriptor"
+
+    result = parser.parse(text)
+    assert result.service_type == "Card Purchase"
+    assert result.provider == "Pf Pay"
+    assert result.transaction_type_detail == "Purchase/Online Shopping"
+    assert result.card_number == ""
+    assert result.merchant == "FIKTIVE DIGITAL GMBH"
+    assert result.location == ""
+    assert result.reference == "PAYMENT ID 000A00D0 BESTELLNUMMER AB00CD00"
+
+
 def test_cash_withdrawal_parser():
     """CashWithdrawalParser should parse cash withdrawal transactions."""
     parser = CashWithdrawalParser()

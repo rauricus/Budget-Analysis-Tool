@@ -6,9 +6,12 @@ from notification.base import NotificationParseResult, AbstractServiceParser
 class EFinancePurchaseParser(AbstractServiceParser):
     """Parse PostFinance eFinance purchase notifications."""
 
+    # Between merchant and "PAYMENT ID" PostFinance prints a billing descriptor:
+    # either the literal "N/A" or the acquirer's billing domain (e.g. "BILLING.PAY.F4D.CH").
     PATTERN = re.compile(
         r"^(?:(?P<provider>.+?)\s+)?KAUF/ONLINE-SHOPPING\s+VOM\s+\d{2}\.\d{2}\.\d{4}\s+"
-        r"(?P<merchant>.+?)\s+N/A\s+PAYMENT ID\s+(?P<payment_id>[A-Z0-9-]+)\s+BESTELLNUMMER\s+(?P<order_ref>[A-Z0-9-]+)$",
+        r"(?P<merchant>.+?)\s+(?P<descriptor>N/A|\S+\.\S+)\s+"
+        r"PAYMENT ID\s+(?P<payment_id>[A-Z0-9-]+)\s+BESTELLNUMMER\s+(?P<order_ref>[A-Z0-9-]+)$",
         re.IGNORECASE,
     )
 
