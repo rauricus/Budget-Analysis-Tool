@@ -180,8 +180,7 @@
           "Card Purchase",
           "Twint"
         ],
-        "providers": [
-        ],
+        "providers": [],
         "notification_filters": {
           "merchants": [
             "MIGROS",
@@ -354,7 +353,7 @@
             "BACK",
             "CONFISERIE",
             "SPRÜNGLI",
-            "JAISLI"            
+            "JAISLI"
           ],
           "locations": [],
           "include_keywords": [],
@@ -408,7 +407,8 @@
         "providers": [],
         "notification_filters": {
           "merchants": [
-            "MIGROS", "MM ",
+            "MIGROS",
+            "MM ",
             "MIGROLINO",
             "COOP",
             "VOI"
@@ -718,15 +718,15 @@
         "transaction_type": "Debit",
         "transaction_type_detail": null,
         "services": [
-          "Card Purchase"
+          "Card Purchase",
+          "Direct Debit"
         ],
-        "providers": [
-          "Apple Pay"
-        ],
+        "providers": [],
         "notification_filters": {
           "merchants": [
             "ORELL FÜSSLI THALIA",
-            "ORELL FUSSLI"
+            "ORELL FUSSLI",
+            "ORELL FUESSLI"
           ],
           "locations": [],
           "include_keywords": [],
@@ -993,7 +993,8 @@
         "transaction_type": "Debit",
         "transaction_type_detail": null,
         "services": [
-          "Card Purchase"
+          "Card Purchase",
+          "Direct Debit"
         ],
         "providers": [],
         "notification_filters": {
@@ -1058,7 +1059,7 @@
             "CINEMA",
             "KINO",
             "KULTUR"
-            ],
+          ],
           "locations": [],
           "include_keywords": [],
           "exclude_keywords": [],
@@ -1086,7 +1087,7 @@
             "PICKWICK",
             "PUB",
             "BAR "
-            ],
+          ],
           "locations": [],
           "include_keywords": [],
           "exclude_keywords": [],
@@ -1114,7 +1115,7 @@
             "AIRBNB",
             "HOTEL",
             "BOOKING.COM"
-            ],
+          ],
           "locations": [],
           "include_keywords": [],
           "exclude_keywords": [],
@@ -1324,6 +1325,110 @@
           "merchants": [
             "DIGITEC",
             "GALAXUS"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "shopping_5",
+      "name": "Post: Verzollung und Logistik",
+      "transaction_category": "Expense",
+      "category": "Einkaufen",
+      "subcategory": "Sonstiges Einkaufen",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "POST CH AG"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "work-study_2",
+      "name": "Co-Working: Lastschrift",
+      "transaction_category": "Expense",
+      "category": "Leben",
+      "subcategory": "Arbeiten und Lernen",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [
+            "COWORKING"
+          ],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "insurance_1",
+      "name": "Versicherung: Mobiliar",
+      "transaction_category": "Expense",
+      "category": "Finanzen",
+      "subcategory": "Versicherungen",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "SCHWEIZERISCHE MOBILIAR"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "creditcard_1",
+      "name": "Kreditkarten-Abrechnung",
+      "transaction_category": "Expense",
+      "category": "Finanzen",
+      "subcategory": "Kreditkarte",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "VISECA"
           ],
           "locations": [],
           "include_keywords": [],

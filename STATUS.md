@@ -27,7 +27,7 @@ title.
 | Tests | 15 test modules covering parsers, rules, overlays, overrides, export, ID registry |
 | Agent skills | 3 skills covering the rule/parser iteration loop |
 
-Rule sets: 47 baseline rules in `data/reference`, 36 in the standalone `data/example`.
+Rule sets: 52 baseline rules in `data/reference`, 36 in the standalone `data/example`.
 
 Per-dataset state — coverage, open transactions, figures — is tracked inside the respective
 dataset directory, not here.
