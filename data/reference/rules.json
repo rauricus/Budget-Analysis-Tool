@@ -826,7 +826,9 @@
         "transaction_type": "Debit",
         "transaction_type_detail": null,
         "services": [
-          "Card Purchase"
+          "Card Purchase",
+          "Direct Debit",
+          "Twint"
         ],
         "providers": [],
         "notification_filters": {
@@ -1296,6 +1298,33 @@
         "providers": [],
         "notification_filters": {
           "merchants": [],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "refund_4",
+      "name": "Rückerstattung Onlinehändler",
+      "transaction_category": "Refund",
+      "category": "Wohnen",
+      "subcategory": "Haushalt",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Credit",
+        "transaction_type_detail": null,
+        "services": [
+          "Credit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "DIGITEC",
+            "GALAXUS"
+          ],
           "locations": [],
           "include_keywords": [],
           "exclude_keywords": [],
