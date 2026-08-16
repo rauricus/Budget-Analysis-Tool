@@ -3,3 +3,7 @@ TX-000061;04.04.2025;Credit;Refund;PostFinance Card Refund;;XXXX1384;UEFA WOMEN'
 TX-000062;16.04.2025;Credit;Credit;Credit;;;;;FIKTIVE LOHN AG PERSONALABTEILUNG;CH9300762011623852957;LOHNBEISPIEL APRIL 2025 | DEMO REF 001;4200.0;;;Income;Einkommen;Lohn;income_example_counterparty_1;data/example/rules.json
 TX-000063;17.04.2025;Debit;Payment;Direct Debit;;;;;ANONYMISIERTER VEREIN MITTEILUNGEN: DEMO-ZWECK JAHRESBEITRAG;CH1122223333444455556;;;25.0;;Expense;Finanzen;Spenden;expense_example_counterparty_iban_1;data/example/rules.json
 TX-000065;18.04.2025;Debit;Purchase/Online Shopping;Card Purchase;Pf Pay;;FIKTIVE DIGITAL GMBH;;;;PAYMENT ID 000A00D0 BESTELLNUMMER AB00CD00;;33.7;;;?;;-;-
+TX-000066;19.04.2025;Debit;Purchase/Online Shopping;Card Purchase;Pf Pay;;FIKTIVE POST AG;;;;PAYMENT ID AB0CD0EF00GH0IJ0 BESTELLNUMMER MYS_AB0CD0EF00GH0I;;12.5;;;?;;-;-
+TX-000067;20.04.2025;Credit;Refund;PostFinance Card Refund;Apple Pay;XXXX4821;FIKTIVER SCHUHLADEN BIEL;CH;;;;49.9;;;;?;;-;-
+TX-000068;21.04.2025;Credit;Refund;PostFinance Card Refund;Apple Pay;XXXX4821;FIKTIVER FAHRSCHEIN BERLIN DEUTSCHLAND;;;;;19.15;;;;?;;-;-
+TX-000069;22.04.2025;Debit;Cash Withdrawal;Cash Withdrawal;;XXXX4821;BAHNHOF;BEISPIELSTADT;;;;;143.5;;Expense;Finanzen;Bargeldbezug;finance_1;data/example/rules.json

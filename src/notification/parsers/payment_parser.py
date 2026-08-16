@@ -7,8 +7,11 @@ class PaymentParser(AbstractServiceParser):
     """Parser for direct debit payment formats (LASTSCHRIFT ... CH<iban> ...)."""
 
     # Pattern: LASTSCHRIFT [optional bank route] CH<iban> <counterparty>
+    # The IBAN group must be a full 21-character Swiss IBAN. A loose "CH\S+" would
+    # also match counterparty words starting with CH (for example "CHRISTIAN"), which
+    # cuts the payee name in half.
     PATTERN = re.compile(
-        r"^LASTSCHRIFT\s+(?:(.+?)\s+)?(CH\S+)\s+(.+)$",
+        r"^LASTSCHRIFT\s+(?:(.+?)\s+)?(CH\d{2}[0-9A-Z]{17})\s+(.+)$",
         re.IGNORECASE,
     )
 

@@ -4,8 +4,11 @@ from notification.base import NotificationParseResult, AbstractServiceParser
 
 
 class CashWithdrawalParser(AbstractServiceParser):
+    # Any content between date and KARTEN NR. is skipped (e.g. foreign-currency conversion).
     PATTERN = re.compile(
-        r"^BARGELDBEZUG\s+VOM\s+\d{2}\.\d{2}\.\d{4}\s+KARTEN NR\.\s+(?P<card>XXXX\d{4})\s+(?P<rest>.+)$",
+        r"^BARGELDBEZUG\s+VOM\s+\d{2}\.\d{2}\.\d{4}\s+"
+        r"(?:[\w.,/%\s]+?\s+)?"
+        r"KARTEN NR\.\s+(?P<card>XXXX\d{4})\s+(?P<rest>.+)$",
         re.IGNORECASE,
     )
 
@@ -30,6 +33,9 @@ class CashWithdrawalParser(AbstractServiceParser):
     def _extract_merchant_location(text: str) -> tuple[str, str]:
         if not text:
             return "", ""
+
+        # Drop a trailing country marker like "(CH)" so the last token stays the location.
+        text = re.sub(r"\s*\([^)]+\)\s*$", "", text).strip()
 
         tokens = text.split()
         if len(tokens) < 2:

@@ -6,8 +6,11 @@ from notification.base import NotificationParseResult, AbstractServiceParser
 class PostFinanceCardRefundParser(AbstractServiceParser):
     """Parser for PostFinance Card refunds."""
 
+    # Optional provider prefix (e.g. "APPLE PAY") before GUTSCHRIFT.
+    # Any content between date and KARTEN NR. is skipped (e.g. foreign-currency conversion).
     PATTERN = re.compile(
-        r"^GUTSCHRIFT\s+POSTFINANCE\s+CARD\s+VOM\s+\d{2}\.\d{2}\.\d{4}\s+"
+        r"^(?:(?P<provider>.+?)\s+)?GUTSCHRIFT\s+POSTFINANCE\s+CARD\s+VOM\s+\d{2}\.\d{2}\.\d{4}\s+"
+        r"(?:[\w.,/%\s]+?\s+)?"
         r"KARTEN NR\.\s+(?P<card>XXXX\d{4})\s+(?P<rest>.+)$",
         re.IGNORECASE,
     )
@@ -23,6 +26,7 @@ class PostFinanceCardRefundParser(AbstractServiceParser):
         merchant, location = self._extract_merchant_location(match.group("rest").strip())
         return NotificationParseResult(
             service_type="PostFinance Card Refund",
+            provider=(match.group("provider") or "").strip().title(),
             transaction_type_detail="Refund",
             card_number=match.group("card").strip(),
             merchant=merchant,

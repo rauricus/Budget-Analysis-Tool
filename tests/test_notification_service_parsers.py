@@ -121,6 +121,20 @@ def test_cash_withdrawal_parser():
     assert result.location == "BIEL"
 
 
+def test_cash_withdrawal_parser_with_foreign_currency():
+    """CashWithdrawalParser should skip the currency conversion and drop the country marker."""
+    parser = CashWithdrawalParser()
+    text = "BARGELDBEZUG VOM 22.04.2025 EUR 150.00 ZUM KURS VON 0.9567 KARTEN NR. XXXX4821 BAHNHOF BEISPIELSTADT (CH)"
+
+    assert parser.supports(text), "Cash withdrawal parser should support foreign currency withdrawals"
+
+    result = parser.parse(text)
+    assert result.service_type == "Cash Withdrawal"
+    assert result.card_number == "XXXX4821"
+    assert result.merchant == "BAHNHOF"
+    assert result.location == "BEISPIELSTADT"
+
+
 def test_credit_transfer_parser_salary_credit():
     """CreditTransferParser should parse salary-like credit transfer format."""
     parser = CreditTransferParser()
@@ -291,6 +305,16 @@ def test_debit_direct_parser():
     assert "2025/04/01 / 7045128" in result.reference
 
 
+def test_payment_parser_keeps_counterparty_starting_with_ch():
+    """PaymentParser must not treat a counterparty word starting with 'CH' as the IBAN."""
+    parser = PaymentParser()
+    text = "LASTSCHRIFT CH4830000001891806603 HERR DR. MED. DENT. CHRISTIAN MUSTER KASERNENSTRASSE 26 5000 AARAU"
+
+    result = parser.parse(text)
+    assert result.counterparty_iban == "CH4830000001891806603"
+    assert result.counterparty == "HERR DR. MED. DENT. CHRISTIAN MUSTER KASERNENSTRASSE 26 5000 AARAU"
+
+
 def test_payment_parser():
     """PaymentParser should parse standard and bank-route payment formats."""
     parser = PaymentParser()
@@ -341,6 +365,54 @@ def test_postfinance_card_refund_parser():
     assert result.card_number == "XXXX1384"
     assert result.merchant == "UEFA WOMEN'S EURO 2025 NYON"
     assert result.location == "CH"
+
+
+def test_postfinance_card_refund_parser_with_provider():
+    """PostFinanceCardRefundParser should keep an optional provider prefix."""
+    parser = PostFinanceCardRefundParser()
+    text = "APPLE PAY GUTSCHRIFT POSTFINANCE CARD VOM 20.04.2025 KARTEN NR. XXXX4821 FIKTIVER SCHUHLADEN BIEL (CH)"
+
+    assert parser.supports(text), "Should support a provider prefix"
+
+    result = parser.parse(text)
+    assert result.service_type == "PostFinance Card Refund"
+    assert result.provider == "Apple Pay"
+    assert result.card_number == "XXXX4821"
+    assert result.merchant == "FIKTIVER SCHUHLADEN BIEL"
+    assert result.location == "CH"
+
+
+def test_postfinance_card_refund_parser_with_foreign_currency():
+    """PostFinanceCardRefundParser should skip a currency conversion segment."""
+    parser = PostFinanceCardRefundParser()
+    text = (
+        "APPLE PAY GUTSCHRIFT POSTFINANCE CARD VOM 21.04.2025 EUR 20.00 ZUM KURS VON 0.9567 "
+        "KARTEN NR. XXXX4821 FIKTIVER FAHRSCHEIN BERLIN DEUTSCHLAND"
+    )
+
+    assert parser.supports(text), "Should support foreign currency refunds"
+
+    result = parser.parse(text)
+    assert result.service_type == "PostFinance Card Refund"
+    assert result.provider == "Apple Pay"
+    assert result.card_number == "XXXX4821"
+    assert result.merchant == "FIKTIVER FAHRSCHEIN BERLIN DEUTSCHLAND"
+    assert result.location == ""
+
+
+def test_efinance_purchase_parser_with_underscore_order_reference():
+    """EFinancePurchaseParser should accept underscores in payment/order references."""
+    parser = EFinancePurchaseParser()
+    text = (
+        "PF PAY KAUF/ONLINE-SHOPPING VOM 19.04.2025 FIKTIVE POST AG HTTPS://BEISPIEL.CH "
+        "PAYMENT ID AB0CD0EF00GH0IJ0 BESTELLNUMMER MYS_AB0CD0EF00GH0I"
+    )
+
+    assert parser.supports(text), "Should support underscores in the order reference"
+
+    result = parser.parse(text)
+    assert result.merchant == "FIKTIVE POST AG"
+    assert result.reference == "PAYMENT ID AB0CD0EF00GH0IJ0 BESTELLNUMMER MYS_AB0CD0EF00GH0I"
 
 
 if __name__ == '__main__':

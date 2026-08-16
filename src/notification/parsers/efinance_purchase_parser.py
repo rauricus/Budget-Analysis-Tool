@@ -11,7 +11,7 @@ class EFinancePurchaseParser(AbstractServiceParser):
     PATTERN = re.compile(
         r"^(?:(?P<provider>.+?)\s+)?KAUF/ONLINE-SHOPPING\s+VOM\s+\d{2}\.\d{2}\.\d{4}\s+"
         r"(?P<merchant>.+?)\s+(?P<descriptor>N/A|\S+\.\S+)\s+"
-        r"PAYMENT ID\s+(?P<payment_id>[A-Z0-9-]+)\s+BESTELLNUMMER\s+(?P<order_ref>[A-Z0-9-]+)$",
+        r"PAYMENT ID\s+(?P<payment_id>[A-Z0-9_-]+)\s+BESTELLNUMMER\s+(?P<order_ref>[A-Z0-9_-]+)$",
         re.IGNORECASE,
     )
 
