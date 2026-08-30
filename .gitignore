@@ -48,6 +48,10 @@ htmlcov/
 .tox/
 .hypothesis/
 
+# Claude Code
+# .claude/settings.json is shared; local overrides are machine-specific
+.claude/settings.local.json
+
 # Project specific
 data/private
 

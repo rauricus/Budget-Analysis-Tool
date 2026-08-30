@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv run pytest *)",
+      "Bash(uv run python categorize_transactions.py *)",
+      "Bash(uv run python analyze_by_category.py *)",
+      "Bash(uv run python explain_rule_match.py *)",
+      "Bash(uv run python suggest_override_ids.py *)"
+    ]
+  }
+}
