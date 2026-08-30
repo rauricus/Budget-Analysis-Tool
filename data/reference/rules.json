@@ -37,7 +37,9 @@
         "transaction_type": "Debit",
         "transaction_type_detail": null,
         "services": [
-          "Direct Debit"
+          "Direct Debit",
+          "Card Purchase",
+          "Twint"
         ],
         "providers": [],
         "notification_filters": {
@@ -45,7 +47,8 @@
             "SUNRISE",
             "SWISSCOM",
             "SALT",
-            "CYON"
+            "CYON",
+            "SIPCALL"
           ],
           "locations": [],
           "include_keywords": [],
@@ -74,7 +77,11 @@
             "APPLE.COM",
             "NETFLIX",
             "OPENAI *CHATGPT SUBSCR",
-            "RMILK.COM"
+            "RMILK.COM",
+            "GITHUB",
+            "OPENROUTER",
+            "FLEXIBITS",
+            "REMARKABLE"
           ],
           "locations": [],
           "include_keywords": [],
@@ -215,7 +222,11 @@
             "RESTAURANT",
             "BISTRO",
             "YOOJI'S",
-            "PEPPINO"
+            "TIBITS",
+            "EAT.CH",
+            "SUSHI",
+            "TAKE AWAY",
+            "BURGER"
           ],
           "locations": [],
           "include_keywords": [],
@@ -243,7 +254,13 @@
           "merchants": [
             "SPETTACOLO",
             "CAFE",
-            "BARISTA"
+            "BARISTA",
+            "CAFÉ",
+            "CAFFÈ",
+            "CAFFE",
+            "KAFI",
+            "COFFEE",
+            "STARBUCKS"
           ],
           "locations": [],
           "include_keywords": [],
@@ -343,9 +360,7 @@
         "services": [
           "Card Purchase"
         ],
-        "providers": [
-          "Apple Pay"
-        ],
+        "providers": [],
         "notification_filters": {
           "merchants": [
             "BÄCKEREI",
@@ -353,7 +368,12 @@
             "BACK",
             "CONFISERIE",
             "SPRÜNGLI",
-            "JAISLI"
+            "JAISLI",
+            "BOULANGERIE",
+            "CONFISEUR",
+            "METZGEREI",
+            "BRAUEREI",
+            "BECK"
           ],
           "locations": [],
           "include_keywords": [],
@@ -411,7 +431,11 @@
             "MM ",
             "MIGROLINO",
             "COOP",
-            "VOI"
+            "VOI",
+            "SPAR",
+            "VOLG",
+            "ALNATURA",
+            "DENNER"
           ],
           "locations": [],
           "include_keywords": [],
@@ -436,13 +460,13 @@
         "services": [
           "Card Purchase"
         ],
-        "providers": [
-          "Apple Pay"
-        ],
+        "providers": [],
         "notification_filters": {
           "merchants": [
             "APOTHEKE",
-            "CARELAND AG"
+            "CARELAND AG",
+            "LINSENMAX",
+            "OPTIK"
           ],
           "locations": [],
           "include_keywords": [],
@@ -493,9 +517,7 @@
         "services": [
           "Card Purchase"
         ],
-        "providers": [
-          "Apple Pay"
-        ],
+        "providers": [],
         "notification_filters": {
           "merchants": [
             "JUMBO"
@@ -521,13 +543,12 @@
         "services": [
           "Card Purchase"
         ],
-        "providers": [
-          "Apple Pay"
-        ],
+        "providers": [],
         "notification_filters": {
           "merchants": [
             "MANOR",
-            "INTERDISCOUNT"
+            "INTERDISCOUNT",
+            "FLYING TIGER"
           ],
           "locations": [],
           "include_keywords": [],
@@ -553,7 +574,8 @@
         "providers": [],
         "notification_filters": {
           "merchants": [
-            "IKEA"
+            "IKEA",
+            "ZIGZAGZURICH"
           ],
           "locations": [],
           "include_keywords": [],
@@ -660,10 +682,7 @@
           "Card Purchase",
           "Twint"
         ],
-        "providers": [
-          "Apple Pay",
-          "Twint"
-        ],
+        "providers": [],
         "notification_filters": {
           "merchants": [
             "COWORKING",
@@ -690,9 +709,7 @@
         "services": [
           "Card Purchase"
         ],
-        "providers": [
-          "Apple Pay"
-        ],
+        "providers": [],
         "notification_filters": {
           "merchants": [
             "KKIOSK",
@@ -749,9 +766,7 @@
         "services": [
           "Card Purchase"
         ],
-        "providers": [
-          "Apple Pay"
-        ],
+        "providers": [],
         "notification_filters": {
           "merchants": [
             "TANKSTELLE"
@@ -836,7 +851,8 @@
             "SBB",
             "BLS",
             "TRANSPORTS PUBLICS",
-            "FAIRTIQ"
+            "FAIRTIQ",
+            "BODENSEESCHIFFE"
           ],
           "locations": [],
           "include_keywords": [],
@@ -889,7 +905,8 @@
         "providers": [],
         "notification_filters": {
           "merchants": [
-            "PARKING"
+            "PARKING",
+            "SAMMELPAR"
           ],
           "locations": [],
           "include_keywords": [],
@@ -939,12 +956,11 @@
         "services": [
           "Card Purchase"
         ],
-        "providers": [
-          "Apple Pay"
-        ],
+        "providers": [],
         "notification_filters": {
           "merchants": [
-            "THE BODY SHOP"
+            "THE BODY SHOP",
+            "THEBODYSHOP"
           ],
           "locations": [],
           "include_keywords": [],
@@ -967,9 +983,7 @@
         "services": [
           "Card Purchase"
         ],
-        "providers": [
-          "Apple Pay"
-        ],
+        "providers": [],
         "notification_filters": {
           "merchants": [
             "COIFFEUR"
@@ -999,7 +1013,8 @@
         "providers": [],
         "notification_filters": {
           "merchants": [
-            "FITNESS"
+            "FITNESS",
+            "OCHSNER SPORT"
           ],
           "locations": [],
           "include_keywords": [],
@@ -1022,9 +1037,7 @@
         "services": [
           "Card Purchase"
         ],
-        "providers": [
-          "Apple Pay"
-        ],
+        "providers": [],
         "notification_filters": {
           "merchants": [
             "KULTURHAUS ODEON BRUGG"
@@ -1039,7 +1052,7 @@
     },
     {
       "key": "leisure_2",
-      "name": "Freizeit: Theater",
+      "name": "Freizeit: Theater, Kino, Kultur, Museum",
       "transaction_category": "Expense",
       "category": "Freizeit",
       "subcategory": "Kultur",
@@ -1050,15 +1063,17 @@
         "services": [
           "Card Purchase"
         ],
-        "providers": [
-          "Apple Pay"
-        ],
+        "providers": [],
         "notification_filters": {
           "merchants": [
             "THEATER",
             "CINEMA",
             "KINO",
-            "KULTUR"
+            "KULTUR",
+            "PATHE",
+            "KUNSTHAUS",
+            "MUSEUM",
+            "TICKETCORNER"
           ],
           "locations": [],
           "include_keywords": [],
@@ -1087,6 +1102,41 @@
             "PICKWICK",
             "PUB",
             "BAR "
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "vacation_1",
+      "name": "Ferien: Reise",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Reisen und Erleben",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Twint"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "EASYJET",
+            "SWISS INTERNATIONAL",
+            "SWISS.COM",
+            "LX SWISS",
+            "HELVETIC AIRWAYS",
+            "EDELWEISS AIR",
+            "LUFTHANSA",
+            "AIR FRANCE",
+            "FLUGHAFEN ZUERICH"
           ],
           "locations": [],
           "include_keywords": [],
@@ -1335,22 +1385,25 @@
       }
     },
     {
-      "key": "shopping_5",
-      "name": "Post: Verzollung und Logistik",
+      "key": "post_1",
+      "name": "Post: Porto, Versand und Zoll",
       "transaction_category": "Expense",
-      "category": "Einkaufen",
-      "subcategory": "Sonstiges Einkaufen",
+      "category": "Wohnen",
+      "subcategory": "Kommunikation",
       "priority": 5,
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": null,
         "services": [
+          "Card Purchase",
           "Direct Debit"
         ],
         "providers": [],
         "notification_filters": {
           "merchants": [
-            "POST CH AG"
+            "POST CH AG",
+            "SCHWEIZERISCHE POST",
+            "POST BILLINGONLINE"
           ],
           "locations": [],
           "include_keywords": [],
@@ -1429,6 +1482,95 @@
         "notification_filters": {
           "merchants": [
             "VISECA"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "fashion_1",
+      "name": "Mode: Bekleidung und Schuhe",
+      "transaction_category": "Expense",
+      "category": "Einkaufen",
+      "subcategory": "Mode",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Twint"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "STRELLSON",
+            "OCHSNER SHOES",
+            "OCHSNER-SHOES",
+            "NEW YORKER",
+            "INTIMISSIMI",
+            "NIKIN",
+            "WECO"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "hobby_1",
+      "name": "Spiele und Hobby",
+      "transaction_category": "Expense",
+      "category": "Einkaufen",
+      "subcategory": "Spiele & Hobby",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Twint"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "MODIPHIUS",
+            "LEGO SYSTEM",
+            "LEGO STORE"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "online_1",
+      "name": "Grossmarktplätze: Inhalt nicht belegt",
+      "transaction_category": "Expense",
+      "category": "Einkaufen",
+      "subcategory": "Sonstiges Einkaufen",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "AMAZON",
+            "AMZN"
           ],
           "locations": [],
           "include_keywords": [],
