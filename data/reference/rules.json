@@ -1579,6 +1579,66 @@
           "counterparty_ibans": []
         }
       }
+    },
+    {
+      "key": "refund_5",
+      "name": "Rückerstattung: Mode",
+      "transaction_category": "Refund",
+      "category": "Einkaufen",
+      "subcategory": "Mode",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Credit",
+        "transaction_type_detail": null,
+        "services": [
+          "PostFinance Card Refund",
+          "Credit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "STRELLSON",
+            "OCHSNER SHOES",
+            "OCHSNER-SHOES",
+            "NEW YORKER",
+            "INTIMISSIMI",
+            "NIKIN",
+            "WECO"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "refund_6",
+      "name": "Rückerstattung: Sportveranstaltung",
+      "transaction_category": "Refund",
+      "category": "Freizeit",
+      "subcategory": "Reisen und Erleben",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Credit",
+        "transaction_type_detail": null,
+        "services": [
+          "PostFinance Card Refund",
+          "Credit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "UEFA"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
     }
   ],
   "comments": {
