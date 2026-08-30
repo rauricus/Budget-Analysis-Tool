@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from datetime import date
 from typing import Optional
 
 from models.transaction import Transaction
@@ -27,6 +28,8 @@ class Rule:
     counterparty_ibans: list[str] = field(default_factory=list)  # Optional filter, e.g. ["CH5600000000000000000"]
     include_keywords: list[str] = field(default_factory=list)  # Optional filter; all must be present
     exclude_keywords: list[str] = field(default_factory=list)  # Optional filter; none may be present
+    valid_from: Optional[date] = None  # Optional filter: rule applies only from this date (inclusive)
+    valid_to: Optional[date] = None  # Optional filter: rule applies only up to this date (inclusive)
     
     source: str = ""  # originating rules file (set by RuleEngine)
 
@@ -67,6 +70,20 @@ class Rule:
 
         def add_check(check_id: str, passed: bool, detail: str) -> None:
             checks.append({"id": check_id, "passed": passed, "detail": detail})
+
+        # 0. Match validity window (optional)
+        transaction_date = transaction.date.date() if transaction.date else None
+        validity_passed = True
+        if transaction_date is not None:
+            if self.valid_from and transaction_date < self.valid_from:
+                validity_passed = False
+            if self.valid_to and transaction_date > self.valid_to:
+                validity_passed = False
+        add_check(
+            "validity",
+            validity_passed,
+            f"expected={self.valid_from or '*'}..{self.valid_to or '*'}, actual='{transaction_date}'",
+        )
 
         # 1. Match credit/debit direction (optional)
         tx_type_expected = (self.transaction_type or "").strip()

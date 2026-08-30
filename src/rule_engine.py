@@ -1,5 +1,6 @@
 import json
 import logging
+from datetime import date, datetime
 from pathlib import Path
 from typing import Optional
 from models import Rule, Transaction
@@ -27,6 +28,20 @@ class RuleEngine:
         self.rules: list[Rule] = []
         self.load_rules()
     
+    @staticmethod
+    def _parse_validity_date(value, field_name: str, rule_data: dict, source: str) -> Optional[date]:
+        """Parse an optional ISO date (YYYY-MM-DD) from a rule's validity window."""
+        if value in (None, ""):
+            return None
+        try:
+            return datetime.strptime(str(value), "%Y-%m-%d").date()
+        except ValueError:
+            raise ValueError(
+                f"Invalid '{field_name}' for rule "
+                f"'{rule_data.get('key', '?')}' ('{rule_data.get('name', '')}') in {source}: "
+                f"'{value}'. Expected ISO date YYYY-MM-DD"
+            )
+
     @staticmethod
     def _parse_rules(data: dict, source: str = "") -> dict[str, Rule]:
         """Parse a rules JSON dict into a {key: Rule} mapping."""
@@ -59,6 +74,19 @@ class RuleEngine:
                     f"'{priority}'. Allowed: integer {MIN_RULE_PRIORITY}-{MAX_RULE_PRIORITY}"
                 )
 
+            valid_from = RuleEngine._parse_validity_date(
+                scope.get("valid_from", rule_data.get("valid_from")), "valid_from", rule_data, source
+            )
+            valid_to = RuleEngine._parse_validity_date(
+                scope.get("valid_to", rule_data.get("valid_to")), "valid_to", rule_data, source
+            )
+            if valid_from and valid_to and valid_from > valid_to:
+                raise ValueError(
+                    "Invalid validity window for rule "
+                    f"'{rule_data.get('key', '?')}' ('{rule_data.get('name', '')}') in {source}: "
+                    f"valid_from '{valid_from}' is after valid_to '{valid_to}'"
+                )
+
             key = rule_data["key"]
             if key in result:
                 raise ValueError(
@@ -89,6 +117,8 @@ class RuleEngine:
                 counterparty_ibans=filters.get("counterparty_ibans", []),
                 include_keywords=filters.get("include_keywords", []),
                 exclude_keywords=filters.get("exclude_keywords", []),
+                valid_from=valid_from,
+                valid_to=valid_to,
                 
                 source=source,
             )

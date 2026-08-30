@@ -1584,9 +1584,11 @@
   "comments": {
     "required_fields": "Rule fields that should always be set: key, name, transaction_category, priority, scope.transaction_type.",
     "priority": "Required integer from 1 to 10. Use 5 as the default medium value.",
-    "optional_fields": "Optional scope filters: scope.transaction_type_detail, scope.services, scope.providers, scope.notification_filters.{merchants,locations,counterparties,counterparty_ibans,include_keywords,exclude_keywords}. Empty list means 'do not filter by this field'.",
+    "optional_fields": "Optional scope filters: scope.transaction_type_detail, scope.valid_from, scope.valid_to, scope.services, scope.providers, scope.notification_filters.{merchants,locations,counterparties,counterparty_ibans,include_keywords,exclude_keywords}. Empty list means 'do not filter by this field'.",
     "scope.transaction_type": "Required filter by money direction: 'credit' or 'debit'.",
     "scope.transaction_type_detail": "Optional exact detail filter (e.g. 'Geld senden', 'Kauf/Dienstleistung'). Use null to disable.",
+    "scope.valid_from": "Optional ISO date (YYYY-MM-DD). Rule applies only to transactions on or after this date. Omit or null to disable.",
+    "scope.valid_to": "Optional ISO date (YYYY-MM-DD). Rule applies only to transactions on or before this date. Omit or null to disable. Combined with valid_from it forms an inclusive window, useful for rules that are only valid during a trip or after a provider change.",
     "scope.services": "Optional filter on parsed generic service type (e.g. Karteneinkauf, Twint, Lastschrift).",
     "scope.providers": "Optional filter on payment provider (e.g. Apple Pay). Provider must NOT be encoded in services.",
     "scope.notification_filters.merchants": "Optional merchant filter (case-insensitive). OR logic (at least one must match).",
