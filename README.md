@@ -15,6 +15,7 @@ Project documentation:
 - Stable transaction IDs via persistent fingerprint registry
 - Service/provider-scoped rule selection (`services` + optional `providers` in rules)
 - Merchant, location, counterparty, IBAN and include/exclude keyword matching
+- Optional validity window per rule (`valid_from` / `valid_to`) for rules that apply only during a defined period
 - Transaction-level overrides by transaction ID
 - Structured CSV export with parsed service fields
 - Aggregated Excel analysis across all categorized months of a dataset
@@ -301,6 +302,8 @@ a base rule without `"overlay_of"` is an error, as is referencing an unknown bas
       "scope": {
         "transaction_type": "Debit",
         "transaction_type_detail": "Purchase/Service",
+        "valid_from": null,
+        "valid_to": null,
         "services": ["Card Purchase"],
         "providers": ["Apple Pay"],
         "notification_filters": {
@@ -325,6 +328,7 @@ a base rule without `"overlay_of"` is an error, as is referencing an unknown bas
 - `priority` is a required integer from 1 to 10. Use `5` as the default "medium" value.
 - `scope.transaction_type` filters on money direction: `Credit` or `Debit`.
 - `scope.transaction_type_detail` optionally filters on the parsed detail (for example `Send Money`, `Purchase/Service`, `Standing Order`). Use `null` (or empty) to disable this filter.
+- `scope.valid_from` and `scope.valid_to` optionally restrict a rule to a date range (ISO `YYYY-MM-DD`, both bounds inclusive). Either bound may be omitted for an open-ended window. Omit both (or use `null`) to make the rule apply to every date.
 - `scope.services` filters by parsed service and `scope.providers` optionally by payment provider.
 - `scope.notification_filters` contains parsed-field matching criteria (`merchants`, `locations`, `counterparties`, `counterparty_ibans`, `include_keywords`, `exclude_keywords`).
 - A rule matches only if all configured conditions match.
@@ -335,6 +339,7 @@ Per-field logic:
 | Field | Logic |
 |---|---|
 | `transaction_type`, `transaction_type_detail` | exact match |
+| `valid_from`, `valid_to` | inclusive date range; transaction date must fall inside |
 | `services`, `providers` | OR within the list, exact match per entry |
 | `merchants`, `counterparties` | OR (at least one must match) |
 | `counterparty_ibans` | OR, exact IBAN match (spaces ignored) |

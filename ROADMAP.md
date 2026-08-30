@@ -3,7 +3,7 @@
 Plan for turning the existing categorization tool into an actual budgeting tool.
 Baseline and gap analysis: [STATUS.md](STATUS.md).
 
-_Last updated: 2026-08-16._
+_Last updated: 2026-08-30._
 
 ## Goal
 
@@ -41,6 +41,7 @@ Open decisions to settle here:
   subcategory level. Recommendation: budget at category level by default, and drop to
   subcategory only where it changes behavior.
 - **Transfers**: currently excluded from the analysis. Confirm they stay out of the budget.
+- **Travel**: trips are now modelled per trip in the datasets, so holiday and business travel arrive as complete, dated units rather than scattered across categories. That makes them the clearest case for a `yearly` line with the individual trips as its detail — a monthly target for travel is meaningless.
 
 ## Step 2 — Budget proposal generator
 
