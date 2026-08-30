@@ -369,6 +369,7 @@ Supported fields per transaction ID entry:
     "transaction_category": "Expense",
     "category": "Freizeit",
     "subcategory": "Kultur",
+    "_note": "optional comment explaining why this override exists",
     "_row": "optional raw row hint for future ID remapping"
   }
 }
@@ -379,6 +380,7 @@ Behavior and constraints:
 - `hidden: true` removes the transaction from export.
 - `transaction_category`, `category`, `subcategory` override automatic categorization values for that transaction ID.
 - `_row` is optional metadata that helps remap old IDs after registry resets; it does not affect categorization.
+- `_note` is optional free text documenting the reason for the override, for example the rule it belongs with; it does not affect categorization.
 - A `transaction_overrides.json` file is only valid in the top-level run dataset. One in a referenced base dataset (declared via `"base"`) is rejected.
 - If an override references an unknown transaction ID, `categorize_transactions.py` fails fast by default. Opt into warning-only behavior with `--ignore-unknown-overrides`.
 

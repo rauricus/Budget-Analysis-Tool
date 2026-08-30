@@ -23,7 +23,7 @@ from models import Transaction
 logger = logging.getLogger(__name__)
 
 VALID_TRANSACTION_CATEGORIES = {"Income", "Expense", "Refund", "Transfer"}
-ALLOWED_OVERRIDE_FIELDS = {"hidden", "transaction_category", "category", "subcategory", "_row"}
+ALLOWED_OVERRIDE_FIELDS = {"hidden", "transaction_category", "category", "subcategory", "_row", "_note"}
 
 
 class TransactionOverrides:
@@ -69,12 +69,13 @@ class TransactionOverrides:
                     f"in {self.overrides_path}. "
                     f"Allowed: {sorted(VALID_TRANSACTION_CATEGORIES)}"
                 )
-            row_hint = entry.get("_row")
-            if row_hint is not None and not isinstance(row_hint, str):
-                raise ValueError(
-                    f"'_row' in override entry for '{tx_id}' must be a string "
-                    f"in {self.overrides_path}."
-                )
+            for comment_field in ("_row", "_note"):
+                comment_value = entry.get(comment_field)
+                if comment_value is not None and not isinstance(comment_value, str):
+                    raise ValueError(
+                        f"'{comment_field}' in override entry for '{tx_id}' must be a string "
+                        f"in {self.overrides_path}."
+                    )
 
         self.overrides = raw
 

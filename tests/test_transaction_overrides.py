@@ -118,6 +118,26 @@ class TestLoading:
         result = ov.apply(txns)
         assert result[0].auto_category == "Neu"
 
+    def test_note_accepted_as_string(self, tmp_path):
+        f = tmp_path / "transaction_overrides.json"
+        _write(f, {"TX-000001": {"category": "Freizeit", "_note": "Anreise Menton, gehört zu ferien_2025_menton"}})
+        ov = TransactionOverrides(str(f))
+        assert ov.count == 1
+
+    def test_note_non_string_raises(self, tmp_path):
+        f = tmp_path / "transaction_overrides.json"
+        _write(f, {"TX-000001": {"_note": ["nicht", "erlaubt"]}})
+        with pytest.raises(ValueError, match="'_note'.*must be a string"):
+            TransactionOverrides(str(f))
+
+    def test_note_does_not_affect_apply(self, tmp_path):
+        f = tmp_path / "transaction_overrides.json"
+        _write(f, {"TX-000001": {"category": "Neu", "_note": "warum diese Buchung umgehängt wurde"}})
+        ov = TransactionOverrides(str(f))
+        txns = [_make_transaction("TX-000001")]
+        result = ov.apply(txns)
+        assert result[0].auto_category == "Neu"
+
 
 # ---------------------------------------------------------------------------
 # apply()
