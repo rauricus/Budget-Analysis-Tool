@@ -42,14 +42,24 @@ Open decisions to settle here:
   subcategory only where it changes behavior.
 - **Transfers**: currently excluded from the analysis. Confirm they stay out of the budget.
 - **Travel**: trips are now modelled per trip in the datasets, so holiday and business travel arrive as complete, dated units rather than scattered across categories. That makes them the clearest case for a `yearly` line with the individual trips as its detail — a monthly target for travel is meaningless.
-- **One-off spending needs a third class.** `monthly` vs `yearly` separates regular from
-  rare, and `fixed` vs `variable` separates predictable from not. Neither separates regular
-  from *never again*. A single large purchase in a category that otherwise runs small is
-  indistinguishable from an annual item by shape alone — both occur once and both are big —
-  yet only one of them says anything about next year. Where that marking lives is the open
-  question: the override file already carries a `_note` per transaction and could carry a
-  flag, or the budget could name the categories it treats as one-off. Without it, step 2
-  systematically proposes targets that are too high.
+- **Three kinds of spending, not one.** `monthly`/`yearly` and `fixed`/`variable` both
+  describe recurring spending. Two other kinds need different treatment:
+
+  1. *Recurring* — becomes a category target, as today.
+  2. *One-off individually, recurring as a class* — furniture, appliances, equipment. Not a
+     target but a **provision**: a monthly rate paid into a pot, sized from history. `period`
+     therefore needs a third value where `amount` is that rate and the comparison is a pot
+     balance rather than a category actual.
+  3. *Offset by a matching inflow* — reimbursed by someone else, or drawn from a pot that is
+     already being funded elsewhere in the budget. Belongs in neither: both sides must leave
+     the derivation, or the same money gets budgeted twice.
+
+  Classes 2 and 3 have to be marked per transaction, since nothing in the transaction itself
+  distinguishes them. The mechanism mirrors `transaction_overrides.json` — same
+  `{TX-id: {...}}` shape, same ID-remap helper — but in its own file, so that the
+  categorization pipeline stays free of budgeting concepts. The marking classifies rather
+  than excludes: class 2 leaves the category target *and* feeds the provision rate, both from
+  the same entry.
 
 ## Step 2 — Budget proposal generator
 
@@ -100,6 +110,8 @@ steps 1–4.
 
 ## Deliberately out of scope for now
 
-- Multi-account support (only a single account per dataset is processed today).
+- Multi-account support (only a single account per dataset is processed today). Provision
+  balances live on the accounts they are saved into, so "is the pot big enough" stays out of
+  reach until this exists.
 - Forecasting and simulation on top of the budget.
 - Non-German CSV locales.
