@@ -20,6 +20,7 @@ from notification.parsers.twint_receive_parser import TwintReceiveParser
 from notification.parsers.twint_purchase_parser import TwintPurchaseParser
 from notification.parsers.postfinance_card_refund_parser import PostFinanceCardRefundParser
 from notification.parsers.online_shopping_refund_parser import OnlineShoppingRefundParser
+from notification.parsers.foreign_payment_parser import ForeignPaymentParser
 
 
 def test_card_purchase_parser_for_generic_card_purchase():
@@ -487,3 +488,46 @@ def test_online_shopping_refund_parser_does_not_support_purchase():
     )
 
     assert not parser.supports(text)
+
+
+def test_foreign_payment_parser():
+    """ForeignPaymentParser should split bank, counterparty and sender reference at the IBAN."""
+    parser = ForeignPaymentParser()
+    text = (
+        "AUSLANDZAHLUNG (SEPA) EUR 100.00 ZUM KURS VON 0.9336 "
+        "FIKTIVE BANCA S.P.A. VIA FITTIZIA 8-20 41121 MODENA "
+        "IT00X0000000000000000000000 FIKTIVA SAS VIA INVENTATA 121 80077 ISCHIA "
+        "SENDER REFERENZ: FERIEN: ÜBERNACHTUNG 20260600000000000000000"
+    )
+
+    assert parser.supports(text), "Foreign payment parser should support the SEPA format"
+
+    result = parser.parse(text)
+    assert result.service_type == "Direct Debit"
+    assert result.transaction_type_detail == "Foreign Payment"
+    assert result.counterparty == "FIKTIVA SAS VIA INVENTATA 121 80077 ISCHIA"
+    assert result.counterparty_iban == "IT00X0000000000000000000000"
+    assert result.reference == (
+        "SEPA EUR 100.00 ZUM KURS VON 0.9336 | "
+        "FIKTIVE BANCA S.P.A. VIA FITTIZIA 8-20 41121 MODENA | "
+        "FERIEN: ÜBERNACHTUNG 20260600000000000000000"
+    )
+
+
+def test_foreign_payment_parser_without_sender_reference():
+    """A foreign payment without a sender reference keeps counterparty and bank intact."""
+    parser = ForeignPaymentParser()
+    text = (
+        "AUSLANDZAHLUNG (SEPA) EUR 50.00 ZUM KURS VON 0.9500 "
+        "FIKTIVE BANK AG FANTASIESTRASSE 1 10115 BERLIN "
+        "DE00000000000000000000 FIKTIVER VERLAG GMBH ERFUNDENWEG 2 10115 BERLIN"
+    )
+
+    assert parser.supports(text)
+
+    result = parser.parse(text)
+    assert result.counterparty == "FIKTIVER VERLAG GMBH ERFUNDENWEG 2 10115 BERLIN"
+    assert result.counterparty_iban == "DE00000000000000000000"
+    assert result.reference == (
+        "SEPA EUR 50.00 ZUM KURS VON 0.9500 | FIKTIVE BANK AG FANTASIESTRASSE 1 10115 BERLIN"
+    )

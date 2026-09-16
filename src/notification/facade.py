@@ -21,6 +21,7 @@ from notification.parsers.twint_send_parser import TwintSendParser
 from notification.parsers.twint_receive_parser import TwintReceiveParser
 from notification.parsers.twint_purchase_parser import TwintPurchaseParser
 from notification.parsers.payment_parser import PaymentParser
+from notification.parsers.foreign_payment_parser import ForeignPaymentParser
 
 
 
@@ -52,6 +53,7 @@ class _NotificationParserRegistry:
             DebitDirectParser(),
             StandingOrderParser(),
             PaymentParser(),
+            ForeignPaymentParser(),
         ]
 
     def parse(self, avisierungstext: str) -> NotificationParseResult:
