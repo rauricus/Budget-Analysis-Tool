@@ -4,7 +4,9 @@ from notification.parsers.bank_package_fee_parser import BankPackageFeeParser
 from notification.parsers.cash_withdrawal_parser import CashWithdrawalParser
 from notification.parsers.card_purchase_parser import CardPurchaseParser
 from notification.parsers.efinance_purchase_parser import EFinancePurchaseParser
+from notification.parsers.postfinance_card_refund_parser import PostFinanceCardRefundParser
 from notification.parsers.credit_transfer_parser import CreditTransferParser
+from notification.parsers.account_transfer_parser import AccountTransferParser
 from notification.parsers.standing_order_parser import StandingOrderParser
 from notification.parsers.debit_direct_parser import DebitDirectParser
 from notification.parsers.twint_send_parser import TwintSendParser
@@ -17,7 +19,9 @@ __all__ = [
     "CashWithdrawalParser",
     "CardPurchaseParser",
     "EFinancePurchaseParser",
+    "PostFinanceCardRefundParser",
     "CreditTransferParser",
+    "AccountTransferParser",
     "TwintSendParser",
     "TwintReceiveParser",
     "TwintPurchaseParser",
