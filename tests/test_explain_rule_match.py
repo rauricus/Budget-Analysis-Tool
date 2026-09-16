@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Tests for explain_rule_match tool."""
 
+import json
 import os
+import shutil
 import sys
 from pathlib import Path
 
@@ -78,13 +80,67 @@ def test_build_explain_report_for_target_rule():
     assert len(report["target_rule"]["checks"]) > 0
 
 
-def test_build_explain_report_uses_overlay_declared_key_for_overrides():
+
+def _overlay_run_dir(tmp_path):
+    """Build a run directory that overlays `data/reference`, mirroring a real dataset.
+
+    The tests below need a base/overlay pair, which `data/example` cannot provide: it is a
+    standalone rule set. Building the overlay here keeps the fixture in the public repository
+    and next to the assertions that depend on it.
+    """
+    run_dir = tmp_path / "overlay_dataset"
+    (run_dir / "input").mkdir(parents=True)
+    shutil.copy(
+        Path("data/example/input/export.202503.csv"),
+        run_dir / "input" / "export.202503.csv",
+    )
+
+    # Replaces reference rule `housing_1`, which line 9 of the sample file matches.
+    overlay_rule = {
+        "key": "housing_1_private",
+        "overlay_of": "housing_1",
+        "name": "Wohnen: Miete (Overlay)",
+        "transaction_category": "Expense",
+        "category": "Wohnen",
+        "subcategory": "Miete und Hypothek",
+        "priority": 6,
+        "scope": {
+            "transaction_type": "Debit",
+            "transaction_type_detail": None,
+            "services": ["Direct Debit"],
+            "providers": [],
+            "notification_filters": {
+                "merchants": [],
+                "locations": [],
+                "include_keywords": ["FINANZVERWALTUNG STADT SOLOTHURN"],
+                "exclude_keywords": [],
+                "counterparties": [],
+                "counterparty_ibans": [],
+            },
+        },
+    }
+    (run_dir / "rules.json").write_text(
+        json.dumps({"base": "reference", "rules": [overlay_rule]}), encoding="utf-8"
+    )
+    return run_dir
+
+
+def _overlay_line_number():
+    """Source line of the transaction the overlay rule is built around."""
+    txns = ImportHandler.load_csv('data/example/input/export.202503.csv')
+    matching = [t for t in txns if "FINANZVERWALTUNG STADT SOLOTHURN" in (t.counterparty or "").upper()]
+    assert matching, "sample file no longer contains the transaction these tests rely on"
+    return matching[0].source_line_number
+
+
+def test_build_explain_report_uses_overlay_declared_key_for_overrides(tmp_path):
     """Overlay rules should be reported under their declared overlay key."""
+    run_dir = _overlay_run_dir(tmp_path)
     report = build_explain_report(
-        run_dir=Path('data/private/dev'),
+        run_dir=run_dir,
         transaction_id=None,
-        line_number=9,
-        input_file='privates_konto.202501.csv',
+        line_number=_overlay_line_number(),
+        input_file='export.202503.csv',
         rule_id='housing_1_private',
         no_overlays=False,
         no_overrides=False,
@@ -92,10 +148,10 @@ def test_build_explain_report_uses_overlay_declared_key_for_overrides():
     )
 
     assert report["pre_override"]["winning_rule"] == 'housing_1_private'
-    assert report["pre_override"]["winning_rule_source"].endswith('data/private/dev/rules.json')
+    assert report["pre_override"]["winning_rule_source"] == (run_dir / "rules.json").as_posix()
     assert report["target_rule"] is not None
     assert report["target_rule"]["key"] == 'housing_1_private'
-    assert report["target_rule"]["source"].endswith('data/private/dev/rules.json')
+    assert report["target_rule"]["source"] == (run_dir / "rules.json").as_posix()
     assert report["pre_override"]["winning_rule_layer"] == 'overlay'
     assert report["pre_override"]["winning_rule_overlay_of"] == 'housing_1'
 
@@ -104,14 +160,15 @@ def test_build_explain_report_uses_overlay_declared_key_for_overrides():
     assert "Overlay Of: housing_1" in text_report
 
 
-def test_build_explain_report_can_disable_overlays():
+def test_build_explain_report_can_disable_overlays(tmp_path):
     """Disabling overlays should make overlay-only rule IDs unavailable."""
+    run_dir = _overlay_run_dir(tmp_path)
     try:
         build_explain_report(
-            run_dir=Path('data/private/dev'),
+            run_dir=run_dir,
             transaction_id=None,
-            line_number=9,
-            input_file='privates_konto.202501.csv',
+            line_number=_overlay_line_number(),
+            input_file='export.202503.csv',
             rule_id='housing_1_private',
             no_overlays=True,
             no_overrides=False,
