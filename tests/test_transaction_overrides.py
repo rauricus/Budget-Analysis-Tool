@@ -437,6 +437,19 @@ class TestMainWithOverrides:
         assert not (run_dir / "output" / "export.202503.categorized.csv").exists()
 
 
+def _example_overrides_with_stale_id(target: Path) -> None:
+    """Write the example overrides plus one entry whose ID no longer exists.
+
+    `data/example` itself stays free of stale IDs — it is the dataset the README tells a
+    newcomer to run, and an unknown ID there aborts that run by design.
+    """
+    overrides = json.loads(
+        Path("data/example/transaction_overrides.json").read_text(encoding="utf-8")
+    )
+    overrides["TX-999999"] = {"hidden": True, "_row": "Unknown former transaction"}
+    target.write_text(json.dumps(overrides, ensure_ascii=False, indent="\t"), encoding="utf-8")
+
+
 class TestExampleDatasetOverrides:
     def test_example_overrides_fail_on_unknown_ids_with_help_hint(self, tmp_path, capsys):
         """Example overrides must fail when unknown IDs exist and should point to remap helper."""
@@ -453,10 +466,7 @@ class TestExampleDatasetOverrides:
             run_dir / "input" / "export.202503.csv",
         )
         shutil.copy(Path("data/example/rules.json"), run_dir / "rules.json")
-        shutil.copy(
-            Path("data/example/transaction_overrides.json"),
-            run_dir / "transaction_overrides.json",
-        )
+        _example_overrides_with_stale_id(run_dir / "transaction_overrides.json")
 
         result = main([str(run_dir)])
 
@@ -480,10 +490,7 @@ class TestExampleDatasetOverrides:
             run_dir / "input" / "export.202503.csv",
         )
         shutil.copy(Path("data/example/rules.json"), run_dir / "rules.json")
-        shutil.copy(
-            Path("data/example/transaction_overrides.json"),
-            run_dir / "transaction_overrides.json",
-        )
+        _example_overrides_with_stale_id(run_dir / "transaction_overrides.json")
 
         result = main([str(run_dir), "--ignore-unknown-overrides"])
 

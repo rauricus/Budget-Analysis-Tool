@@ -3,6 +3,7 @@
 
 import json
 import os
+import shutil
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -90,20 +91,50 @@ def test_suggestion_ambiguous_when_top_two_are_too_close():
     assert len(result[0].candidates) == 2
 
 
-def test_example_overrides_cover_additional_statuses():
-    run_dir = Path("data/example")
-    overrides_path = run_dir / "transaction_overrides.json"
-    input_dir = run_dir / "input"
-    registry_path = run_dir / "metadata" / "transaction_id_registry.json"
+def test_override_statuses_against_a_real_dataset(tmp_path):
+    """Every remap status should be reachable on a dataset loaded from disk.
 
-    with open(overrides_path, "r", encoding="utf-8") as f:
-        overrides = json.load(f)
+    The stale entries live here rather than in `data/example`, which doubles as the
+    dataset the README tells a newcomer to run: overrides pointing at IDs that no longer
+    exist are exactly what this test needs and exactly what makes that run fail.
+    """
+    run_dir = tmp_path / "remap_dataset"
+    (run_dir / "input").mkdir(parents=True)
+    (run_dir / "metadata").mkdir()
+    for csv_path in sorted(Path("data/example/input").glob("*.csv")):
+        shutil.copy(csv_path, run_dir / "input" / csv_path.name)
+    shutil.copy(
+        Path("data/example/metadata/transaction_id_registry.json"),
+        run_dir / "metadata" / "transaction_id_registry.json",
+    )
+
+    overrides = json.loads(
+        Path("data/example/transaction_overrides.json").read_text(encoding="utf-8")
+    )
+    overrides.update({
+        # No row hint at all, so nothing can be matched against.
+        "TX-910003": {"category": "Wohnen"},
+        # Row hint quotes a transaction that is present, so the ID can be remapped.
+        "TX-910001": {
+            "category": "Mobilität",
+            "subcategory": "Bahn",
+            "_row": "31.03.2025;Buchung;\"APPLE PAY KAUF/DIENSTLEISTUNG VOM 31.03.2025 KARTEN NR. XXXX4821 KKIOSK 45810 BERN SCHWEIZ\";;-7.55;;Einkaufen // Sonstiges Einkaufen",
+        },
+        # Row hint is close to more than one transaction.
+        "TX-910002": {
+            "category": "Freizeit",
+            "subcategory": "Gastronomie",
+            "_row": "30.03.2025;Buchung;\"APPLE PAY KAUF/DIENSTLEISTUNG VOM 30.03.2025 KARTEN NR. XXXX4821 BYRO BASEL SCHWEIZ\"",
+        },
+        # Row hint resembles nothing in the dataset.
+        "TX-999999": {"hidden": True, "_row": "Unknown former transaction"},
+    })
 
     transactions = []
-    for csv_path in sorted(input_dir.glob("*.csv")):
+    for csv_path in sorted((run_dir / "input").glob("*.csv")):
         transactions.extend(ImportHandler.load_csv(str(csv_path)))
 
-    id_registry = TransactionIdRegistry(registry_path)
+    id_registry = TransactionIdRegistry(run_dir / "metadata" / "transaction_id_registry.json")
     id_registry.assign_batch(transactions)
 
     suggestions = build_remap_suggestions(overrides, transactions, candidate_limit=3)
