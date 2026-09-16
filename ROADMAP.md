@@ -3,7 +3,7 @@
 Plan for turning the existing categorization tool into an actual budgeting tool.
 Baseline and gap analysis: [STATUS.md](STATUS.md).
 
-_Last updated: 2026-08-30._
+_Last updated: 2026-09-16._
 
 ## Goal
 
@@ -42,6 +42,14 @@ Open decisions to settle here:
   subcategory only where it changes behavior.
 - **Transfers**: currently excluded from the analysis. Confirm they stay out of the budget.
 - **Travel**: trips are now modelled per trip in the datasets, so holiday and business travel arrive as complete, dated units rather than scattered across categories. That makes them the clearest case for a `yearly` line with the individual trips as its detail — a monthly target for travel is meaningless.
+- **One-off spending needs a third class.** `monthly` vs `yearly` separates regular from
+  rare, and `fixed` vs `variable` separates predictable from not. Neither separates regular
+  from *never again*. A single large purchase in a category that otherwise runs small is
+  indistinguishable from an annual item by shape alone — both occur once and both are big —
+  yet only one of them says anything about next year. Where that marking lives is the open
+  question: the override file already carries a `_note` per transaction and could carry a
+  flag, or the budget could name the categories it treats as one-off. Without it, step 2
+  systematically proposes targets that are too high.
 
 ## Step 2 — Budget proposal generator
 
@@ -54,6 +62,9 @@ history.
 - Fixed costs detected from recurring standing orders and direct debits with a stable
   counterparty. Distinguish two cases: recurring *and* constant in amount (propose directly),
   versus recurring with a varying amount (propose as `fixed` rhythm, amount for review).
+- One-off spending excluded from the derivation rather than averaged into it, using whatever
+  marking step 1 settles on. It still belongs in the report as actuals — it happened — but it
+  is not evidence about next year.
 - Output is a draft for manual review, never applied automatically.
 
 ## Step 3 — Plan vs. actual
@@ -74,6 +85,18 @@ The per-month table layout already used in the category sheets carries over dire
   report, and summarize the variances.
 - Revisit the budget at a fixed cadence (for example quarterly) rather than editing it
   ad hoc, so that plan-vs-actual stays meaningful over time.
+
+## Side goal — make the data browsable
+
+The Excel report is a good export, but it is a snapshot: it carries the aggregates, not the
+transactions behind them, and nothing in it recalculates. Checking why a category looks the
+way it does still means going back to the CSV or to `explain_rule_match.py`.
+
+The goal is to browse the categorized data — drill from a category into the transactions that
+make it up, and from a transaction into the rule that claimed it. That serves understanding
+and verification of the categorization and the rules, not budgeting. A small local web app is
+the obvious shape, but the shape is not the point and this is explicitly secondary to
+steps 1–4.
 
 ## Deliberately out of scope for now
 
