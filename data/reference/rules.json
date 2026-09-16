@@ -1635,10 +1635,10 @@
     },
     {
       "key": "refund_6",
-      "name": "Rückerstattung: Sportveranstaltung",
+      "name": "Rückerstattung: Veranstaltungstickets",
       "transaction_category": "Refund",
       "category": "Freizeit",
-      "subcategory": "Reisen und Erleben",
+      "subcategory": "Kultur",
       "priority": 5,
       "scope": {
         "transaction_type": "Credit",
