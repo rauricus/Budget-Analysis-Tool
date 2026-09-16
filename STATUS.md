@@ -2,7 +2,7 @@
 
 Snapshot of what this project actually does today, as a baseline for [ROADMAP.md](ROADMAP.md).
 
-_Last reviewed: 2026-08-30._
+_Last reviewed: 2026-09-16._
 
 ## Summary
 
@@ -16,7 +16,7 @@ title.
 | Area | State |
 |---|---|
 | CSV import (PostFinance) | Complete |
-| Notification parsing | 13 parsers, registry-based, 8 normalized service types |
+| Notification parsing | 15 parsers, registry-based, 8 normalized service types |
 | Transaction IDs | Stable fingerprint registry, persisted per dataset |
 | Rule engine | Priority-based matching, service/provider scoping, keyword and counterparty filters, optional per-rule validity window (`valid_from`/`valid_to`) |
 | Rule overlays | `base` + `overlay_of` mechanism, base rules replaceable per dataset |
@@ -24,7 +24,7 @@ title.
 | Explain tooling | `explain_rule_match.py` with per-rule check breakdown, JSON output |
 | Export | 20-column structured CSV incl. matched rule key and source |
 | Analysis | Excel report with 4 sheets (summary, category overviews, per-month category and subcategory tables) |
-| Tests | 15 test modules covering parsers, rules, overlays, validity windows, overrides, export, ID registry |
+| Tests | 15 test modules covering parsers, rules, overlays, validity windows, overrides, export, ID registry; no test depends on a private dataset |
 | Agent skills | 3 skills covering the rule/parser iteration loop |
 
 Rule sets: 58 baseline rules in `data/reference`, 36 in the standalone `data/example`.
@@ -53,9 +53,11 @@ dataset directory, not here.
 
 ## Smaller findings
 
-- `src/notification/parsers/__init__.py` re-exports 11 parsers, while the registry in
-  `facade.py` instantiates 13. `AccountTransferParser` and `PostFinanceCardRefundParser`
-  are missing from `__all__`. Harmless today (the facade imports directly from the modules), but the two lists should not drift apart.
+- **`include_keywords` is an AND across the list, `merchants` is an OR.** The asymmetry is
+  deliberate but easy to misread, and a two-keyword rule silently stops matching as soon as a
+  creditor rewords half of its reference. Worth stating in the rule documentation next to the
+  filter list; `explain_rule_match.py` already shows it correctly as `expected_all` vs
+  `expected_any`.
 - `categorize_transactions.py` and `analyze_by_category.py` parse their flags by hand, while `explain_rule_match.py` and `suggest_override_ids.py` use `argparse`. Consistency would make the flags self-documenting.
 - `pyproject.toml` pins `requires-python = ">=3.9,<3.10"`, which is a narrow window for a
   tool that is otherwise version-agnostic.
