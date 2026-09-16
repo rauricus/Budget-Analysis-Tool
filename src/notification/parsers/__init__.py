@@ -5,6 +5,7 @@ from notification.parsers.cash_withdrawal_parser import CashWithdrawalParser
 from notification.parsers.card_purchase_parser import CardPurchaseParser
 from notification.parsers.efinance_purchase_parser import EFinancePurchaseParser
 from notification.parsers.postfinance_card_refund_parser import PostFinanceCardRefundParser
+from notification.parsers.online_shopping_refund_parser import OnlineShoppingRefundParser
 from notification.parsers.credit_transfer_parser import CreditTransferParser
 from notification.parsers.account_transfer_parser import AccountTransferParser
 from notification.parsers.standing_order_parser import StandingOrderParser
@@ -20,6 +21,7 @@ __all__ = [
     "CardPurchaseParser",
     "EFinancePurchaseParser",
     "PostFinanceCardRefundParser",
+    "OnlineShoppingRefundParser",
     "CreditTransferParser",
     "AccountTransferParser",
     "TwintSendParser",

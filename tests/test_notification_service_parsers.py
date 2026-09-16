@@ -19,6 +19,7 @@ from notification.parsers.standing_order_parser import StandingOrderParser
 from notification.parsers.twint_receive_parser import TwintReceiveParser
 from notification.parsers.twint_purchase_parser import TwintPurchaseParser
 from notification.parsers.postfinance_card_refund_parser import PostFinanceCardRefundParser
+from notification.parsers.online_shopping_refund_parser import OnlineShoppingRefundParser
 
 
 def test_card_purchase_parser_for_generic_card_purchase():
@@ -438,3 +439,51 @@ if __name__ == '__main__':
     test_standing_order_parser()
     test_postfinance_card_refund_parser()
     print("✓ All notification service parser tests passed")
+
+
+def test_online_shopping_refund_parser_without_provider():
+    """OnlineShoppingRefundParser should parse an online shopping refund with payment ID/order reference."""
+    parser = OnlineShoppingRefundParser()
+    text = (
+        "GUTSCHRIFT ONLINE SHOPPING VOM 28.08.2026 FIKTIVE VERSAND AG "
+        "N/A PAYMENT ID 260800000000000000 BESTELLNUMMER DP-P-00000000"
+    )
+
+    assert parser.supports(text), "Online shopping refund parser should support payment ID format"
+
+    result = parser.parse(text)
+    assert result.service_type == "Card Purchase"
+    assert result.provider == ""
+    assert result.transaction_type_detail == "Refund/Online Shopping"
+    assert result.card_number == ""
+    assert result.merchant == "FIKTIVE VERSAND AG"
+    assert result.location == ""
+    assert result.reference == "PAYMENT ID 260800000000000000 BESTELLNUMMER DP-P-00000000"
+
+
+def test_online_shopping_refund_parser_with_provider():
+    """OnlineShoppingRefundParser should keep a provider prefix such as 'PF PAY'."""
+    parser = OnlineShoppingRefundParser()
+    text = (
+        "PF PAY GUTSCHRIFT ONLINE SHOPPING VOM 17.06.2026 FIKTIVER TICKET SHOP "
+        "N/A PAYMENT ID 00000000-00000000 BESTELLNUMMER 000000000000"
+    )
+
+    assert parser.supports(text)
+
+    result = parser.parse(text)
+    assert result.provider == "Pf Pay"
+    assert result.transaction_type_detail == "Refund/Online Shopping"
+    assert result.merchant == "FIKTIVER TICKET SHOP"
+    assert result.reference == "PAYMENT ID 00000000-00000000 BESTELLNUMMER 000000000000"
+
+
+def test_online_shopping_refund_parser_does_not_support_purchase():
+    """The refund parser must not claim the purchase notification handled by EFinancePurchaseParser."""
+    parser = OnlineShoppingRefundParser()
+    text = (
+        "KAUF/ONLINE-SHOPPING VOM 19.01.2026 FIKTIVE VERSAND AG "
+        "N/A PAYMENT ID 260100000000000000 BESTELLNUMMER DP-P-00000000"
+    )
+
+    assert not parser.supports(text)
