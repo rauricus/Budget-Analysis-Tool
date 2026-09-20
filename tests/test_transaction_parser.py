@@ -44,6 +44,24 @@ def test_parse_row_skips_empty_date():
     assert txn is None, "Rows without date should be skipped"
 
 
+def test_parse_row_without_movement_type_column():
+    """'Bewegungstyp' is not read by the parser, so a row without it parses fine."""
+    row = pd.Series({
+        'Datum': '31.03.2025',
+        'Avisierungstext': 'APPLE PAY KAUF/DIENSTLEISTUNG VOM 31.03.2025 KARTEN NR. XXXX4821 CITY TANKSTELLE OLTEN',
+        'Gutschrift in CHF': '',
+        'Lastschrift in CHF': '-10.34',
+        'Label': '',
+        'Kategorie': '',
+    })
+
+    txn = TransactionParser.parse_row(row)
+
+    assert txn is not None, "Row without Bewegungstyp should still parse"
+    assert txn.service_type == 'Card Purchase', "Service type should be parsed"
+    assert txn.transaction_type == 'Debit', "Direction comes from the amount columns, not Bewegungstyp"
+
+
 def test_parse_row_credit_transaction_type():
     """Credit rows should be normalized to transaction_type='credit'."""
     df = pd.read_csv('data/example/input/export.202503.csv', sep=';', skiprows=5, encoding='utf-8')

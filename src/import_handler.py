@@ -1,11 +1,34 @@
 import io
 import pandas as pd
 from pathlib import Path
+from typing import Optional
 from models import Transaction
 from transaction_parser import TransactionParser, TransactionParserError
 
 _MIN_DELIMITER_COUNT = 3
 _HEADER_SCAN_LIMIT = 10
+_BOOKED_MOVEMENT_TYPE = "BUCHUNG"
+
+
+def _movement_type_warning(value) -> Optional[str]:
+    """Return a warning when a row is not a booked movement, else None.
+
+    PostFinance writes "Buchung" in the `Bewegungstyp` column of every row seen so
+    far, and the pipeline does not read the column at all.  A different value would
+    most likely mean the row is not a booking but something like a reservation,
+    which the pipeline would nonetheless import, categorize and count as one.  It is
+    not treated as an error, because the correct handling is unknown until such a
+    row actually turns up.
+    """
+    text = "" if value is None else str(value).strip()
+    if not text or text.lower() in ("nan", "<na>"):
+        return None
+    if text.upper() == _BOOKED_MOVEMENT_TYPE:
+        return None
+    return (
+        f"Unexpected 'Bewegungstyp': '{text}'. Only 'Buchung' is known to mean a booked "
+        "transaction; this row is imported and counted like one."
+    )
 
 
 def _find_header_line(lines: list[str]) -> tuple[int, str]:
@@ -66,6 +89,13 @@ class ImportHandler:
         transactions = []
         for pandas_index, row in df.iterrows():
             csv_row = data_row_file_lines[pandas_index]
+
+            movement_warning = _movement_type_warning(row.get("Bewegungstyp"))
+            if movement_warning:
+                if firstError:
+                    print(); firstError = False
+                print(f"   ⚠️  Row {csv_row}: {movement_warning}")
+
             try:
                 txn = TransactionParser.parse_row(row)
             except TransactionParserError as e:

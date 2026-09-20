@@ -9,6 +9,18 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from import_handler import ImportHandler
 from models import Transaction
 
+_CSV_HEADER = "Datum;Bewegungstyp;Avisierungstext;Gutschrift in CHF;Lastschrift in CHF;Label;Kategorie"
+_CSV_ROW = '27.02.2025;{movement_type};"TWINT KAUF/DIENSTLEISTUNG VOM 27.02.2025 MUSTER CAFE YVERDON";;-3.00;;'
+
+
+def _write_csv(tmp_path, movement_type: str):
+    csv_path = tmp_path / "export.202502.csv"
+    csv_path.write_text(
+        _CSV_HEADER + "\n" + _CSV_ROW.format(movement_type=movement_type) + "\n",
+        encoding="utf-8",
+    )
+    return csv_path
+
 
 def test_csv_loading():
     """Test that CSV file is loaded correctly"""
@@ -46,6 +58,28 @@ def test_apple_pay_notification_parsing():
     assert apple_pay_txn.card_number == 'XXXX4821', "Card number should be parsed"
     assert apple_pay_txn.parsed_merchant == 'CITY TANKSTELLE', "Merchant should be parsed"
     assert apple_pay_txn.parsed_location == 'OLTEN', "Location should be parsed"
+
+
+def test_booked_movement_type_is_silent(tmp_path, capsys):
+    """The regular 'Buchung' movement type must not produce a warning."""
+    txns = ImportHandler.load_csv(str(_write_csv(tmp_path, "Buchung")))
+
+    assert len(txns) == 1, "Booked row should be imported"
+    assert "Bewegungstyp" not in capsys.readouterr().out, "Booked rows should not warn"
+
+
+def test_unexpected_movement_type_warns_but_imports(tmp_path, capsys):
+    """A row that is not a booking is imported, but says so.
+
+    The pipeline ignores 'Bewegungstyp', so a reservation would otherwise be
+    counted as a booking without any trace in the output.
+    """
+    txns = ImportHandler.load_csv(str(_write_csv(tmp_path, "Vormerkung")))
+
+    output = capsys.readouterr().out
+    assert "Unexpected 'Bewegungstyp': 'Vormerkung'" in output, "Unknown movement type should warn"
+    assert len(txns) == 1, "The row should still be imported, not dropped"
+    assert txns[0].service_type == "Twint", "The row should be parsed as usual"
 
 
 if __name__ == '__main__':
