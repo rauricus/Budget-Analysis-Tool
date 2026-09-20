@@ -6,11 +6,12 @@ Project documentation:
 
 - [STATUS.md](STATUS.md) — what the tool does today and where it stands (IST)
 - [ROADMAP.md](ROADMAP.md) — planned next steps towards an actual budget (SOLL)
+- [AGENTS.md](AGENTS.md) — architecture, invariants and conventions for contributors and agents
 
 ## Features
 
 - CSV import (PostFinance format)
-- Service-specific parser registry (card purchases incl. provider, cash withdrawals, credit transfers, account transfers, Twint, Lastschrift variants, bank fees)
+- Service-specific parser registry (card purchases incl. provider, card and online-shopping refunds, cash withdrawals, credit transfers, account transfers, Twint, Lastschrift variants, foreign payments, bank fees)
 - Rule engine with priority-based matching (1-10; 1: lowest, 10: highest)
 - Stable transaction IDs via persistent fingerprint registry
 - Service/provider-scoped rule selection (`services` + optional `providers` in rules)
@@ -23,7 +24,8 @@ Project documentation:
 ### CSV locale support (current)
 
 - Import and export are currently aligned to German PostFinance CSV conventions.
-- Import expects German source columns from PostFinance (for example `Datum`, `Bewegungstyp`, `Avisierungstext`, `Gutschrift in CHF`, `Lastschrift in CHF`, `Kategorie`).
+- Import reads six German source columns from PostFinance: `Datum`, `Avisierungstext`, `Gutschrift in CHF`, `Lastschrift in CHF`, `Label` and `Kategorie`. Which of the two amount columns is filled decides the transaction direction; `Label` and `Kategorie` are only carried through to the export. Every other column of a PostFinance export, `Bewegungstyp` among them, is ignored. The one exception is a warning: if `Bewegungstyp` ever holds something other than `Buchung`, the row is probably not a booking — a reservation, say — and import says so, because the pipeline would otherwise categorize and count it like any other transaction.
+- Columns are read defensively rather than validated: a row without `Datum` is skipped and any other missing field falls back to empty or zero, so a CSV with an unexpected column layout imports quietly instead of failing.
 - Export preserves German transaction content (for example Lastschrift/Zahlung/Dauerauftrag details) in parsed fields.
 
 ## Setup
@@ -214,6 +216,7 @@ src/
   └── parsers/
     ├── card_purchase_parser.py           # Card purchases (Purchase/Service, Purchase/Online Shopping, optional provider)
     ├── postfinance_card_refund_parser.py # Card refunds
+    ├── online_shopping_refund_parser.py  # Online shopping refunds (credit counterpart of e-finance purchases)
     ├── efinance_purchase_parser.py       # E-Finance purchases
     ├── cash_withdrawal_parser.py         # Cash withdrawals (Bargeldbezug)
     ├── credit_transfer_parser.py         # Credit transfers (Gutschrift Auftraggeber/Absender)
@@ -224,7 +227,8 @@ src/
     ├── twint_purchase_parser.py          # Twint purchases
     ├── debit_direct_parser.py            # CH-DD debit direct
     ├── payment_parser.py                 # Lastschrift payments
-    └── standing_order_parser.py          # Lastschrift standing orders
+    ├── standing_order_parser.py          # Lastschrift standing orders
+    └── foreign_payment_parser.py         # Foreign payments (Auslandzahlung, for example SEPA)
 
 categorize_transactions.py            # Pipeline entry point
 explain_rule_match.py                 # CLI helper to explain rule matching per transaction
@@ -238,16 +242,23 @@ tests/                                # Unit/integration-style tests for pipelin
 Parsers normalize the notification text into a `Service` value and an optional
 `Transaction Type Detail`. Rules match on these fields.
 
+The registry tries its parsers in a fixed order and the first parser that claims a
+notification text wins, so a narrow format has to be registered before a broader one.
+
 | Service | Transaction Type Detail (examples) |
 |---|---|
-| `Card Purchase` | `Purchase/Service`, `Purchase/Online Shopping` |
+| `Card Purchase` | `Purchase/Service`, `Purchase/Online Shopping`, `Refund/Online Shopping` |
 | `PostFinance Card Refund` | `Refund` |
 | `Cash Withdrawal` | `Cash Withdrawal` |
 | `Credit` | `Credit` |
-| `Account Transfer` | `Account Transfer In`, `Account Transfer Out` |
-| `Direct Debit` | `Payment`, `Standing Order`, `Direct Debit (CH-DD)` |
-| `Twint` | `Send Money`, `Receive Money`, `Purchase/Service` |
+| `Account Transfer` | `Account Transfer Auf` (outgoing), `Account Transfer Von` (incoming) |
+| `Direct Debit` | `Payment`, `Standing Order`, `Direct Debit (CH-DD)`, `Foreign Payment` |
+| `Twint` | `Send Money`, `Receive Money`, `Purchase/Service`, `Purchase/Online Shopping` |
 | `Fees` | `Bank Package Fee` |
+
+`scope.transaction_type_detail` is compared exactly, so these values have to be spelled as
+listed. `Account Transfer Auf` / `Account Transfer Von` carry the German direction word
+through from the source text, unlike the other details.
 
 ## Rules
 
@@ -332,7 +343,7 @@ a base rule without `"overlay_of"` is an error, as is referencing an unknown bas
 - `scope.services` filters by parsed service and `scope.providers` optionally by payment provider.
 - `scope.notification_filters` contains parsed-field matching criteria (`merchants`, `locations`, `counterparties`, `counterparty_ibans`, `include_keywords`, `exclude_keywords`).
 - A rule matches only if all configured conditions match.
-- Empty filters behave like wildcards: if a field is unset, `null`, `""`, or `[]` (depending on the field), that field does not restrict matching.
+- Empty filters behave like wildcards: if a field is unset, `null`, `""`, or `[]` (depending on the field), that field does not restrict matching. A rule whose filters are all empty therefore matches every transaction of its service and is decided by priority alone — deliberate catch-alls should sit at priority 1.
 
 Per-field logic:
 
@@ -347,6 +358,12 @@ Per-field logic:
 | `exclude_keywords` | negative filter (none may match) |
 
 Across different fields, checks are cumulative: every configured field must pass for the rule to match.
+
+Note the asymmetry within the fields: one entry from `merchants` or `counterparties` is
+enough, while *all* entries of `locations` and `include_keywords` must be present. A rule
+with two include keywords therefore stops matching as soon as a creditor rewords half of
+its reference. `explain_rule_match.py` reports which logic applies per field, as
+`expected_any` versus `expected_all`.
 
 ### No fallback category
 
