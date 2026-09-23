@@ -26,7 +26,7 @@ generator, an Excel sheet — is still open.
 | Explain tooling | `explain_rule_match.py` with per-rule check breakdown, JSON output |
 | Export | 20-column structured CSV incl. matched rule key and source |
 | Analysis | Excel report with 6 sheets: summary, category overviews, per-month category and subcategory tables, every transaction in one filterable table, and the largest payees per subcategory (net of refunds, on the budget's basis). All figures are static and reconciled against the transactions before writing; each summary table carries a `SUMIFS` check row |
-| Budget | Minimal: `budget.json` with a planned `income`, `reserves` (pots per category or subcategory, e.g. health insurance, taxes, pension) and one `monthly`/`yearly` target per category in `budget`, compared per month and cumulated by `budget_report.py` on the console. Shows what is left of the income after reserves and budget lines. Refunds netted; income excluded; transfers excluded from budget lines but counted for reserves |
+| Budget | Minimal: `budget.json` with a planned `income`, `reserves` (pots per category or subcategory, e.g. health insurance, taxes, pension) and one `monthly`/`yearly` target per category or subcategory in `budget`, compared per month and cumulated by `budget_report.py` on the console. Shows what is left of the income after reserves and budget lines. Refunds netted; income excluded; transfers excluded from budget lines but counted for reserves |
 | Tests | 17 test modules covering parsers, rules, overlays, validity windows, overrides, export, ID registry, budget comparison; no test depends on a private dataset |
 | Agent skills | 3 skills covering the rule/parser iteration loop |
 
@@ -37,9 +37,8 @@ dataset directory, not here.
 
 ## Known gaps
 
-1. **The budget is category-level only, and standalone.** No subcategory lines, so rent and
-   furniture share one `Wohnen` target — only a reserve can take a subcategory out. A
-   reserve matches by category/subcategory, not by rule, so premiums and deductible can
+1. **The budget is standalone.** Budget lines and reserves work on category or
+   subcategory level, not on payee or rule level. A reserve matches by category/subcategory, not by rule, so premiums and deductible can
    only be separated if the rules give them distinct subcategories. Reserves accrue
    linearly; a tax bill due in March shows as an overdrawn pot until the year catches up. No `base`/overlay mechanism, so a budget shared
    across datasets means copying the file. No `fixed`/`variable` distinction, no provisions

@@ -43,7 +43,8 @@ sections, loaded and validated in `budget_report.py`. Still open:
 
 - Overlay-capable: a shared baseline budget in `data/reference` can be overridden per
   dataset, using the same `base` mechanism as the rules.
-- Optional `subcategory` per line, and a `type` (`fixed` | `variable`) distinction.
+- A `type` (`fixed` | `variable`) distinction. Subcategory lines exist since 2026-09-23
+  (`"Freizeit / Gastronomie"` as a key).
 - Validation against the categories actually produced by the rule set. Deliberately skipped
   for now: an unknown category shows up under "Ohne Ist-Werte" with an actual of zero, which
   surfaces a typo without loading and merging the rule files.
@@ -58,8 +59,9 @@ Decisions settled by the first version:
 - **Refund handling**: netted. A category's actual is its debits minus its credits, so a
   refund carrying its expense category reduces that category, and an unattributable one
   keeps `Rückerstattungen` and shows up as a line without a budget.
-- **Budget granularity**: category level. Subcategory lines are the first candidate for the
-  next increment if the grid turns out too coarse in practice.
+- **Budget granularity**: category level, with optional subcategory lines that take their
+  transactions out of the category line. The "Top Payees" sheet of the Excel report is where
+  to find the subcategories worth a line of their own.
 - **Transfers**: out, together with income. Only spending is budgeted.
 
 Still open:

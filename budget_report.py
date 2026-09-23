@@ -37,6 +37,9 @@ VALID_PERIODS = {"monthly", "yearly"}
 ALLOWED_SECTIONS = {"income", "reserves", "budget"}
 ALLOWED_BUDGET_FIELDS = {"amount", "period", "_note"}
 ALLOWED_RESERVE_FIELDS = ALLOWED_BUDGET_FIELDS | {"category", "subcategory"}
+# A budget key is a category, or 'Category / Subcategory' for a subcategory
+# line. Spaces around the slash keep names like 'Bücher/Filme/Musik' intact.
+SUBCATEGORY_SEPARATOR = " / "
 
 
 @dataclass
@@ -209,10 +212,17 @@ def load_budget(budget_path) -> dict:
         _validate_entry(income, "'income'", ALLOWED_BUDGET_FIELDS, path)
 
     budget = _validate_section(raw, "budget", path)
-    for category, entry in budget.items():
+    for key, entry in budget.items():
         _validate_entry(
-            entry, f"budget entry for '{category}'", ALLOWED_BUDGET_FIELDS, path
+            entry, f"budget entry for '{key}'", ALLOWED_BUDGET_FIELDS, path
         )
+        category, subcategory = split_budget_key(key)
+        if not category or subcategory == "":
+            raise ValueError(
+                f"Budget key '{key}' in {path} must be 'Category' or "
+                f"'Category{SUBCATEGORY_SEPARATOR}Subcategory'."
+            )
+    budgeted_categories = {split_budget_key(key)[0] for key in budget}
 
     reserves = _validate_section(raw, "reserves", path)
     claimed = {}
@@ -244,13 +254,47 @@ def load_budget(budget_path) -> dict:
         # A whole category cannot be reserved and budgeted at once: every
         # transaction in it would count twice. A reserved subcategory is fine,
         # the budget line then sees the category without it.
-        if subcategory is None and category in budget:
+        if subcategory is None and category in budgeted_categories:
             raise ValueError(
                 f"Category '{category}' is covered by {label} and by a budget "
                 f"line in {path}. Reserve a subcategory, or drop one of the two."
             )
+        if subcategory is not None and _budget_key(category, subcategory) in budget:
+            raise ValueError(
+                f"'{_budget_key(category, subcategory)}' is covered by {label} "
+                f"and by a budget line in {path}. Drop one of the two."
+            )
 
     return {"income": income, "reserves": reserves, "budget": budget}
+
+
+def split_budget_key(key: str) -> tuple:
+    """'Leben / Familie' -> ('Leben', 'Familie'); 'Leben' -> ('Leben', None)."""
+    if SUBCATEGORY_SEPARATOR not in key:
+        return key.strip(), None
+    category, subcategory = key.split(SUBCATEGORY_SEPARATOR, 1)
+    return category.strip(), subcategory.strip()
+
+
+def _budget_key(category: str, subcategory: str) -> str:
+    return f"{category}{SUBCATEGORY_SEPARATOR}{subcategory}"
+
+
+def assign_budget_keys(df: pd.DataFrame, lines: dict) -> pd.Series:
+    """The budget line each row counts against: its subcategory line if the
+    budget has one, otherwise its category.
+
+    A subcategory line thereby takes its rows out of the category line, the
+    same precedence reserves follow. A category without any line keeps its own
+    name, so its rows surface as unbudgeted.
+    """
+    category = df["Category"].fillna("").astype(str)
+    if "Subcategory" in df.columns:
+        subcategory = df["Subcategory"].fillna("").astype(str)
+    else:
+        subcategory = pd.Series("", index=df.index)
+    specific = category + SUBCATEGORY_SEPARATOR + subcategory
+    return specific.where(specific.isin(list(lines)) & (subcategory != ""), category)
 
 
 def _reserve_scope(entry: dict) -> str:
@@ -266,8 +310,8 @@ def monthly_target(entry: dict) -> float:
     return entry["amount"]
 
 
-def net_by_category(df: pd.DataFrame) -> dict:
-    """Net spending per category: debits minus credits.
+def net_by_category(df: pd.DataFrame, by: str = "Category") -> dict:
+    """Net spending per category (or per column *by*): debits minus credits.
 
     Subtracting credits is what nets refunds against the category they belong
     to. A refund that carries no expense category (the catch-all rules) forms
@@ -275,7 +319,7 @@ def net_by_category(df: pd.DataFrame) -> dict:
     """
     if df.empty:
         return {}
-    grouped = df.groupby("Category")[["Debit in CHF", "Credit in CHF"]].sum()
+    grouped = df.groupby(by)[["Debit in CHF", "Credit in CHF"]].sum()
     return {
         category: round(row["Debit in CHF"] - row["Credit in CHF"], 2)
         for category, row in grouped.iterrows()
@@ -375,8 +419,9 @@ def compare_budget_to_actuals(
 
     unreserved = df[owner.isna()]
     spending = spending_rows(unreserved)
-    actuals = net_by_category(_rows_for_months(spending, [month]))
-    ytd_actuals = net_by_category(_rows_for_months(spending, cumulated_months))
+    spending["Budget Key"] = assign_budget_keys(spending, lines_budget)
+    actuals = net_by_category(_rows_for_months(spending, [month]), by="Budget Key")
+    ytd_actuals = net_by_category(_rows_for_months(spending, cumulated_months), by="Budget Key")
 
     lines = []
     for category in sorted(lines_budget):
@@ -504,14 +549,14 @@ def format_report(comparison: BudgetComparison, source_label: str) -> str:
 
     out.append("")
     out.append(
-        f"{'Kategorie':<20}{'Soll':>12}{'Ist':>12}{'Abw.':>12}{'Abw.%':>8}"
+        f"{'Kategorie':<28}{'Soll':>12}{'Ist':>12}{'Abw.':>12}{'Abw.%':>8}"
         f"{'Kum. Soll':>14}{'Kum. Ist':>12}{'Kum. Abw.':>12}"
     )
-    out.append("-" * 102)
+    out.append("-" * 110)
 
     for line in comparison.lines:
         out.append(
-            f"{line.category:<20}"
+            f"{line.category:<28}"
             f"{_fmt(line.target):>12}{_fmt(line.actual):>12}"
             f"{_fmt(line.variance):>12}{_fmt_pct(line.variance_pct):>8}"
             f"{_fmt(line.ytd_target):>14}{_fmt(line.ytd_actual):>12}"
@@ -519,9 +564,9 @@ def format_report(comparison: BudgetComparison, source_label: str) -> str:
         )
 
     if comparison.lines:
-        out.append("-" * 102)
+        out.append("-" * 110)
         out.append(
-            f"{'Summe':<20}"
+            f"{'Summe':<28}"
             f"{_fmt(sum(l.target for l in comparison.lines)):>12}"
             f"{_fmt(sum(l.actual for l in comparison.lines)):>12}"
             f"{_fmt(sum(l.variance for l in comparison.lines)):>12}"
@@ -536,7 +581,7 @@ def format_report(comparison: BudgetComparison, source_label: str) -> str:
         out.append("Ohne Budgetzeile (Ist vorhanden):")
         for category, amount, ytd_amount in comparison.unbudgeted:
             # Widths line the two amounts up under 'Ist' and 'Kum. Ist'.
-            out.append(f"   {category:<17}{_fmt(amount):>24}{_fmt(ytd_amount):>46}")
+            out.append(f"   {category:<25}{_fmt(amount):>24}{_fmt(ytd_amount):>46}")
 
     if comparison.without_actuals:
         out.append("")

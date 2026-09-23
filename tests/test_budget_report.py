@@ -355,6 +355,99 @@ class TestComparison:
 
 
 # ---------------------------------------------------------------------------
+# Subcategory budget lines
+# ---------------------------------------------------------------------------
+
+class TestSubcategoryLines:
+    def test_subcategory_line_takes_its_rows_out_of_the_category_line(self):
+        df = _rows(
+            ("2025-01", "Expense", "Freizeit", 80.0, 0.0, "Gastronomie"),
+            ("2025-01", "Expense", "Freizeit", 20.0, 0.0, "Kultur"),
+        )
+        budget = _budget({
+            "Freizeit": {"amount": 50.0, "period": "monthly"},
+            "Freizeit / Gastronomie": {"amount": 100.0, "period": "monthly"},
+        })
+
+        lines = compare_budget_to_actuals(df, budget, MONTHS, "2025-01").lines
+
+        assert [(l.category, l.actual) for l in lines] == [
+            ("Freizeit", 20.0),
+            ("Freizeit / Gastronomie", 80.0),
+        ]
+
+    def test_refunds_are_netted_on_the_subcategory_line(self):
+        df = _rows(
+            ("2025-01", "Expense", "Freizeit", 80.0, 0.0, "Gastronomie"),
+            ("2025-01", "Refund", "Freizeit", 0.0, 30.0, "Gastronomie"),
+        )
+        budget = _budget({"Freizeit / Gastronomie": {"amount": 100.0, "period": "monthly"}})
+
+        line = compare_budget_to_actuals(df, budget, MONTHS, "2025-01").lines[0]
+
+        assert line.actual == 50.0
+
+    def test_rest_of_a_category_without_its_own_line_is_unbudgeted(self):
+        df = _rows(
+            ("2025-01", "Expense", "Freizeit", 80.0, 0.0, "Gastronomie"),
+            ("2025-01", "Expense", "Freizeit", 20.0, 0.0, "Kultur"),
+        )
+        budget = _budget({"Freizeit / Gastronomie": {"amount": 100.0, "period": "monthly"}})
+
+        comparison = compare_budget_to_actuals(df, budget, MONTHS, "2025-01")
+
+        assert comparison.unbudgeted == [("Freizeit", 20.0, 20.0)]
+        assert comparison.without_actuals == []
+
+    def test_subcategory_line_without_actuals_is_listed(self):
+        budget = _budget({"Freizeit / Gastronomie": {"amount": 100.0, "period": "monthly"}})
+        comparison = compare_budget_to_actuals(_rows(), budget, MONTHS, "2025-01")
+        assert comparison.without_actuals == ["Freizeit / Gastronomie"]
+
+    def test_slash_without_spaces_stays_part_of_the_name(self):
+        df = _rows(("2025-01", "Expense", "Einkaufen", 10.0, 0.0, "Bücher/Filme/Musik"))
+        budget = _budget({"Einkaufen / Bücher/Filme/Musik": {"amount": 1.0, "period": "monthly"}})
+
+        line = compare_budget_to_actuals(df, budget, MONTHS, "2025-01").lines[0]
+
+        assert line.actual == 10.0
+
+    def test_rejects_an_empty_part_in_the_key(self, tmp_path):
+        f = tmp_path / "budget.json"
+        _write(f, {"budget": {"Freizeit / ": {"amount": 1, "period": "monthly"}}})
+        with pytest.raises(ValueError, match="must be 'Category' or"):
+            load_budget(f)
+
+    def test_rejects_a_line_on_a_reserved_subcategory(self, tmp_path):
+        f = tmp_path / "budget.json"
+        _write(f, {
+            "reserves": {"KK": {"amount": 1, "period": "yearly",
+                                "category": "Leben", "subcategory": "Krankenkasse"}},
+            "budget": {"Leben / Krankenkasse": {"amount": 1, "period": "monthly"}},
+        })
+        with pytest.raises(ValueError, match="covered by reserve"):
+            load_budget(f)
+
+    def test_rejects_a_subcategory_line_in_a_fully_reserved_category(self, tmp_path):
+        f = tmp_path / "budget.json"
+        _write(f, {
+            "reserves": {"Steuern": {"amount": 1, "period": "yearly", "category": "Steuern"}},
+            "budget": {"Steuern / Bund": {"amount": 1, "period": "monthly"}},
+        })
+        with pytest.raises(ValueError, match="covered by reserve"):
+            load_budget(f)
+
+    def test_report_renders_a_long_line_key(self):
+        df = _rows(("2025-01", "Expense", "Freizeit", 80.0, 0.0, "Reisen und Erleben"))
+        budget = _budget({"Freizeit / Reisen und Erleben": {"amount": 100.0, "period": "monthly"}})
+        comparison = compare_budget_to_actuals(df, budget, MONTHS, "2025-01")
+
+        text = format_report(comparison, "data/test")
+
+        assert "Freizeit / Reisen und Erleben   " in text
+
+
+# ---------------------------------------------------------------------------
 # Reserves and availability
 # ---------------------------------------------------------------------------
 

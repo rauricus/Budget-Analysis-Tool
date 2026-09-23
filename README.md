@@ -503,8 +503,14 @@ each optional:
   are free names; `category` is required and `subcategory` optional. Each reserve is a
   pot: its target accrues month by month, the transactions it covers draw on it, and the
   report shows the balance.
-- **`budget`** distributes what is left, one target per category. Keys are categories
-  exactly as the rule set produces them.
+- **`budget`** distributes what is left, one target per line. A key is a category exactly
+  as the rule set produces it (`Freizeit`), or a category and subcategory separated by
+  ` / ` (`Freizeit / Gastronomie`) — the same shape as the `Category / Subcategory` column in
+  the Excel report. A subcategory line takes its transactions out of the category line, so
+  `Freizeit` then stands for Freizeit without Gastronomie. A category with only subcategory
+  lines lists its remaining transactions under "Ohne Budgetzeile". The spaces around the
+  slash are required: `Einkaufen / Bücher/Filme/Musik` is category `Einkaufen`,
+  subcategory `Bücher/Filme/Musik`.
 
 Every entry has an `amount` (a number) and a `period` (`monthly` or `yearly`), and may have
 an optional `_note` that does not affect anything. A yearly amount counts one twelfth per
@@ -518,8 +524,9 @@ Reserves and budget lines never share a transaction:
 - A reserve on a subcategory takes precedence over one on the whole category. A reserve
   on `Leben` / `Krankenkasse` next to a budget line on `Leben` is fine: the line then sees
   `Leben` without its health insurance.
-- Two reserves on the same category and subcategory, or a reserve and a budget line on
-  the same whole category, are rejected — the money would be planned twice.
+- Two reserves on the same category and subcategory, a reserve and a budget line on the
+  same subcategory, or a reserve on a whole category next to any budget line in that
+  category, are rejected — the money would be planned twice.
 - Two reserves on the same kind of transaction — premiums and deductible, say — need
   distinct subcategories from the rule set; otherwise use one reserve for both.
 
