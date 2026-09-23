@@ -454,7 +454,7 @@ each optional:
   "reserves": {
     "Krankenkasse": {
       "amount": 3600.00, "period": "yearly",
-      "category": "Leben", "subcategory": "Gesundheit"
+      "category": "Leben", "subcategory": "Krankenkasse"
     }
   },
   "budget": {
@@ -484,8 +484,8 @@ Reserves and budget lines never share a transaction:
 - A transaction matching a reserve counts against that reserve only, and leaves both the
   budget lines and the list of categories without a budget.
 - A reserve on a subcategory takes precedence over one on the whole category. A reserve
-  on `Leben` / `Gesundheit` next to a budget line on `Leben` is fine: the line then sees
-  `Leben` without its health costs.
+  on `Leben` / `Krankenkasse` next to a budget line on `Leben` is fine: the line then sees
+  `Leben` without its health insurance.
 - Two reserves on the same category and subcategory, or a reserve and a budget line on
   the same whole category, are rejected — the money would be planned twice.
 - Two reserves on the same kind of transaction — premiums and deductible, say — need

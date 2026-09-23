@@ -486,7 +486,7 @@
       "name": "Krankenkasse",
       "transaction_category": "Expense",
       "category": "Leben",
-      "subcategory": "Gesundheit",
+      "subcategory": "Krankenkasse",
       "priority": 5,
       "scope": {
         "transaction_type": "Debit",
@@ -1328,7 +1328,7 @@
       "name": "Rückerstattung: Krankenkasse",
       "transaction_category": "Refund",
       "category": "Leben",
-      "subcategory": "Gesundheit",
+      "subcategory": "Krankenkasse",
       "priority": 5,
       "scope": {
         "transaction_type": "Credit",

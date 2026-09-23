@@ -96,7 +96,7 @@ def test_example_amount_rule_separates_otherwise_identical_credits():
     }
 
     assert joint == {
-        120.0: ('Leben', 'Gesundheit'),
+        120.0: ('Leben', 'Krankenkasse'),
         15.0: ('Leben', 'Familie'),
     }
 

@@ -170,7 +170,7 @@ class TestLoading:
     def test_rejects_two_reserves_on_the_same_scope(self, tmp_path):
         f = tmp_path / "budget.json"
         entry = {"amount": 1, "period": "yearly",
-                 "category": "Leben", "subcategory": "Gesundheit"}
+                 "category": "Leben", "subcategory": "Krankenkasse"}
         _write(f, {"reserves": {"Prämien": entry, "Franchise": entry}})
         with pytest.raises(ValueError, match="both cover"):
             load_budget(f)
@@ -189,7 +189,7 @@ class TestLoading:
         f = tmp_path / "budget.json"
         _write(f, {
             "reserves": {"KK": {"amount": 1, "period": "yearly",
-                                "category": "Leben", "subcategory": "Gesundheit"}},
+                                "category": "Leben", "subcategory": "Krankenkasse"}},
             "budget": {"Leben": {"amount": 1, "period": "monthly"}},
         })
         assert "Leben" in load_budget(f)["budget"]
@@ -359,13 +359,13 @@ class TestComparison:
 # ---------------------------------------------------------------------------
 
 HEALTH = {"amount": 1200.0, "period": "yearly",
-          "category": "Leben", "subcategory": "Gesundheit"}
+          "category": "Leben", "subcategory": "Krankenkasse"}
 
 
 class TestReserves:
     def test_subcategory_reserve_wins_over_category_reserve(self):
         df = _rows(
-            ("2025-01", "Expense", "Leben", 80.0, 0.0, "Gesundheit"),
+            ("2025-01", "Expense", "Leben", 80.0, 0.0, "Krankenkasse"),
             ("2025-01", "Expense", "Leben", 20.0, 0.0, "Familie"),
         )
         reserves = {
@@ -375,7 +375,7 @@ class TestReserves:
         assert list(assign_reserves(df, reserves)) == ["KK", "Leben"]
 
     def test_income_is_never_reserved(self):
-        df = _rows(("2025-01", "Income", "Leben", 0.0, 100.0, "Gesundheit"))
+        df = _rows(("2025-01", "Income", "Leben", 0.0, 100.0, "Krankenkasse"))
         assert list(assign_reserves(df, {"KK": HEALTH})) == [None]
 
     def test_transfer_with_a_reserved_category_counts(self):
@@ -390,7 +390,7 @@ class TestReserves:
 
     def test_reserved_rows_leave_the_budget_line_and_unbudgeted_list(self):
         df = _rows(
-            ("2025-01", "Expense", "Leben", 80.0, 0.0, "Gesundheit"),
+            ("2025-01", "Expense", "Leben", 80.0, 0.0, "Krankenkasse"),
             ("2025-01", "Expense", "Leben", 20.0, 0.0, "Familie"),
             ("2025-01", "Expense", "Steuern", 500.0, 0.0),
         )
@@ -409,9 +409,9 @@ class TestReserves:
 
     def test_reserve_is_a_pot_netted_and_cumulated(self):
         df = _rows(
-            ("2025-01", "Expense", "Leben", 300.0, 0.0, "Gesundheit"),
-            ("2025-02", "Refund", "Leben", 0.0, 120.0, "Gesundheit"),
-            ("2025-03", "Expense", "Leben", 999.0, 0.0, "Gesundheit"),
+            ("2025-01", "Expense", "Leben", 300.0, 0.0, "Krankenkasse"),
+            ("2025-02", "Refund", "Leben", 0.0, 120.0, "Krankenkasse"),
+            ("2025-03", "Expense", "Leben", 999.0, 0.0, "Krankenkasse"),
         )
 
         line = compare_budget_to_actuals(
@@ -423,7 +423,7 @@ class TestReserves:
         assert line.ytd_target == 200.0
         assert line.ytd_actual == 180.0
         assert line.balance == 20.0
-        assert line.scope == "Leben / Gesundheit"
+        assert line.scope == "Leben / Krankenkasse"
         assert line.yearly_amount == 1200.0
 
     def test_availability_subtracts_reserves_and_budget_lines(self):
@@ -471,7 +471,7 @@ class TestReserves:
         assert "= Nicht verplant" in text
         assert "Reservation" in text
         assert "KK" in text
-        assert "Leben / Gesundheit" in text
+        assert "Leben / Krankenkasse" in text
 
     def test_report_without_income_and_reserves_omits_both_blocks(self):
         comparison = compare_budget_to_actuals(_rows(), _budget(), MONTHS, "2025-01")

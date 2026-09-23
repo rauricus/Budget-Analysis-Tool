@@ -434,7 +434,7 @@
       "name": "Krankenkasse",
       "transaction_category": "Expense",
       "category": "Leben",
-      "subcategory": "Gesundheit",
+      "subcategory": "Krankenkasse",
       "priority": 5,
       "scope": {
         "transaction_type": "Debit",
@@ -635,7 +635,7 @@
       "name": "Rückerstattung Krankenkasse: Medicura Plus",
       "transaction_category": "Refund",
       "category": "Leben",
-      "subcategory": "Gesundheit",
+      "subcategory": "Krankenkasse",
       "priority": 5,
       "scope": {
         "transaction_type": "Credit",
@@ -894,7 +894,7 @@
       "name": "Beispiel: Rückzahlung Prämienanteil vom Gemeinschaftskonto (nur über den Betrag erkennbar)",
       "transaction_category": "Refund",
       "category": "Leben",
-      "subcategory": "Gesundheit",
+      "subcategory": "Krankenkasse",
       "priority": 6,
       "scope": {
         "transaction_type": "Credit",
