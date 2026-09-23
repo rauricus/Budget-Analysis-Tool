@@ -127,9 +127,11 @@ The per-month table layout already used in the category sheets carries over dire
 
 ## Side goal — make the data browsable
 
-The Excel report is a good export, but it is a snapshot: it carries the aggregates, not the
-transactions behind them, and nothing in it recalculates. Checking why a category looks the
-way it does still means going back to the CSV or to `explain_rule_match.py`.
+The Excel report is a good export, but it is a snapshot, and nothing in it recalculates.
+Since 2026-09-23 it carries the transactions behind the aggregates (sheet "Transactions",
+filterable) and the largest payees per subcategory (sheet "Top Payees"), which covers the
+first half of the drill-down: category to transactions. Going from a transaction to the rule
+that claimed it still means `explain_rule_match.py`.
 
 The goal is to browse the categorized data — drill from a category into the transactions that
 make it up, and from a transaction into the rule that claimed it. That serves understanding

@@ -18,6 +18,10 @@ from analyze_by_category import (
     analyze_by_subcategory,
     create_excel_report,
     load_months_metadata,
+    normalize_payee,
+    OTHER_PAYEES_LABEL,
+    top_payees,
+    transaction_table,
 )
 
 
@@ -276,3 +280,138 @@ def test_load_dataset_categorized_csvs_raises_when_no_files():
             assert False, "Expected FileNotFoundError when no categorized files exist"
         except FileNotFoundError as exc:
             assert 'No categorized CSV files found' in str(exc)
+
+
+# ---------------------------------------------------------------------------
+# Transactions and Top Payees sheets
+# ---------------------------------------------------------------------------
+
+def _tx(date, tc, category, subcategory, debit=0.0, credit=0.0, merchant='', counterparty='',
+        reference='', tx_id=''):
+    return {
+        'Transaction ID': tx_id,
+        'Date': pd.Timestamp(date),
+        'Transaction Category': tc,
+        'Category': category,
+        'Subcategory': subcategory,
+        'Merchant': merchant,
+        'Counterparty': counterparty,
+        'Reference': reference,
+        'Debit in CHF': debit,
+        'Credit in CHF': credit,
+    }
+
+
+def test_normalize_payee_drops_branch_numbers_and_case():
+    assert normalize_payee('Migros  Markthalle (8812)') == 'MIGROS MARKTHALLE'
+    assert normalize_payee(None) == ''
+
+
+def test_normalize_payee_drops_the_sender_reference():
+    assert normalize_payee(
+        'STEUERAMT MUSTERHAUSEN 5000 SENDER REFERENZ: STEUER 25, TEIL 1'
+    ) == 'STEUERAMT MUSTERHAUSEN 5000'
+
+
+def test_transaction_table_uses_budget_sign_and_payee_fallback():
+    df = pd.DataFrame([
+        _tx('2025-03-02', 'Expense', 'Leben', 'Familie', debit=50.0, merchant='KIOSK', tx_id='TX-2'),
+        _tx('2025-03-01', 'Refund', 'Leben', 'Familie', credit=20.0, counterparty='MUSTER', tx_id='TX-1'),
+        _tx('2025-03-03', 'Expense', 'Leben', 'Familie', debit=5.0, reference='NUR REFERENZ'),
+    ])
+
+    table = transaction_table(df)
+
+    assert list(table['Transaction ID']) == ['TX-1', 'TX-2', '']
+    assert list(table['Amount']) == [-20.0, 50.0, 5.0]
+    assert list(table['Payee']) == ['MUSTER', 'KIOSK', 'NUR REFERENZ']
+    assert list(table['Month']) == ['2025-03'] * 3
+
+
+def test_transaction_table_tolerates_missing_columns():
+    df = pd.DataFrame([{
+        'Date': pd.Timestamp('2025-03-01'), 'Category': 'Leben', 'Subcategory': '',
+        'Debit in CHF': 10.0, 'Credit in CHF': 0.0,
+    }])
+
+    table = transaction_table(df)
+
+    assert table.loc[0, 'Rule'] == ''
+    assert table.loc[0, 'Payee'] == ''
+
+
+def test_top_payees_nets_refunds_and_excludes_income_and_transfers():
+    df = pd.DataFrame([
+        _tx('2025-01-05', 'Expense', 'Leben', 'Familie', debit=100.0, merchant='SPIELWAREN (12)'),
+        _tx('2025-02-05', 'Expense', 'Leben', 'Familie', debit=60.0, merchant='SPIELWAREN (34)'),
+        _tx('2025-02-06', 'Refund', 'Leben', 'Familie', credit=10.0, merchant='SPIELWAREN (12)'),
+        _tx('2025-01-25', 'Income', 'Einkommen', 'Lohn', credit=5000.0, counterparty='ARBEITGEBER'),
+        _tx('2025-01-26', 'Transfer', 'Überträge', 'Account Transfer', debit=300.0, counterparty='SPARKONTO'),
+    ])
+
+    result = top_payees(df)
+
+    assert list(result['Payee']) == ['SPIELWAREN']
+    row = result.iloc[0]
+    assert row['Net'] == 150.0
+    assert row['Count'] == 3
+    assert row['Months'] == 2
+    assert row['Share'] == 1.0
+    assert row['Rank'] == 1
+
+
+def test_top_payees_folds_the_rest_and_keeps_the_subcategory_total():
+    df = pd.DataFrame([
+        _tx('2025-01-01', 'Expense', 'Freizeit', 'Gastronomie', debit=float(amount), merchant=f'BEIZ {amount}')
+        for amount in range(1, 13)
+    ])
+
+    result = top_payees(df, limit=10)
+
+    assert len(result) == 11
+    assert list(result['Rank'][:3]) == [1, 2, 3]
+    assert result.iloc[0]['Payee'] == 'BEIZ 12'
+    rest = result.iloc[-1]
+    assert rest['Payee'] == OTHER_PAYEES_LABEL
+    assert rest['Net'] == 3.0  # 1 + 2
+    assert rest['Count'] == 2
+    assert result['Net'].sum() == sum(range(1, 13))
+    assert round(result['Share'].sum(), 3) == 1.0
+
+
+def test_top_payees_orders_subcategories_by_total():
+    df = pd.DataFrame([
+        _tx('2025-01-01', 'Expense', 'Wohnen', 'Haushalt', debit=10.0, merchant='A'),
+        _tx('2025-01-01', 'Expense', 'Wohnen', 'Miete und Hypothek', debit=1800.0, counterparty='VERMIETER'),
+    ])
+
+    result = top_payees(df)
+
+    assert list(result['Subcategory']) == ['Miete und Hypothek', 'Haushalt']
+
+
+def test_excel_report_has_filterable_transactions_and_top_payees():
+    run_dir = Path('data/example')
+    df, _ = load_dataset_categorized_csvs(run_dir)
+    months = load_months_metadata(run_dir)
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        output_path = Path(tmpdir) / 'analysis.xlsx'
+        create_excel_report(df, analyze_by_category(df), str(output_path), 'example', months)
+        wb = load_workbook(output_path)
+
+        ws = wb['Transactions']
+        assert ws['A1'].value == 'Transaction ID'
+        assert ws.freeze_panes == 'A2'
+        assert ws.auto_filter.ref.startswith('A1:')
+        assert ws.max_row == len(df) + 1, "One row per transaction below the header"
+        amounts = [ws.cell(row=r, column=9).value for r in range(2, ws.max_row + 1)]
+        expected = (df['Debit in CHF'] - df['Credit in CHF']).sum()
+        assert round(sum(amounts), 2) == round(expected, 2)
+
+        ws_top = wb['Top Payees']
+        assert [c.value for c in ws_top[1]] == [
+            'Category', 'Subcategory', 'Payee', 'Net', 'Count', 'Months', 'Share', 'Rank'
+        ]
+        assert ws_top.max_row > 1
+        wb.close()

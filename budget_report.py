@@ -30,16 +30,13 @@ from analyze_by_category import (
     _resolve_run_directory,
     load_dataset_categorized_csvs,
     load_months_metadata,
+    spending_rows,
 )
 
 VALID_PERIODS = {"monthly", "yearly"}
 ALLOWED_SECTIONS = {"income", "reserves", "budget"}
 ALLOWED_BUDGET_FIELDS = {"amount", "period", "_note"}
 ALLOWED_RESERVE_FIELDS = ALLOWED_BUDGET_FIELDS | {"category", "subcategory"}
-
-# Only spending is budgeted. Income has no target here, and transfers move
-# money between own accounts without being an expense.
-NON_BUDGET_TRANSACTION_CATEGORIES = {"income", "transfer"}
 
 
 @dataclass
@@ -267,18 +264,6 @@ def monthly_target(entry: dict) -> float:
     if entry["period"] == "yearly":
         return entry["amount"] / 12
     return entry["amount"]
-
-
-def spending_rows(df: pd.DataFrame) -> pd.DataFrame:
-    """Return only the rows a budget is about: neither income nor transfers.
-
-    Rows without a transaction category are kept: they are uncategorized
-    spending and should stay visible.
-    """
-    if "Transaction Category" not in df.columns:
-        return df.copy()
-    tc = df["Transaction Category"].fillna("").astype(str).str.lower()
-    return df[~tc.isin(NON_BUDGET_TRANSACTION_CATEGORIES)].copy()
 
 
 def net_by_category(df: pd.DataFrame) -> dict:

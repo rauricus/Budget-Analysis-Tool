@@ -78,7 +78,7 @@ Entry points live at the repository root, the library under `src/`:
 | `categorize_transactions.py` | pipeline driver, dataset/rule resolution, debug report |
 | `explain_rule_match.py` | per-transaction match diagnostics, text or `--json` |
 | `suggest_override_ids.py` | old→new ID suggestions after a registry reset |
-| `analyze_by_category.py` | Excel report (summary, overviews, category, subcategory sheets) |
+| `analyze_by_category.py` | Excel report (summary, overviews, category, subcategory, transactions, top payees); owns `spending_rows` |
 | `budget_report.py` | `budget.json` loading and validation, reserves, availability and budget vs. actual on the console |
 | `src/import_handler.py` | CSV reading, header detection, per-row error reporting |
 | `src/transaction_parser.py` | row → `Transaction`, PostFinance amount/date formats |
@@ -177,10 +177,12 @@ These are the things a change must not quietly break.
   assigned to reserves by category/subcategory over everything except income, so a
   pension payment booked as a transfer still draws on its reserve. Only the rows no reserve
   claims go through `spending_rows` into the budget lines.
-- **The budget nets refunds, the Excel report does not.** `budget_report.py` computes a
+- **The budget nets refunds, most of the Excel report does not.** `budget_report.py` computes a
   category's actual as debits minus credits and excludes income and transfers;
   `analyze_by_category.py` reports `Refund` as its own transaction category and excludes
-  only transfers. The two answer different questions — do not "fix" one to match the other
+  only transfers. The exceptions are the "Transactions" sheet, whose `Amount` carries the
+  budget's sign, and "Top Payees", which uses the budget's basis via the shared
+  `spending_rows`. The two answer different questions — do not "fix" one to match the other
   without deciding which behaviour the analysis should have.
 - **Everything user-facing is German, everything structural is English.** Input columns,
   notification texts and category names are German; service types, transaction categories,

@@ -5,6 +5,8 @@ Budget Analysis by Category
 Analyzes categorized CSV files and generates an Excel report with:
 - Summary tables by category and subcategory
 - Charts for visual analysis
+- Every transaction in one filterable table, to trace a figure back to its bookings
+- The largest payees per subcategory, to see what drives a line
 - Flexibility for users to modify and customize
 
 Usage:
@@ -18,6 +20,7 @@ Example:
 
 import calendar
 import json
+import re
 import sys
 from pathlib import Path
 import numbers
@@ -40,6 +43,21 @@ OVERVIEW_TABLE_HEADER_GAP = 22
 SHEET_TITLE_FONT_SIZE = 16
 SUBTITLE_FONT_SIZE = 14
 TOP_NOTE_CONTENT_START_ROW = 5
+HEADER_FILL = PatternFill(start_color='366092', end_color='366092', fill_type='solid')
+TOP_PAYEES_PER_SUBCATEGORY = 10
+OTHER_PAYEES_LABEL = '(übrige)'
+
+# Only spending is budgeted. Income has no target, and transfers move money
+# between own accounts without being an expense. Shared with budget_report.py,
+# so that the Excel report and the budget agree on what a line contains.
+NON_SPENDING_TRANSACTION_CATEGORIES = {"income", "transfer"}
+
+# Branch numbers in parentheses split one merchant into many payees,
+# e.g. 'MIGROS MARKTHALLE (8812)'.
+_BRANCH_NUMBER = re.compile(r"\s*\(\d+\)")
+# Some payment orders carry the sender's reference inside the counterparty
+# (a parser leak), which would make every instalment its own payee.
+_SENDER_REFERENCE = re.compile(r"\s+SENDER REFERENZ:.*$", re.IGNORECASE)
 
 def _month_label(month_str: str) -> str:
     """Convert 'YYYY-MM' string to English month name, e.g. '2024-01' -> 'January 2024'."""
@@ -156,6 +174,122 @@ def load_months_metadata(run_dir: Path) -> list[str]:
         return json.load(f)
 
 
+def spending_rows(df: pd.DataFrame) -> pd.DataFrame:
+    """Return only the rows a budget is about: neither income nor transfers.
+
+    Rows without a transaction category are kept: they are uncategorized
+    spending and should stay visible.
+    """
+    if "Transaction Category" not in df.columns:
+        return df.copy()
+    tc = df["Transaction Category"].fillna("").astype(str).str.lower()
+    return df[~tc.isin(NON_SPENDING_TRANSACTION_CATEGORIES)].copy()
+
+
+def _text_column(df: pd.DataFrame, column: str) -> pd.Series:
+    """A column as stripped strings, empty where the column or value is missing."""
+    if column not in df.columns:
+        return pd.Series("", index=df.index)
+    return df[column].fillna("").astype(str).str.strip()
+
+
+def payees(df: pd.DataFrame) -> pd.Series:
+    """Who the money went to or came from: merchant, else counterparty, else reference."""
+    merchant = _text_column(df, "Merchant")
+    counterparty = _text_column(df, "Counterparty")
+    reference = _text_column(df, "Reference")
+    return merchant.where(merchant != "", counterparty.where(counterparty != "", reference))
+
+
+def normalize_payee(payee: str) -> str:
+    """Group spellings of one payee: upper case, single spaces, no branch number,
+    no sender reference.
+
+    Deliberately minimal. Merging different spellings of the same company
+    (addresses, legal forms) is left to the reader of the report.
+    """
+    text = _SENDER_REFERENCE.sub("", str(payee or ""))
+    text = _BRANCH_NUMBER.sub("", text).upper()
+    return " ".join(text.split())
+
+
+def net_amounts(df: pd.DataFrame) -> pd.Series:
+    """Debit minus credit: positive for spending, as in the budget report."""
+    return (df["Debit in CHF"] - df["Credit in CHF"]).round(2)
+
+
+def top_payees(df: pd.DataFrame, limit: int = TOP_PAYEES_PER_SUBCATEGORY) -> pd.DataFrame:
+    """The largest payees per category and subcategory, net of refunds.
+
+    Income and transfers are excluded, refunds are netted against the payee
+    they come from — the same basis as the budget report. Per subcategory the
+    top *limit* payees are listed and the rest folded into one row, so every
+    subcategory still sums to its total. Subcategories are ordered by total,
+    payees by net amount, both descending.
+    """
+    columns = ["Category", "Subcategory", "Payee", "Net", "Count", "Months", "Share", "Rank"]
+    spending = spending_rows(df)
+    if spending.empty:
+        return pd.DataFrame(columns=columns)
+
+    spending = spending.assign(
+        Payee=payees(spending).map(normalize_payee),
+        Net=net_amounts(spending),
+        Month=spending["Date"].dt.strftime("%Y-%m"),
+    )
+    per_payee = (
+        spending.groupby(["Category", "Subcategory", "Payee"])
+        .agg(Net=("Net", "sum"), Count=("Net", "size"), Months=("Month", "nunique"))
+        .reset_index()
+    )
+    totals = per_payee.groupby(["Category", "Subcategory"])["Net"].sum()
+
+    rows = []
+    for (category, subcategory), total in totals.sort_values(ascending=False).items():
+        group = per_payee[
+            (per_payee["Category"] == category) & (per_payee["Subcategory"] == subcategory)
+        ].sort_values("Net", ascending=False)
+        top, rest = group.head(limit), group.iloc[limit:]
+        entries = [
+            (row.Payee, row.Net, row.Count, row.Months, rank)
+            for rank, row in enumerate(top.itertuples(index=False), start=1)
+        ]
+        if not rest.empty:
+            entries.append(
+                (OTHER_PAYEES_LABEL, rest["Net"].sum(), int(rest["Count"].sum()), None, None)
+            )
+        for payee, net, count, months, rank in entries:
+            share = round(net / total, 4) if total else None
+            rows.append([category, subcategory, payee, net, count, months, share, rank])
+
+    result = pd.DataFrame(rows, columns=columns)
+    result["Net"] = result["Net"].round(2)
+    return result
+
+
+def transaction_table(df: pd.DataFrame) -> pd.DataFrame:
+    """Every transaction as one row, for filtering in Excel.
+
+    Amount carries the budget report's sign (debit minus credit), so the sum
+    over a filtered category matches its actual there. Columns an older export
+    lacks stay empty.
+    """
+    table = pd.DataFrame({
+        "Transaction ID": _text_column(df, "Transaction ID"),
+        "Date": df["Date"],
+        "Month": df["Date"].dt.strftime("%Y-%m"),
+        "Transaction Category": _text_column(df, "Transaction Category"),
+        "Category": _text_column(df, "Category"),
+        "Subcategory": _text_column(df, "Subcategory"),
+        "Payee": payees(df),
+        "Reference": _text_column(df, "Reference"),
+        "Amount": net_amounts(df),
+        "Rule": _text_column(df, "Matched Rule Key"),
+        "Source File": _text_column(df, "Source File"),
+    })
+    return table.sort_values(["Date", "Transaction ID"], kind="stable").reset_index(drop=True)
+
+
 def analyze_by_category(df: pd.DataFrame) -> pd.DataFrame:
     """Analyze transactions by category.
 
@@ -247,6 +381,14 @@ def create_excel_report(df: pd.DataFrame, category_stats: pd.DataFrame,
     # Create Subcategory Analysis sheet (one table per month)
     ws_subcategory = wb.create_sheet("Subcategory Analysis", 3)
     _create_subcategory_sheet(ws_subcategory, df, months)
+
+    # Every transaction behind the figures above, filterable
+    ws_transactions = wb.create_sheet("Transactions", 4)
+    _create_transactions_sheet(ws_transactions, df)
+
+    # Largest payees per subcategory
+    ws_top_payees = wb.create_sheet("Top Payees", 5)
+    _create_top_payees_sheet(ws_top_payees, df)
 
     # Ensure output directory exists before saving
     output_file = Path(output_path)
@@ -624,6 +766,57 @@ def _create_subcategory_sheet(ws, df: pd.DataFrame, months: list[str]):
     ws.column_dimensions['C'].width = 15
     ws.column_dimensions['D'].width = 15
     ws.column_dimensions['E'].width = 15
+
+
+def _write_filterable_table(ws, table: pd.DataFrame, widths: dict, formats: dict):
+    """Write *table* from A1 with a frozen, filterable header row.
+
+    The header sits in row 1 on purpose: Excel's filter and freeze panes work
+    best without title rows above the table.
+    """
+    for col_idx, name in enumerate(table.columns, start=1):
+        cell = ws.cell(row=1, column=col_idx, value=name)
+        cell.font = Font(color='FFFFFF', bold=True)
+        cell.fill = HEADER_FILL
+        cell.alignment = Alignment(horizontal='center')
+
+    for row_idx, values in enumerate(table.itertuples(index=False), start=2):
+        for col_idx, value in enumerate(values, start=1):
+            if value is None or (isinstance(value, float) and pd.isna(value)) or value is pd.NaT:
+                value = None
+            elif isinstance(value, pd.Timestamp):
+                value = value.to_pydatetime()
+            cell = ws.cell(row=row_idx, column=col_idx, value=value)
+            number_format = formats.get(table.columns[col_idx - 1])
+            if number_format and value is not None:
+                cell.number_format = number_format
+
+    last_column = ws.cell(row=1, column=len(table.columns)).column_letter
+    ws.auto_filter.ref = f"A1:{last_column}{max(len(table) + 1, 1)}"
+    ws.freeze_panes = 'A2'
+    for letter, width in widths.items():
+        ws.column_dimensions[letter].width = width
+
+
+def _create_transactions_sheet(ws, df: pd.DataFrame):
+    """Create a sheet with every transaction, to trace any figure to its bookings."""
+    _write_filterable_table(
+        ws,
+        transaction_table(df),
+        widths={'A': 12, 'B': 11, 'C': 9, 'D': 12, 'E': 16, 'F': 22,
+                'G': 40, 'H': 40, 'I': 12, 'J': 28, 'K': 32},
+        formats={'Date': 'DD.MM.YYYY', 'Amount': '#,##0.00'},
+    )
+
+
+def _create_top_payees_sheet(ws, df: pd.DataFrame):
+    """Create a sheet with the largest payees per subcategory."""
+    _write_filterable_table(
+        ws,
+        top_payees(df),
+        widths={'A': 16, 'B': 22, 'C': 40, 'D': 12, 'E': 8, 'F': 8, 'G': 8, 'H': 6},
+        formats={'Net': '#,##0.00', 'Share': '0%'},
+    )
 
 
 def main(argv: Optional[Sequence[str]] = None):

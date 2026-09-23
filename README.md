@@ -148,12 +148,26 @@ uv run python analyze_by_category.py example
 uv run python analyze_by_category.py example my_analysis.xlsx
 ```
 
-The generated Excel file contains four sheets:
+The generated Excel file contains six sheets:
 
 - **Summary** — income vs. expenses vs. refunds across the whole dataset, with a stacked bar chart. Transfers are reported separately.
 - **Overviews by category** — income, expense and refund totals per category, each with a pie chart.
 - **Category Analysis** — one table per processed month, broken down by category.
 - **Subcategory Analysis** — one table per processed month, broken down by category and subcategory.
+- **Transactions** — every transaction as one row, with a frozen header and a filter on every
+  column: ID, date, month, transaction category, category, subcategory, payee, reference,
+  amount, matched rule and source file. Filter on a category to see the bookings behind a
+  figure. `Amount` is debit minus credit — positive for spending, like the budget report — so
+  the sum over a filtered category matches its actual there. Transfers are included; filter
+  them out on `Transaction Category`.
+- **Top Payees** — the largest payees per category and subcategory, on the budget report's
+  basis: income and transfers excluded, refunds netted. Subcategories are ordered by total,
+  and each lists its ten largest payees with net amount, number of transactions, months in
+  which the payee occurs, and share of the subcategory; the rest is folded into `(übrige)`, so
+  every subcategory still sums to its total. `Payee` is the merchant, else the counterparty,
+  else the reference. For grouping it is upper-cased, and branch numbers in parentheses and
+  sender references are dropped. Different spellings of the same company, such as two
+  addresses, stay separate.
 
 The Excel format lets you modify charts, add custom analysis, and adjust formatting.
 
