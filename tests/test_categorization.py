@@ -82,10 +82,29 @@ def test_example_counterparty_examples_in_input_are_categorized():
     assert seen_fragments == expected_categories
 
 
+def test_example_amount_rule_separates_otherwise_identical_credits():
+    """Two credits from the same joint account differ only in their amount;
+    the amounts filter is what tells the premium share apart."""
+    txns = ImportHandler.load_csv('data/example/input/export.202504.csv')
+    engine = RuleEngine('data/example/rules.json')
+
+    categorized, _ = engine.categorize_batch(txns)
+    joint = {
+        txn.credit: (txn.auto_category, txn.auto_subcategory)
+        for txn in categorized
+        if 'GEMEINSCHAFTSKONTO' in (txn.notification_text or '').upper()
+    }
+
+    assert joint == {
+        120.0: ('Leben', 'Gesundheit'),
+        15.0: ('Leben', 'Familie'),
+    }
+
 if __name__ == '__main__':
     test_categorization()
     test_example_dataset_contains_uncategorized_cases()
     test_example_dataset_contains_transfer_case()
     test_example_counterparty_examples_in_input_are_categorized()
+    test_example_amount_rule_separates_otherwise_identical_credits()
     print("✓ All categorization tests passed")
 

@@ -890,6 +890,62 @@
       }
     },
     {
+      "key": "refund_example_amount_1",
+      "name": "Beispiel: Rückzahlung Prämienanteil vom Gemeinschaftskonto (nur über den Betrag erkennbar)",
+      "transaction_category": "Refund",
+      "category": "Leben",
+      "subcategory": "Gesundheit",
+      "priority": 6,
+      "scope": {
+        "transaction_type": "Credit",
+        "transaction_type_detail": null,
+        "amounts": [
+          120.0
+        ],
+        "services": [
+          "Credit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "counterparties": [
+            "GEMEINSCHAFTSKONTO"
+          ],
+          "counterparty_ibans": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
+      "key": "refund_example_counterparty_1",
+      "name": "Beispiel: übrige Rückzahlungen vom Gemeinschaftskonto",
+      "transaction_category": "Refund",
+      "category": "Leben",
+      "subcategory": "Familie",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Credit",
+        "transaction_type_detail": null,
+        "amounts": [],
+        "services": [
+          "Credit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "counterparties": [
+            "GEMEINSCHAFTSKONTO"
+          ],
+          "counterparty_ibans": [],
+          "include_keywords": [],
+          "exclude_keywords": []
+        }
+      }
+    },
+    {
       "key": "expense_example_counterparty_iban_1",
       "name": "Beispiel: Gegenpartei IBAN Lastschrift",
       "transaction_category": "Expense",

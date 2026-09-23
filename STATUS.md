@@ -20,17 +20,17 @@ generator, an Excel sheet — is still open.
 | CSV import (PostFinance) | Complete |
 | Notification parsing | 15 parsers, registry-based, 8 normalized service types |
 | Transaction IDs | Stable fingerprint registry, persisted per dataset |
-| Rule engine | Priority-based matching, service/provider scoping, keyword and counterparty filters, optional per-rule validity window (`valid_from`/`valid_to`) |
+| Rule engine | Priority-based matching, service/provider scoping, keyword and counterparty filters, optional per-rule validity window (`valid_from`/`valid_to`) and exact-amount filter (`amounts`) |
 | Rule overlays | `base` + `overlay_of` mechanism, base rules replaceable per dataset |
 | Transaction overrides | Per-ID overrides incl. `hidden`, with fail-fast ID validation, a remap helper and an optional `_note` for documenting why an override exists |
 | Explain tooling | `explain_rule_match.py` with per-rule check breakdown, JSON output |
 | Export | 20-column structured CSV incl. matched rule key and source |
 | Analysis | Excel report with 4 sheets (summary, category overviews, per-month category and subcategory tables) |
 | Budget | Minimal: `budget.json` with a planned `income`, `reserves` (pots per category or subcategory, e.g. health insurance, taxes, pension) and one `monthly`/`yearly` target per category in `budget`, compared per month and cumulated by `budget_report.py` on the console. Shows what is left of the income after reserves and budget lines. Refunds netted; income excluded; transfers excluded from budget lines but counted for reserves |
-| Tests | 16 test modules covering parsers, rules, overlays, validity windows, overrides, export, ID registry, budget comparison; no test depends on a private dataset |
+| Tests | 17 test modules covering parsers, rules, overlays, validity windows, overrides, export, ID registry, budget comparison; no test depends on a private dataset |
 | Agent skills | 3 skills covering the rule/parser iteration loop |
 
-Rule sets: 70 baseline rules in `data/reference`, 36 in the standalone `data/example`.
+Rule sets: 70 baseline rules in `data/reference`, 38 in the standalone `data/example`.
 
 Per-dataset state — coverage, open transactions, figures — is tracked inside the respective
 dataset directory, not here.

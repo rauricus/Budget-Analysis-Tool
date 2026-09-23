@@ -30,6 +30,7 @@ class Rule:
     exclude_keywords: list[str] = field(default_factory=list)  # Optional filter; none may be present
     valid_from: Optional[date] = None  # Optional filter: rule applies only from this date (inclusive)
     valid_to: Optional[date] = None  # Optional filter: rule applies only up to this date (inclusive)
+    amounts: list[float] = field(default_factory=list)  # Optional filter; exact amount in CHF, one must match
     
     source: str = ""  # originating rules file (set by RuleEngine)
 
@@ -97,6 +98,19 @@ class Rule:
             "transaction_type",
             tx_type_passed,
             f"expected='{tx_type_expected or '*'}', actual='{tx_type_actual}'",
+        )
+
+        # 1. Match the exact amount (optional). Direction is left to
+        # transaction_type, so the absolute value is compared. Needed where two
+        # transactions differ in nothing but their amount, e.g. identical
+        # standing orders from the same account.
+        expected_amounts = [round(a, 2) for a in self.amounts]
+        actual_amount = round(abs(transaction.credit - transaction.debit), 2)
+        amount_passed = True if not expected_amounts else actual_amount in expected_amounts
+        add_check(
+            "amounts",
+            amount_passed,
+            f"expected_any={expected_amounts or ['*']}, actual={actual_amount}",
         )
 
         # 1a. Match transaction detail (optional)

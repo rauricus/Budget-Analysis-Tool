@@ -17,6 +17,7 @@ Project documentation:
 - Service/provider-scoped rule selection (`services` + optional `providers` in rules)
 - Merchant, location, counterparty, IBAN and include/exclude keyword matching
 - Optional validity window per rule (`valid_from` / `valid_to`) for rules that apply only during a defined period
+- Optional exact-amount filter per rule (`amounts`) for transactions that differ in nothing but their amount
 - Transaction-level overrides by transaction ID
 - Structured CSV export with parsed service fields
 - Aggregated Excel analysis across all categorized months of a dataset
@@ -345,6 +346,7 @@ a base rule without `"overlay_of"` is an error, as is referencing an unknown bas
         "transaction_type_detail": "Purchase/Service",
         "valid_from": null,
         "valid_to": null,
+        "amounts": [],
         "services": ["Card Purchase"],
         "providers": ["Apple Pay"],
         "notification_filters": {
@@ -370,6 +372,7 @@ a base rule without `"overlay_of"` is an error, as is referencing an unknown bas
 - `scope.transaction_type` filters on money direction: `Credit` or `Debit`.
 - `scope.transaction_type_detail` optionally filters on the parsed detail (for example `Send Money`, `Purchase/Service`, `Standing Order`). Use `null` (or empty) to disable this filter.
 - `scope.valid_from` and `scope.valid_to` optionally restrict a rule to a date range (ISO `YYYY-MM-DD`, both bounds inclusive). Either bound may be omitted for an open-ended window. Omit both (or use `null`) to make the rule apply to every date.
+- `scope.amounts` optionally restricts a rule to exact amounts in CHF, compared without sign (direction is `transaction_type`'s job). Meant for the case where nothing but the amount tells two transactions apart, such as two standing orders from the same account. It breaks as soon as the amount changes, so pair it with a validity window where the amount is known to change.
 - `scope.services` filters by parsed service and `scope.providers` optionally by payment provider.
 - `scope.notification_filters` contains parsed-field matching criteria (`merchants`, `locations`, `counterparties`, `counterparty_ibans`, `include_keywords`, `exclude_keywords`).
 - A rule matches only if all configured conditions match.
@@ -381,6 +384,7 @@ Per-field logic:
 |---|---|
 | `transaction_type`, `transaction_type_detail` | exact match |
 | `valid_from`, `valid_to` | inclusive date range; transaction date must fall inside |
+| `amounts` | OR, exact amount to the cent, sign ignored |
 | `services`, `providers` | OR within the list, exact match per entry |
 | `merchants`, `counterparties` | OR (at least one must match) |
 | `counterparty_ibans` | OR, exact IBAN match (spaces ignored) |

@@ -87,6 +87,17 @@ class RuleEngine:
                     f"valid_from '{valid_from}' is after valid_to '{valid_to}'"
                 )
 
+            amounts = scope.get("amounts", rule_data.get("amounts")) or []
+            if not isinstance(amounts, list) or not all(
+                isinstance(a, (int, float)) and not isinstance(a, bool) and a > 0
+                for a in amounts
+            ):
+                raise ValueError(
+                    "Invalid 'amounts' for rule "
+                    f"'{rule_data.get('key', '?')}' ('{rule_data.get('name', '')}') in {source}: "
+                    f"{amounts!r}. Expected a list of positive numbers"
+                )
+
             key = rule_data["key"]
             if key in result:
                 raise ValueError(
@@ -119,6 +130,7 @@ class RuleEngine:
                 exclude_keywords=filters.get("exclude_keywords", []),
                 valid_from=valid_from,
                 valid_to=valid_to,
+                amounts=[float(a) for a in amounts],
                 
                 source=source,
             )

@@ -1,4 +1,6 @@
 Transaction ID;Date;Transaction Type;Transaction Type Detail;Service;Provider;Card Number;Merchant;Location;Counterparty;Counterparty IBAN;Reference;Credit in CHF;Debit in CHF;Label;Transaction Category;Category;Subcategory;Matched Rule Key;Matched Rule Source
+TX-000089;01.04.2025;Credit;Credit;Credit;;;;;MUSTER UND BEISPIEL GEMEINSCHAFTSKONTO MUSTERWEG 1 4600 OLTEN;CH5604835012345678009;;120.0;;;Refund;Leben;Gesundheit;refund_example_amount_1;data/example/rules.json
+TX-000090;01.04.2025;Credit;Credit;Credit;;;;;MUSTER UND BEISPIEL GEMEINSCHAFTSKONTO MUSTERWEG 1 4600 OLTEN;CH5604835012345678009;;15.0;;;Refund;Leben;Familie;refund_example_counterparty_1;data/example/rules.json
 TX-000061;04.04.2025;Credit;Refund;PostFinance Card Refund;;XXXX1384;UEFA WOMEN'S EURO 2025 NYON;CH;;;;100.0;;;Refund;Freizeit;Reisen und Erleben;refund_3;data/example/rules.json
 TX-000084;05.04.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;MIGROS MARKTHALLE (8812);SOLOTHURN;;;;;108.9;;Expense;Einkaufen;Supermärkte;supermarket_1;data/example/rules.json
 TX-000085;12.04.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;COOP-5510 RIVERSIDE REST.;LUZERN;;;;;76.3;;Expense;Einkaufen;Supermärkte;supermarket_1;data/example/rules.json
