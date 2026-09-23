@@ -1,6 +1,7 @@
 # 📊 Budget Tool
 
-Automatic categorization of bank transactions using configurable JSON rules.
+Categorizes bank transactions with configurable JSON rules, reports them in Excel, and
+compares them against a budget. Local and offline.
 
 Project documentation:
 
@@ -20,15 +21,18 @@ Project documentation:
 - Optional exact-amount filter per rule (`amounts`) for transactions that differ in nothing but their amount
 - Transaction-level overrides by transaction ID
 - Structured CSV export with parsed service fields
-- Aggregated Excel analysis across all categorized months of a dataset
-- Budget vs. actual comparison per category, with reserves set aside from planned income
+- Excel report across all categorized months, with every transaction and the top payees
+- Budget vs. actual per category or subcategory, with reserves set aside from planned income
 
 ### CSV locale support (current)
 
-- Import and export are currently aligned to German PostFinance CSV conventions.
-- Import reads six German source columns from PostFinance: `Datum`, `Avisierungstext`, `Gutschrift in CHF`, `Lastschrift in CHF`, `Label` and `Kategorie`. Which of the two amount columns is filled decides the transaction direction; `Label` and `Kategorie` are only carried through to the export. Every other column of a PostFinance export, `Bewegungstyp` among them, is ignored. The one exception is a warning: if `Bewegungstyp` ever holds something other than `Buchung`, the row is probably not a booking — a reservation, say — and import says so, because the pipeline would otherwise categorize and count it like any other transaction.
-- Columns are read defensively rather than validated: a row without `Datum` is skipped and any other missing field falls back to empty or zero, so a CSV with an unexpected column layout imports quietly instead of failing.
-- Export preserves German transaction content (for example Lastschrift/Zahlung/Dauerauftrag details) in parsed fields.
+- Import and export follow the German PostFinance CSV layout.
+- Import reads `Datum`, `Avisierungstext`, `Gutschrift in CHF`, `Lastschrift in CHF`, `Label`
+  and `Kategorie`. The filled amount column decides the direction; `Label` and `Kategorie`
+  are only carried through. Other columns are ignored, except that a `Bewegungstyp` other
+  than `Buchung` triggers a warning: such a row is probably not a booking.
+- Columns are read defensively: a row without `Datum` is skipped, other missing fields fall
+  back to empty or zero.
 
 ## Setup
 
@@ -154,40 +158,24 @@ The generated Excel file contains six sheets:
 - **Overviews by category** — income, expense and refund totals per category, each with a pie chart.
 - **Category Analysis** — one table per processed month, broken down by category.
 - **Subcategory Analysis** — one table per processed month, broken down by category and subcategory.
-- **Transactions** — every transaction as one row, with a frozen header and a filter on every
-  column: ID, date, month, transaction category, category, subcategory, `Category /
-  Subcategory` as one combined filter field, payee, reference, credit, debit, amount, matched
-  rule and source file. Filter on a category to see the bookings behind a figure. `Amount` is debit minus credit — positive for spending, like the budget report — so
-  the sum over a filtered category matches its actual there. Transfers are included; filter
-  them out on `Transaction Category`.
-- **Top Payees** — the largest payees per category and subcategory, on the budget report's
-  basis: income and transfers excluded, refunds netted. Subcategories are ordered by total,
-  and each lists its ten largest payees with net amount, number of transactions, months in
-  which the payee occurs, and share of the subcategory; the rest is folded into `(übrige)`, so
-  every subcategory still sums to its total. `Payee` is the merchant, else the counterparty,
-  else the reference. For grouping it is upper-cased, and branch numbers in parentheses and
-  sender references are dropped. Different spellings of the same company, such as two
-  addresses, stay separate.
+- **Transactions** — every transaction as one filterable row: ID, date, month, transaction
+  category, category, subcategory, `Category / Subcategory`, payee, reference, credit, debit,
+  amount, rule and source file. `Amount` is debit minus credit, as in the budget report, so
+  a filtered sum matches the actual there.
+- **Top Payees** — the ten largest payees per subcategory, net of refunds, without income
+  and transfers; the rest is folded into `(übrige)`. Payees are the merchant, else the
+  counterparty, else the reference, grouped without branch numbers and sender references.
 
-Every figure in the report is computed by the script and written as a fixed value. Excel is
-the view, not the calculation engine, so the report reads the same everywhere, including in
-previews, and the logic stays in one place, shared with `budget_report.py`. Traceability
-comes from two checks instead:
+All figures are computed by the script and written as values; Excel only displays them.
+Before writing, the script reconciles every summary table with the transactions and aborts
+on a difference. Each table also ends with `Total`, `Check (Transactions)` — a `SUMIFS` over
+the Transactions sheet with the table's criteria — and `Difference`, which should read 0.00.
+In the category overviews a difference equals the categories left out of the pie chart
+(net zero or negative). Viewers that do not calculate, such as the macOS preview, leave the
+check cells empty.
 
-- **Before writing**, the script reconciles every summary table (Summary, and each month in
-  Category and Subcategory Analysis) with the transaction rows and aborts on any difference.
-- **In the workbook**, every summary table ends with a `Total` row, a `Check (Transactions)`
-  row and a `Difference` row. The check row is the only formula in the report: a `SUMIFS` over
-  the Transactions sheet with the same criteria as the table, so the formula itself documents
-  what the table contains. `Difference` should read 0.00. In the category overviews it can
-  differ by exactly the categories left out of the pie chart because their net amount is
-  zero or negative. The check cells stay empty in viewers that do not calculate (the macOS
-  preview, for example); Excel, Numbers and LibreOffice fill them.
-
-Edits in the workbook, including in the Transactions sheet, are lost the next time the report
-is generated. Lasting corrections belong in the rules or in `transaction_overrides.json`.
-
-The Excel format lets you modify charts, add custom analysis, and adjust formatting.
+Edits in the workbook are lost when the report is regenerated; lasting corrections belong
+in the rules or in `transaction_overrides.json`.
 
 ### Budget vs. actual
 
@@ -202,19 +190,16 @@ uv run python budget_report.py example
 uv run python budget_report.py example --month 2025-03
 ```
 
-If the budget declares an income, the report opens with an availability block: planned
-income, the actual income for comparison, minus the reserves, what is left to distribute,
-minus the budget lines, and what no line claims yet. If it declares reserves, a table
-follows with each reserve's category and subcategory, target, actual, cumulated values
-and the balance of its pot.
+The report has up to three parts:
 
-The main table shows target, actual, variance in CHF and in percent per category, plus the
-same three figures cumulated over the dataset's months up to and including the reported
-one. Two lists follow it: categories with actuals but no budget line, and budget lines
-with no actuals at all — the latter is also where a mistyped category surfaces.
+- **Availability** (with an `income`): planned and actual income, minus reserves, minus
+  budget lines, and what is left unplanned.
+- **Reserves** (with `reserves`): target, actual, cumulated values and the pot balance.
+- **Budget lines**: target, actual and variance for the month and cumulated over the
+  dataset's months, followed by categories without a line and lines without actuals —
+  the latter is where a mistyped category surfaces.
 
-This is a deliberately minimal first version. See [ROADMAP.md](ROADMAP.md) for what it
-does not do yet.
+The file format is described under [Budget](#budget).
 
 ### Tests
 
@@ -239,12 +224,9 @@ uv run pytest tests/test_rule_matching.py
    -> <run_dir>/output/*.categorized.csv
 ```
 
-During the run, transaction IDs are assigned and persisted in
-`<run_dir>/metadata/transaction_id_registry.json`, and the processed month periods are
-written to `<run_dir>/metadata/months.json`.
-
-IDs remain stable across reruns as long as the normalized transaction content (date,
-type, notification text, credit/debit) and duplicate occurrence order remain unchanged.
+Transaction IDs are persisted in `metadata/transaction_id_registry.json` and stay stable
+across reruns as long as date, direction, notification text and amounts of a transaction do
+not change. Processed months are written to `metadata/months.json`.
 
 ## Structure
 
@@ -253,7 +235,7 @@ data/
 ├── example/                          # Stable example dataset for tests/docs
 │ ├── rules.json
 │ ├── transaction_overrides.json
-│ ├── budget.json                     # Optional: income, reserves, targets per category
+│ ├── budget.json                     # Optional: income, reserves, budget lines
 │ ├── input/
 │ ├── output/
 │ └── metadata/
@@ -262,35 +244,15 @@ data/
 └── private/                          # Personal datasets (gitignored)
 
 src/
-├── import_handler.py                 # CSV import utilities
-├── export_handler.py                 # Structured CSV export builder
-├── models/                           # Domain model package
-│ ├── transaction.py                  # Transaction dataclass
-│ └── rule.py                         # Rule dataclass + matching logic
-├── rule_engine.py                    # Rule loading + service/provider-filtered categorization
-├── transaction_id_registry.py        # Stable transaction ID assignment + registry persistence
-├── transaction_overrides.py          # transaction_overrides.json loading + validation + apply
-├── override_id_remap.py              # old->new ID suggestion logic for override migration
-├── transaction_parser.py             # Row-to-Transaction conversion
-└── notification/
-  ├── base.py                         # Parser interface + parse result model
-  ├── facade.py                       # Public facade to parser registry
-  └── parsers/
-    ├── card_purchase_parser.py           # Card purchases (Purchase/Service, Purchase/Online Shopping, optional provider)
-    ├── postfinance_card_refund_parser.py # Card refunds
-    ├── online_shopping_refund_parser.py  # Online shopping refunds (credit counterpart of e-finance purchases)
-    ├── efinance_purchase_parser.py       # E-Finance purchases
-    ├── cash_withdrawal_parser.py         # Cash withdrawals (Bargeldbezug)
-    ├── credit_transfer_parser.py         # Credit transfers (Gutschrift Auftraggeber/Absender)
-    ├── account_transfer_parser.py        # Transfers between own accounts
-    ├── bank_package_fee_parser.py        # Bank package fees
-    ├── twint_send_parser.py              # Twint send money
-    ├── twint_receive_parser.py           # Twint receive money
-    ├── twint_purchase_parser.py          # Twint purchases
-    ├── debit_direct_parser.py            # CH-DD debit direct
-    ├── payment_parser.py                 # Lastschrift payments
-    ├── standing_order_parser.py          # Lastschrift standing orders
-    └── foreign_payment_parser.py         # Foreign payments (Auslandzahlung, for example SEPA)
+├── import_handler.py                 # CSV import
+├── transaction_parser.py             # Row -> Transaction
+├── notification/                     # Parser interface, registry, one parser per service
+├── transaction_id_registry.py        # Stable transaction IDs
+├── rule_engine.py                    # Rule loading, overlays, categorization
+├── models/                           # Transaction and Rule (incl. matching logic)
+├── transaction_overrides.py          # transaction_overrides.json handling
+├── override_id_remap.py              # Old -> new ID suggestions
+└── export_handler.py                 # Categorized CSV export
 
 categorize_transactions.py            # Pipeline entry point
 explain_rule_match.py                 # CLI helper to explain rule matching per transaction
@@ -575,24 +537,6 @@ Three skills in `.agents/skills/` support this loop: `fix-uncategorized-transact
 
 ### Versioning private data
 
-`data/private` is gitignored. Two practical ways to version it anyway:
-
-**Approach A (recommended): nested private Git repository in `data/private`**
-
-```bash
-cd data/private
-git init
-git remote add origin <private-remote-url>
-git add .
-git commit -m "Initial private dataset"
-git push -u origin main
-```
-
-**Approach B: separate private repository outside this project**
-
-Keep the private repository elsewhere on disk and link `data/private` (or a single dataset
-directory inside it) to that location. Use this when you prefer strict repository separation.
-
-Both approaches work with the overlay mechanism: a private `rules.json` with
-`"base": "reference"` loads `data/reference/rules.json` first and applies the private rules
-on top.
+`data/private` is gitignored. To version it, make it a Git repository of its own
+(`cd data/private && git init`), or link it to a private repository elsewhere on disk. A
+private `rules.json` with `"base": "reference"` works either way.

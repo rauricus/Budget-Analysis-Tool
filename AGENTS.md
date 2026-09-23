@@ -6,15 +6,15 @@ this file covers what an agent needs on top of that: how the code is put togethe
 invariants must survive a change, and where the traps are.
 
 - [STATUS.md](STATUS.md) — what the tool does today (IST), including known gaps.
-- [ROADMAP.md](ROADMAP.md) — where it is going (SOLL): plan-vs-actual budgeting.
+- [ROADMAP.md](ROADMAP.md) — where it is going (SOLL).
 
 ## What this is
 
 A local, offline Python tool that reads PostFinance CSV exports, parses each notification
 text into structured fields, categorizes the transactions with JSON rules, writes a
-categorized CSV per input file, and aggregates everything into an Excel report. There is no
-server, no database and no network access anywhere in the pipeline. Today it is purely
-retrospective — there is no budget, no target value and no plan-vs-actual comparison yet.
+categorized CSV per input file, aggregates everything into an Excel report, and compares the
+actuals against a `budget.json` on the console. There is no server, no database and no
+network access anywhere.
 
 ## Virtual environment for Python
 
@@ -69,6 +69,7 @@ The pipeline is a straight line, with no shared state beyond the dataset directo
   → TransactionOverrides.apply        per-ID corrections, drops hidden rows
   → ExportHandler.export_csv          20-column CSV
 <run_dir>/output/*.categorized.csv → analyze_by_category.py → dataset.analysis.xlsx
+<run_dir>/output/*.categorized.csv + budget.json → budget_report.py → console
 ```
 
 Entry points live at the repository root, the library under `src/`:
@@ -113,7 +114,7 @@ do not introduce `from src.x import y`.
   put a narrow parser before a broader one. A text no parser claims raises
   `NoNotificationParserFoundError`, which the import handler turns into a per-row warning.
   A new parser must be registered in the registry list *and* exported from
-  `src/notification/parsers/__init__.py`; both have been forgotten before.
+  `src/notification/parsers/__init__.py`.
 
 ## Datasets
 
@@ -175,21 +176,22 @@ These are the things a change must not quietly break.
 - **An overlay rule keeps two identities.** `key` becomes the base key it replaces so the
   engine can match it, while `declared_key` stays what the file declared and is what the
   export and debug output show. Read both before changing overlay handling.
-- **Argument parsing is inconsistent.** `explain_rule_match.py`, `suggest_override_ids.py`
-  and `budget_report.py` use `argparse`; `categorize_transactions.py` and
-  `analyze_by_category.py` parse `sys.argv` by hand. Adding a flag to the latter two means
-  editing the hand-rolled block *and* both usage strings.
+- **Argument parsing is inconsistent.** `categorize_transactions.py` and
+  `analyze_by_category.py` parse `sys.argv` by hand; adding a flag there means editing the
+  hand-rolled block *and* both usage strings. The other tools use `argparse`.
+- **`merchants` also searches the counterparty.** `Rule.explain_match` checks merchant
+  names against both parsed fields, so a payee written into `counterparty` by a payment
+  parser still matches a `merchants` entry.
 - **Reserves count transfers, budget lines do not.** In `budget_report.py`, rows are first
   assigned to reserves by category/subcategory over everything except income, so a
   pension payment booked as a transfer still draws on its reserve. Only the rows no reserve
   claims go through `spending_rows` into the budget lines.
 - **The budget nets refunds, most of the Excel report does not.** `budget_report.py` computes a
-  category's actual as debits minus credits and excludes income and transfers;
-  `analyze_by_category.py` reports `Refund` as its own transaction category and excludes
-  only transfers. The exceptions are the "Transactions" sheet, whose `Amount` carries the
-  budget's sign, and "Top Payees", which uses the budget's basis via the shared
-  `spending_rows`. The two answer different questions — do not "fix" one to match the other
-  without deciding which behaviour the analysis should have.
+  line's actual as debits minus credits and excludes income and transfers; the category
+  sheets of the Excel report show `Refund` as its own transaction category and exclude only
+  transfers. "Transactions" (`Amount`) and "Top Payees" follow the budget via the shared
+  `spending_rows`. Do not align the rest without deciding which behaviour the analysis
+  should have.
 - **Everything user-facing is German, everything structural is English.** Input columns,
   notification texts and category names are German; service types, transaction categories,
   export headers, code and documentation are English. Keep that split. The one leak is
@@ -234,4 +236,4 @@ run:
 Order matters: parser warnings first, rule warnings only once the input parses.
 
 The skills hard-code warning strings, file paths and rule field names. When one of those
-changes, update the skills in the same commit — they have drifted from the code before.
+changes, update the skills in the same commit.
