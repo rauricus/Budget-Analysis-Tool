@@ -1,9 +1,14 @@
 Transaction ID;Date;Transaction Type;Transaction Type Detail;Service;Provider;Card Number;Merchant;Location;Counterparty;Counterparty IBAN;Reference;Credit in CHF;Debit in CHF;Label;Transaction Category;Category;Subcategory;Matched Rule Key;Matched Rule Source
 TX-000061;04.04.2025;Credit;Refund;PostFinance Card Refund;;XXXX1384;UEFA WOMEN'S EURO 2025 NYON;CH;;;;100.0;;;Refund;Freizeit;Reisen und Erleben;refund_3;data/example/rules.json
+TX-000084;05.04.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;MIGROS MARKTHALLE (8812);SOLOTHURN;;;;;108.9;;Expense;Einkaufen;Supermärkte;supermarket_1;data/example/rules.json
+TX-000085;12.04.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;COOP-5510 RIVERSIDE REST.;LUZERN;;;;;76.3;;Expense;Einkaufen;Supermärkte;supermarket_1;data/example/rules.json
 TX-000062;16.04.2025;Credit;Credit;Credit;;;;;FIKTIVE LOHN AG PERSONALABTEILUNG;CH9300762011623852957;LOHNBEISPIEL APRIL 2025 | DEMO REF 001;4200.0;;;Income;Einkommen;Lohn;income_example_counterparty_1;data/example/rules.json
 TX-000063;17.04.2025;Debit;Payment;Direct Debit;;;;;ANONYMISIERTER VEREIN MITTEILUNGEN: DEMO-ZWECK JAHRESBEITRAG;CH1122223333444455556;;;25.0;;Expense;Finanzen;Spenden;expense_example_counterparty_iban_1;data/example/rules.json
 TX-000065;18.04.2025;Debit;Purchase/Online Shopping;Card Purchase;Pf Pay;;FIKTIVE DIGITAL GMBH;;;;PAYMENT ID 000A00D0 BESTELLNUMMER AB00CD00;;33.7;;;?;;-;-
 TX-000066;19.04.2025;Debit;Purchase/Online Shopping;Card Purchase;Pf Pay;;FIKTIVE POST AG;;;;PAYMENT ID AB0CD0EF00GH0IJ0 BESTELLNUMMER MYS_AB0CD0EF00GH0I;;12.5;;;?;;-;-
+TX-000086;19.04.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;MIGROS M RIVERSIDE (7741);LUZERN;;;;;54.85;;Expense;Einkaufen;Supermärkte;supermarket_1;data/example/rules.json
 TX-000067;20.04.2025;Credit;Refund;PostFinance Card Refund;Apple Pay;XXXX4821;FIKTIVER SCHUHLADEN BIEL;CH;;;;49.9;;;;?;;-;-
 TX-000068;21.04.2025;Credit;Refund;PostFinance Card Refund;Apple Pay;XXXX4821;FIKTIVER FAHRSCHEIN BERLIN DEUTSCHLAND;;;;;19.15;;;;?;;-;-
 TX-000069;22.04.2025;Debit;Cash Withdrawal;Cash Withdrawal;;XXXX4821;BAHNHOF;BEISPIELSTADT;;;;;143.5;;Expense;Finanzen;Bargeldbezug;finance_1;data/example/rules.json
+TX-000087;26.04.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;MIGROS MARKTHALLE (8812);SOLOTHURN;;;;;121.6;;Expense;Einkaufen;Supermärkte;supermarket_1;data/example/rules.json
+TX-000088;30.04.2025;Debit;Direct Debit (CH-DD);Direct Debit;;;;;FINANZVERWALTUNG STADT SOLOTHURN;41101000000123456;2025/05/01 / 7045128;;1774.0;;Expense;Wohnen;Miete und Hypothek;housing_1;data/example/rules.json

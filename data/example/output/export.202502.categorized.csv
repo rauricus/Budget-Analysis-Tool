@@ -1,2 +1,8 @@
 Transaction ID;Date;Transaction Type;Transaction Type Detail;Service;Provider;Card Number;Merchant;Location;Counterparty;Counterparty IBAN;Reference;Credit in CHF;Debit in CHF;Label;Transaction Category;Category;Subcategory;Matched Rule Key;Matched Rule Source
+TX-000079;28.02.2025;Debit;Direct Debit (CH-DD);Direct Debit;;;;;FINANZVERWALTUNG STADT SOLOTHURN;41101000000123456;2025/03/01 / 7045128;;1774.0;;Expense;Wohnen;Miete und Hypothek;housing_1;data/example/rules.json
 TX-000060;27.02.2025;Debit;Purchase/Service;Twint;Twint;;MUSTER CAFE;YVERDON-LES-BAINS;;;;;3.0;;Expense;Freizeit;Gastronomie;gastronomy_6;data/example/rules.json
+TX-000071;25.02.2025;Credit;Credit;Credit;;;;;ALPENWERK AG INDUSTRIESTRASSE 12 CH-5430 WETTINGEN AG;;SALAER FEBRUAR 2025 | SALA00000000000000000000000000000002 9988776655/1XXXX 250225CH0EXMPL02;4200.0;;;Income;Einkommen;Lohn;income_1;data/example/rules.json
+TX-000080;22.02.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;MIGROS MARKTHALLE (8812);SOLOTHURN;;;;;154.6;;Expense;Einkaufen;Supermärkte;supermarket_1;data/example/rules.json
+TX-000081;14.02.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;COOP-5510 RIVERSIDE REST.;LUZERN;;;;;88.95;;Expense;Einkaufen;Supermärkte;supermarket_1;data/example/rules.json
+TX-000082;08.02.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;MIGROS MARKTHALLE (8812);SOLOTHURN;;;;;127.4;;Expense;Einkaufen;Supermärkte;supermarket_1;data/example/rules.json
+TX-000083;01.02.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;MIGROS M RIVERSIDE (7741);LUZERN;;;;;63.75;;Expense;Einkaufen;Supermärkte;supermarket_1;data/example/rules.json

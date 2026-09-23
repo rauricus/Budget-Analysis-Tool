@@ -1,5 +1,11 @@
 Transaction ID;Date;Transaction Type;Transaction Type Detail;Service;Provider;Card Number;Merchant;Location;Counterparty;Counterparty IBAN;Reference;Credit in CHF;Debit in CHF;Label;Transaction Category;Category;Subcategory;Matched Rule Key;Matched Rule Source
+TX-000074;31.01.2025;Debit;Direct Debit (CH-DD);Direct Debit;;;;;FINANZVERWALTUNG STADT SOLOTHURN;41101000000123456;2025/02/01 / 7045128;;1774.0;;Expense;Wohnen;Miete und Hypothek;housing_1;data/example/rules.json
+TX-000075;28.01.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;MIGROS MARKTHALLE (8812);SOLOTHURN;;;;;96.4;;Expense;Einkaufen;Supermärkte;supermarket_1;data/example/rules.json
+TX-000070;25.01.2025;Credit;Credit;Credit;;;;;ALPENWERK AG INDUSTRIESTRASSE 12 CH-5430 WETTINGEN AG;;SALAER JANUAR 2025 | SALA00000000000000000000000000000001 9988776655/1XXXX 250125CH0EXMPL01;4200.0;;;Income;Einkommen;Lohn;income_1;data/example/rules.json
 TX-000001;25.01.2025;Credit;Receive Money;Twint;Twint;;;;+41790000000 MAX MUSTER;;MITTEILUNGEN: TEST;1.0;;;Refund;Rückerstattungen;;refund_1;data/example/rules.json
 TX-000002;19.01.2025;Debit;Purchase/Online Shopping;Card Purchase;;;ONLINE HAUSHALT AG;;;;PAYMENT ID 250119000000000000 BESTELLNUMMER DP-P-00000000;;13.9;;Expense;Wohnen;Haushalt;home_3;data/example/rules.json
+TX-000076;18.01.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;COOP-5510 RIVERSIDE REST.;LUZERN;;;;;132.85;;Expense;Einkaufen;Supermärkte;supermarket_1;data/example/rules.json
 TX-000057;15.01.2025;Debit;Account Transfer Auf;Account Transfer;;;ZMITTAG 13.1.;;;CH5600000000000000000;ZMITTAG 13.1.;;19.0;;Expense;Leben;Familie;family_2;data/example/rules.json
+TX-000077;10.01.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;MIGROS MARKTHALLE (8812);SOLOTHURN;;;;;118.3;;Expense;Einkaufen;Supermärkte;supermarket_1;data/example/rules.json
+TX-000078;04.01.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;MIGROS M RIVERSIDE (7741);LUZERN;;;;;41.2;;Expense;Einkaufen;Supermärkte;supermarket_1;data/example/rules.json
 TX-000059;03.01.2025;Debit;Payment;Direct Debit;;;;;MOBILITY MUSTER GENOSSENSCHAFT 6343 ROTKREUZ;CH5600000000000000000;MUSTERBANK AG MUSTERSTRASSE 12 6002 LUZERN;;26.7;;Expense;Mobilität;Privater Verkehr;transport_2;data/example/rules.json
