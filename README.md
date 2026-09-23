@@ -20,7 +20,7 @@ Project documentation:
 - Transaction-level overrides by transaction ID
 - Structured CSV export with parsed service fields
 - Aggregated Excel analysis across all categorized months of a dataset
-- Budget vs. actual comparison per category (minimal first version, see below)
+- Budget vs. actual comparison per category, with reserves set aside from planned income
 
 ### CSV locale support (current)
 
@@ -169,7 +169,13 @@ uv run python budget_report.py example
 uv run python budget_report.py example --month 2025-03
 ```
 
-The table shows target, actual, variance in CHF and in percent per category, plus the
+If the budget declares an income, the report opens with an availability block: planned
+income, the actual income for comparison, minus the reserves, what is left to distribute,
+minus the budget lines, and what no line claims yet. If it declares reserves, a table
+follows with each reserve's category and subcategory, target, actual, cumulated values
+and the balance of its pot.
+
+The main table shows target, actual, variance in CHF and in percent per category, plus the
 same three figures cumulated over the dataset's months up to and including the reported
 one. Two lists follow it: categories with actuals but no budget line, and budget lines
 with no actuals at all — the latter is also where a mistyped category surfaces.
@@ -214,7 +220,7 @@ data/
 ├── example/                          # Stable example dataset for tests/docs
 │ ├── rules.json
 │ ├── transaction_overrides.json
-│ ├── budget.json                     # Optional: target values per category
+│ ├── budget.json                     # Optional: income, reserves, targets per category
 │ ├── input/
 │ ├── output/
 │ └── metadata/
@@ -435,35 +441,68 @@ old->new ID mappings based on `_row` hints and current input files.
 
 ## Budget
 
-A dataset may carry a `budget.json` next to its `rules.json`. It holds one target value per
-category:
+A dataset may carry a `budget.json` next to its `rules.json`. It has up to three sections,
+each optional:
 
 ```json
 {
-  "Wohnen": { "amount": 1900.00, "period": "monthly" },
-  "Finanzen": { "amount": 2400.00, "period": "yearly", "_note": "Versicherungen und Gebühren" }
+  "income": { "amount": 4200.00, "period": "monthly", "_note": "Nettolohn" },
+  "reserves": {
+    "Krankenkasse": {
+      "amount": 3600.00, "period": "yearly",
+      "category": "Leben", "subcategory": "Gesundheit"
+    }
+  },
+  "budget": {
+    "Wohnen": { "amount": 1900.00, "period": "monthly" },
+    "Leben": { "amount": 250.00, "period": "monthly" }
+  }
 }
 ```
 
-- Keys are categories exactly as the rule set produces them.
-- `amount` is a number, `period` is `monthly` or `yearly`. A yearly amount is compared
-  pro rata, one twelfth per month, with the cumulated columns showing whether the year as
-  a whole is on track.
-- `_note` is optional free text and does not affect the comparison.
-- Unknown fields are rejected at load time.
+- **`income`** is the planned income the rest is measured against. Without it the report
+  skips the availability block.
+- **`reserves`** set money aside for known costs before anything else is distributed —
+  health insurance premiums and deductible, projected taxes, pension contributions. Keys
+  are free names; `category` is required and `subcategory` optional. Each reserve is a
+  pot: its target accrues month by month, the transactions it covers draw on it, and the
+  report shows the balance.
+- **`budget`** distributes what is left, one target per category. Keys are categories
+  exactly as the rule set produces them.
+
+Every entry has an `amount` (a number) and a `period` (`monthly` or `yearly`), and may have
+an optional `_note` that does not affect anything. A yearly amount counts one twelfth per
+month, with the cumulated columns showing whether the year as a whole is on track. Unknown
+fields and unknown sections are rejected at load time.
+
+Reserves and budget lines never share a transaction:
+
+- A transaction matching a reserve counts against that reserve only, and leaves both the
+  budget lines and the list of categories without a budget.
+- A reserve on a subcategory takes precedence over one on the whole category. A reserve
+  on `Leben` / `Gesundheit` next to a budget line on `Leben` is fine: the line then sees
+  `Leben` without its health costs.
+- Two reserves on the same category and subcategory, or a reserve and a budget line on
+  the same whole category, are rejected — the money would be planned twice.
+- Two reserves on the same kind of transaction — premiums and deductible, say — need
+  distinct subcategories from the rule set; otherwise use one reserve for both.
 
 How actuals are derived:
 
 - **Refunds are netted.** A category's actual is its debits minus its credits, so a refund
   that carries the expense category it belongs to (`Leben` / `Gesundheit`, say) reduces
-  that category. A refund caught by a catch-all rule keeps its own category
+  that category or reserve. A refund caught by a catch-all rule keeps its own category
   (`Rückerstattungen`) and appears as a line without a budget, which is the right signal:
   it could not be attributed.
-- **Income and transfers are excluded.** Only spending is budgeted.
+- **Income is excluded from both.** It only feeds the actual-income line.
+- **Transfers are excluded from budget lines, but count for reserves.** A pension payment
+  often leaves the account as a transfer; if the rules give it the reserve's category, it
+  draws on the reserve.
 - Rows that no rule categorized stay visible under `Uncategorized`.
 
 There is no validation against `rules.json`. A category that does not exist simply shows
 up under "Ohne Ist-Werte" with an actual of zero, which surfaces a typo just as clearly.
+A reserve on a mistyped category stays at an actual of zero in the reserves table.
 
 Budget files follow the same privacy rule as the rest of a dataset: `data/example/budget.json`
 holds fictitious amounts for documentation and tests, real target values belong in

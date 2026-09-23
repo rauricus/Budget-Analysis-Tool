@@ -79,7 +79,7 @@ Entry points live at the repository root, the library under `src/`:
 | `explain_rule_match.py` | per-transaction match diagnostics, text or `--json` |
 | `suggest_override_ids.py` | old→new ID suggestions after a registry reset |
 | `analyze_by_category.py` | Excel report (summary, overviews, category, subcategory sheets) |
-| `budget_report.py` | `budget.json` loading and validation, budget vs. actual on the console |
+| `budget_report.py` | `budget.json` loading and validation, reserves, availability and budget vs. actual on the console |
 | `src/import_handler.py` | CSV reading, header detection, per-row error reporting |
 | `src/transaction_parser.py` | row → `Transaction`, PostFinance amount/date formats |
 | `src/notification/` | parser interface, registry facade, one parser per service |
@@ -173,6 +173,10 @@ These are the things a change must not quietly break.
   and `budget_report.py` use `argparse`; `categorize_transactions.py` and
   `analyze_by_category.py` parse `sys.argv` by hand. Adding a flag to the latter two means
   editing the hand-rolled block *and* both usage strings.
+- **Reserves count transfers, budget lines do not.** In `budget_report.py`, rows are first
+  assigned to reserves by category/subcategory over everything except income, so a
+  pension payment booked as a transfer still draws on its reserve. Only the rows no reserve
+  claims go through `spending_rows` into the budget lines.
 - **The budget nets refunds, the Excel report does not.** `budget_report.py` computes a
   category's actual as debits minus credits and excludes income and transfers;
   `analyze_by_category.py` reports `Refund` as its own transaction category and excludes

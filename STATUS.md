@@ -2,15 +2,16 @@
 
 Snapshot of what this project actually does today, as a baseline for [ROADMAP.md](ROADMAP.md).
 
-_Last reviewed: 2026-09-20._
+_Last reviewed: 2026-09-23._
 
 ## Summary
 
 The categorization pipeline is complete and reliable. Budgeting exists as of 2026-09-20,
-but only as a minimal first version: target values per category in a `budget.json`, and a
-console report comparing them against the actuals for one month plus the cumulated period.
-Everything the roadmap describes around that — overlays, subcategory lines, provisions, a
-proposal generator, an Excel sheet — is still open.
+but only as a minimal first version: a `budget.json` with a planned income, reserves set
+aside for known yearly costs, and target values per category, and a console report
+comparing them against the actuals for one month plus the cumulated period. Everything the
+roadmap describes around that — overlays, subcategory lines, provisions, a proposal
+generator, an Excel sheet — is still open.
 
 ## What works
 
@@ -25,7 +26,7 @@ proposal generator, an Excel sheet — is still open.
 | Explain tooling | `explain_rule_match.py` with per-rule check breakdown, JSON output |
 | Export | 20-column structured CSV incl. matched rule key and source |
 | Analysis | Excel report with 4 sheets (summary, category overviews, per-month category and subcategory tables) |
-| Budget | Minimal: `budget.json` with one `monthly`/`yearly` target per category, compared per month and cumulated by `budget_report.py` on the console. Refunds netted, income and transfers excluded |
+| Budget | Minimal: `budget.json` with a planned `income`, `reserves` (pots per category or subcategory, e.g. health insurance, taxes, pension) and one `monthly`/`yearly` target per category in `budget`, compared per month and cumulated by `budget_report.py` on the console. Shows what is left of the income after reserves and budget lines. Refunds netted; income excluded; transfers excluded from budget lines but counted for reserves |
 | Tests | 16 test modules covering parsers, rules, overlays, validity windows, overrides, export, ID registry, budget comparison; no test depends on a private dataset |
 | Agent skills | 3 skills covering the rule/parser iteration loop |
 
@@ -37,7 +38,10 @@ dataset directory, not here.
 ## Known gaps
 
 1. **The budget is category-level only, and standalone.** No subcategory lines, so rent and
-   furniture share one `Wohnen` target. No `base`/overlay mechanism, so a budget shared
+   furniture share one `Wohnen` target — only a reserve can take a subcategory out. A
+   reserve matches by category/subcategory, not by rule, so premiums and deductible can
+   only be separated if the rules give them distinct subcategories. Reserves accrue
+   linearly; a tax bill due in March shows as an overdrawn pot until the year catches up. No `base`/overlay mechanism, so a budget shared
    across datasets means copying the file. No `fixed`/`variable` distinction, no provisions
    for spending that is one-off individually but recurring as a class, and no way to mark a
    transaction as offset by a matching inflow. Targets are written by hand; nothing derives

@@ -3,7 +3,7 @@
 Plan for turning the existing categorization tool into an actual budgeting tool.
 Baseline and gap analysis: [STATUS.md](STATUS.md).
 
-_Last updated: 2026-09-20._
+_Last updated: 2026-09-23._
 
 ## Where this stands
 
@@ -12,6 +12,11 @@ A minimal version of steps 1 and 3 exists since 2026-09-20: `budget.json` with o
 actuals for one month plus the cumulated period, on the console. Three of the open decisions
 below are settled by it — refunds are netted, transfers stay out, and budgeting happens at
 category level.
+
+Since 2026-09-23 `budget.json` has three sections: a planned `income`, `reserves` that set
+money aside for known yearly costs (health insurance, taxes, pension) and are tracked as pots
+against the transactions of their category or subcategory, and the `budget` lines that
+distribute the rest. The report shows how much of the income is left after both.
 
 It was built deliberately small, to get the plan-vs-actual loop running and let real
 variances decide what the schema actually needs. The steps below are therefore written as
@@ -33,8 +38,8 @@ not here.
 
 ## Step 1 — Budget data model
 
-**Partly done.** `<run_dir>/budget.json` exists as a flat mapping of category to
-`{amount, period}`, loaded and validated in `budget_report.py`. Still open:
+**Partly done.** `<run_dir>/budget.json` exists with `income`, `reserves` and `budget`
+sections, loaded and validated in `budget_report.py`. Still open:
 
 - Overlay-capable: a shared baseline budget in `data/reference` can be overridden per
   dataset, using the same `base` mechanism as the rules.
@@ -44,6 +49,9 @@ not here.
   surfaces a typo without loading and merging the rule files.
 - Moving the model out of `budget_report.py` into `src/budget.py`, once a second caller
   (the Excel sheet) needs it.
+- Reserves: assigning a rule (the premium rule, say) to a reserve directly instead of
+  matching by category/subcategory; matching several categories per reserve; due dates
+  instead of linear twelfths, so a tax bill paid in March does not read as an overdrawn pot.
 
 Decisions settled by the first version:
 
@@ -62,9 +70,9 @@ Still open:
 
   1. *Recurring* — becomes a category target, as today.
   2. *One-off individually, recurring as a class* — furniture, appliances, equipment. Not a
-     target but a **provision**: a monthly rate paid into a pot, sized from history. `period`
-     therefore needs a third value where `amount` is that rate and the comparison is a pot
-     balance rather than a category actual.
+     target but a **provision**: a monthly rate paid into a pot, sized from history. The
+     pot mechanics exist since reserves did (target accrues, actuals draw, balance shown);
+     what is missing is selecting the transactions, which no category captures.
   3. *Offset by a matching inflow* — reimbursed by someone else, or drawn from a pot that is
      already being funded elsewhere in the budget. Belongs in neither: both sides must leave
      the derivation, or the same money gets budgeted twice.
