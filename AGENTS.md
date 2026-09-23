@@ -41,6 +41,7 @@ uv run python categorize_transactions.py example --input-file export.202503.csv
 uv run python explain_rule_match.py example --line-number 42  # why did/didn't a rule match
 uv run python suggest_override_ids.py example                 # after an ID registry reset
 uv run python analyze_by_category.py example                  # Excel report
+uv run python budget_report.py example --month 2025-03        # budget vs. actual
 ```
 
 `--debug` on the pipeline is the primary diagnostic: it prints one line per source row with
@@ -78,6 +79,7 @@ Entry points live at the repository root, the library under `src/`:
 | `explain_rule_match.py` | per-transaction match diagnostics, text or `--json` |
 | `suggest_override_ids.py` | old→new ID suggestions after a registry reset |
 | `analyze_by_category.py` | Excel report (summary, overviews, category, subcategory sheets) |
+| `budget_report.py` | `budget.json` loading and validation, budget vs. actual on the console |
 | `src/import_handler.py` | CSV reading, header detection, per-row error reporting |
 | `src/transaction_parser.py` | row → `Transaction`, PostFinance amount/date formats |
 | `src/notification/` | parser interface, registry facade, one parser per service |
@@ -116,7 +118,7 @@ do not introduce `from src.x import y`.
 ## Datasets
 
 A run dataset is any directory with `rules.json` and `input/`; `output/` and `metadata/`
-are generated. Three live here:
+are generated, and `budget.json` is optional. Three live here:
 
 - `data/example` — standalone, committed, used by tests and documentation. Keep it stable
   and reproducible: changing it moves test expectations. Merchants may be synthetic.
@@ -167,10 +169,15 @@ These are the things a change must not quietly break.
 - **An overlay rule keeps two identities.** `key` becomes the base key it replaces so the
   engine can match it, while `declared_key` stays what the file declared and is what the
   export and debug output show. Read both before changing overlay handling.
-- **Argument parsing is inconsistent.** `explain_rule_match.py` and
-  `suggest_override_ids.py` use `argparse`; `categorize_transactions.py` and
+- **Argument parsing is inconsistent.** `explain_rule_match.py`, `suggest_override_ids.py`
+  and `budget_report.py` use `argparse`; `categorize_transactions.py` and
   `analyze_by_category.py` parse `sys.argv` by hand. Adding a flag to the latter two means
   editing the hand-rolled block *and* both usage strings.
+- **The budget nets refunds, the Excel report does not.** `budget_report.py` computes a
+  category's actual as debits minus credits and excludes income and transfers;
+  `analyze_by_category.py` reports `Refund` as its own transaction category and excludes
+  only transfers. The two answer different questions — do not "fix" one to match the other
+  without deciding which behaviour the analysis should have.
 - **Everything user-facing is German, everything structural is English.** Input columns,
   notification texts and category names are German; service types, transaction categories,
   export headers, code and documentation are English. Keep that split. The one leak is

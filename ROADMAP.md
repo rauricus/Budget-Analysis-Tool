@@ -3,7 +3,19 @@
 Plan for turning the existing categorization tool into an actual budgeting tool.
 Baseline and gap analysis: [STATUS.md](STATUS.md).
 
-_Last updated: 2026-09-16._
+_Last updated: 2026-09-20._
+
+## Where this stands
+
+A minimal version of steps 1 and 3 exists since 2026-09-20: `budget.json` with one
+`monthly`/`yearly` target per category, and `budget_report.py` comparing it against the
+actuals for one month plus the cumulated period, on the console. Three of the open decisions
+below are settled by it — refunds are netted, transfers stay out, and budgeting happens at
+category level.
+
+It was built deliberately small, to get the plan-vs-actual loop running and let real
+variances decide what the schema actually needs. The steps below are therefore written as
+they were, with the parts already covered marked as such.
 
 ## Goal
 
@@ -21,26 +33,29 @@ not here.
 
 ## Step 1 — Budget data model
 
-New file per dataset: `<run_dir>/budget.json`, following the conventions of `rules.json`
-and `transaction_overrides.json`.
+**Partly done.** `<run_dir>/budget.json` exists as a flat mapping of category to
+`{amount, period}`, loaded and validated in `budget_report.py`. Still open:
 
 - Overlay-capable: a shared baseline budget in `data/reference` can be overridden per
   dataset, using the same `base` mechanism as the rules.
-- One entry per budget line: `category`, optional `subcategory`, `amount`, `period`
-  (`monthly` | `yearly`), `type` (`fixed` | `variable`), optional comment.
-- Validation against the categories actually produced by the rule set, so typos surface
-  immediately rather than silently creating an unmatched budget line.
-- Implementation in `src/budget.py` with tests, mirroring the structure of
-  `src/transaction_overrides.py`.
+- Optional `subcategory` per line, and a `type` (`fixed` | `variable`) distinction.
+- Validation against the categories actually produced by the rule set. Deliberately skipped
+  for now: an unknown category shows up under "Ohne Ist-Werte" with an actual of zero, which
+  surfaces a typo without loading and merging the rule files.
+- Moving the model out of `budget_report.py` into `src/budget.py`, once a second caller
+  (the Excel sheet) needs it.
 
-Open decisions to settle here:
+Decisions settled by the first version:
 
-- **Refund handling**: net refunds against their expense category, or treat them as income?
-  This changes the target values of the affected categories materially.
-- **Budget granularity**: which lines are budgeted at category level and which at
-  subcategory level. Recommendation: budget at category level by default, and drop to
-  subcategory only where it changes behavior.
-- **Transfers**: currently excluded from the analysis. Confirm they stay out of the budget.
+- **Refund handling**: netted. A category's actual is its debits minus its credits, so a
+  refund carrying its expense category reduces that category, and an unattributable one
+  keeps `Rückerstattungen` and shows up as a line without a budget.
+- **Budget granularity**: category level. Subcategory lines are the first candidate for the
+  next increment if the grid turns out too coarse in practice.
+- **Transfers**: out, together with income. Only spending is budgeted.
+
+Still open:
+
 - **Travel**: trips are now modelled per trip in the datasets, so holiday and business travel arrive as complete, dated units rather than scattered across categories. That makes them the clearest case for a `yearly` line with the individual trips as its detail — a monthly target for travel is meaningless.
 - **Three kinds of spending, not one.** `monthly`/`yearly` and `fixed`/`variable` both
   describe recurring spending. Two other kinds need different treatment:
@@ -79,7 +94,13 @@ history.
 
 ## Step 3 — Plan vs. actual
 
-New sheet "Budget vs. Actual" in `analyze_by_category.py`, alongside the existing four:
+**Partly done.** `budget_report.py <run_dir> [--month YYYY-MM]` prints target, actual and
+variance per category for one month, plus the same three cumulated over the dataset's months
+up to that one, and lists categories with actuals but no budget line. A `yearly` target is
+compared at a twelfth per month.
+
+What is still missing is the same comparison inside the report you actually keep — a new
+sheet "Budget vs. Actual" in `analyze_by_category.py`, alongside the existing four:
 
 - Per budget line: target, actual, variance in absolute terms and as a percentage,
   year-to-date cumulation, and a colour indicator.

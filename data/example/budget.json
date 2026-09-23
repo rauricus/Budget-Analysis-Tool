@@ -1,0 +1,7 @@
+{
+  "Wohnen": { "amount": 1900.00, "period": "monthly" },
+  "Einkaufen": { "amount": 400.00, "period": "monthly" },
+  "Freizeit": { "amount": 150.00, "period": "monthly" },
+  "Leben": { "amount": 250.00, "period": "monthly" },
+  "Finanzen": { "amount": 2400.00, "period": "yearly", "_note": "Versicherungen und Gebühren, jährlich veranschlagt" }
+}

@@ -20,6 +20,7 @@ Project documentation:
 - Transaction-level overrides by transaction ID
 - Structured CSV export with parsed service fields
 - Aggregated Excel analysis across all categorized months of a dataset
+- Budget vs. actual comparison per category (minimal first version, see below)
 
 ### CSV locale support (current)
 
@@ -155,6 +156,27 @@ The generated Excel file contains four sheets:
 
 The Excel format lets you modify charts, add custom analysis, and adjust formatting.
 
+### Budget vs. actual
+
+If a dataset has a `budget.json`, `budget_report.py` compares its target values against
+the categorized actuals and prints the result as a table.
+
+```bash
+# Report the dataset's last month
+uv run python budget_report.py example
+
+# Report a specific month
+uv run python budget_report.py example --month 2025-03
+```
+
+The table shows target, actual, variance in CHF and in percent per category, plus the
+same three figures cumulated over the dataset's months up to and including the reported
+one. Two lists follow it: categories with actuals but no budget line, and budget lines
+with no actuals at all — the latter is also where a mistyped category surfaces.
+
+This is a deliberately minimal first version. See [ROADMAP.md](ROADMAP.md) for what it
+does not do yet.
+
 ### Tests
 
 ```bash
@@ -192,6 +214,7 @@ data/
 ├── example/                          # Stable example dataset for tests/docs
 │ ├── rules.json
 │ ├── transaction_overrides.json
+│ ├── budget.json                     # Optional: target values per category
 │ ├── input/
 │ ├── output/
 │ └── metadata/
@@ -234,6 +257,7 @@ categorize_transactions.py            # Pipeline entry point
 explain_rule_match.py                 # CLI helper to explain rule matching per transaction
 suggest_override_ids.py               # CLI helper for override ID remapping
 analyze_by_category.py                # Excel report generator
+budget_report.py                      # Budget vs. actual comparison (console)
 tests/                                # Unit/integration-style tests for pipeline components
 ```
 
@@ -408,6 +432,42 @@ Behavior and constraints:
 
 When unknown override IDs are detected, use `suggest_override_ids.py` (see above). It suggests
 old->new ID mappings based on `_row` hints and current input files.
+
+## Budget
+
+A dataset may carry a `budget.json` next to its `rules.json`. It holds one target value per
+category:
+
+```json
+{
+  "Wohnen": { "amount": 1900.00, "period": "monthly" },
+  "Finanzen": { "amount": 2400.00, "period": "yearly", "_note": "Versicherungen und Gebühren" }
+}
+```
+
+- Keys are categories exactly as the rule set produces them.
+- `amount` is a number, `period` is `monthly` or `yearly`. A yearly amount is compared
+  pro rata, one twelfth per month, with the cumulated columns showing whether the year as
+  a whole is on track.
+- `_note` is optional free text and does not affect the comparison.
+- Unknown fields are rejected at load time.
+
+How actuals are derived:
+
+- **Refunds are netted.** A category's actual is its debits minus its credits, so a refund
+  that carries the expense category it belongs to (`Leben` / `Gesundheit`, say) reduces
+  that category. A refund caught by a catch-all rule keeps its own category
+  (`Rückerstattungen`) and appears as a line without a budget, which is the right signal:
+  it could not be attributed.
+- **Income and transfers are excluded.** Only spending is budgeted.
+- Rows that no rule categorized stay visible under `Uncategorized`.
+
+There is no validation against `rules.json`. A category that does not exist simply shows
+up under "Ohne Ist-Werte" with an actual of zero, which surfaces a typo just as clearly.
+
+Budget files follow the same privacy rule as the rest of a dataset: `data/example/budget.json`
+holds fictitious amounts for documentation and tests, real target values belong in
+`data/private/`.
 
 ## Export format
 

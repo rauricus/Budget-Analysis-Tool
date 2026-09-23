@@ -2,14 +2,15 @@
 
 Snapshot of what this project actually does today, as a baseline for [ROADMAP.md](ROADMAP.md).
 
-_Last reviewed: 2026-09-16._
+_Last reviewed: 2026-09-20._
 
 ## Summary
 
-The categorization pipeline is complete and reliable. What does **not** exist yet is the
-budget itself: the tool is purely retrospective. There are no target values anywhere, no
-place to store them, and no plan-vs-actual comparison. "Budget" appears only as a report
-title.
+The categorization pipeline is complete and reliable. Budgeting exists as of 2026-09-20,
+but only as a minimal first version: target values per category in a `budget.json`, and a
+console report comparing them against the actuals for one month plus the cumulated period.
+Everything the roadmap describes around that — overlays, subcategory lines, provisions, a
+proposal generator, an Excel sheet — is still open.
 
 ## What works
 
@@ -24,7 +25,8 @@ title.
 | Explain tooling | `explain_rule_match.py` with per-rule check breakdown, JSON output |
 | Export | 20-column structured CSV incl. matched rule key and source |
 | Analysis | Excel report with 4 sheets (summary, category overviews, per-month category and subcategory tables) |
-| Tests | 15 test modules covering parsers, rules, overlays, validity windows, overrides, export, ID registry; no test depends on a private dataset |
+| Budget | Minimal: `budget.json` with one `monthly`/`yearly` target per category, compared per month and cumulated by `budget_report.py` on the console. Refunds netted, income and transfers excluded |
+| Tests | 16 test modules covering parsers, rules, overlays, validity windows, overrides, export, ID registry, budget comparison; no test depends on a private dataset |
 | Agent skills | 3 skills covering the rule/parser iteration loop |
 
 Rule sets: 70 baseline rules in `data/reference`, 36 in the standalone `data/example`.
@@ -34,22 +36,27 @@ dataset directory, not here.
 
 ## Known gaps
 
-1. **No budget artifacts.** No schema, no storage location, no comparison logic, no report
-   section for target values.
+1. **The budget is category-level only, and standalone.** No subcategory lines, so rent and
+   furniture share one `Wohnen` target. No `base`/overlay mechanism, so a budget shared
+   across datasets means copying the file. No `fixed`/`variable` distinction, no provisions
+   for spending that is one-off individually but recurring as a class, and no way to mark a
+   transaction as offset by a matching inflow. Targets are written by hand; nothing derives
+   them from the history.
 
-2. **No notion of periodicity.** The analysis aggregates strictly per month. An annual
-   charge appears in whichever month it was paid, and there is no way to express it as an
-   annual target that is spread across the year. Any average computed over such data is
-   misleading.
+2. **Periodicity is handled in the budget, not in the analysis.** `budget_report.py` spreads
+   a `yearly` target evenly across the months and cumulates actuals, so an annual charge
+   resolves over the year. The Excel report still aggregates strictly per month, and any
+   average computed over it remains misleading.
 
-3. **Refunds are never netted.** `Refund` is reported as its own transaction category, so
-   expense categories are always gross. Whether a refund should reduce the corresponding
-   expense line is neither decided nor implemented — and it materially changes what a
-   realistic target for the affected categories looks like.
+3. **Refunds are netted in the budget, gross in the analysis.** `budget_report.py` subtracts
+   a category's credits from its debits, so a refund carrying an expense category reduces
+   it. The Excel report still reports `Refund` as its own transaction category. Whether the
+   analysis should follow is open.
 
 4. **Category granularity is analysis-driven.** The rule sets produce fine-grained
-   subcategories, which is right for analysis but not necessarily the right grid for budget
-   lines. There is no concept of a coarser budget-level grouping.
+   subcategories, which is right for analysis. The budget sidesteps this by living one level
+   up, at category level — which is coarse enough that "why is `Wohnen` over?" still has to
+   be answered from the Subcategory sheet.
 
 ## Smaller findings
 
@@ -58,7 +65,7 @@ dataset directory, not here.
   creditor rewords half of its reference. Worth stating in the rule documentation next to the
   filter list; `explain_rule_match.py` already shows it correctly as `expected_all` vs
   `expected_any`.
-- `categorize_transactions.py` and `analyze_by_category.py` parse their flags by hand, while `explain_rule_match.py` and `suggest_override_ids.py` use `argparse`. Consistency would make the flags self-documenting.
+- `categorize_transactions.py` and `analyze_by_category.py` parse their flags by hand, while `explain_rule_match.py`, `suggest_override_ids.py` and `budget_report.py` use `argparse`. Consistency would make the flags self-documenting.
 - `pyproject.toml` pins `requires-python = ">=3.9,<3.10"`, which is a narrow window for a
   tool that is otherwise version-agnostic.
 - **A rule with no filter at all is a silent catch-all.** Empty filter lists mean "do not filter by this field", so a rule that loses its last filter keeps matching on priority alone and quietly absorbs transactions. This bit once, in a private rule set. The engine could warn at load time when a rule above priority 1 has no active filter; the deliberate catch-alls (`shopping_other_1`, `finance_1`, `refund_1`, `refund_3`) all sit at priority 1 or are scoped by service, so the check would be quiet in practice.
