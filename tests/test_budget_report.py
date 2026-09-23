@@ -2,6 +2,7 @@
 """Tests for budget_report: loading budget.json and comparing it to actuals."""
 import json
 import os
+import shutil
 import sys
 from datetime import datetime
 
@@ -603,6 +604,37 @@ class TestCli:
     def test_unknown_month_exits_with_an_error(self, capsys):
         assert main(["example", "--month", "2025-12"]) == 1
         assert "not part of this dataset" in capsys.readouterr().out
+
+    def test_report_names_the_budget_file(self, capsys):
+        assert main(["example"]) == 0
+        assert "Budget: budget.json" in capsys.readouterr().out
+
+    def test_alternative_budget_file_by_path(self, tmp_path, capsys):
+        draft = tmp_path / "draft.json"
+        _write(draft, {"budget": {"Wohnen": {"amount": 1234.0, "period": "monthly"}}})
+
+        assert main(["example", "--budget", str(draft)]) == 0
+
+        out = capsys.readouterr().out
+        assert "Budget: draft.json" in out
+        assert "1'234.00" in out
+        assert "Krankenkasse" not in out, "Reserves come from the chosen file only"
+
+    def test_alternative_budget_file_inside_the_dataset(self, tmp_path, capsys):
+        run_dir = tmp_path / "dataset"
+        shutil.copytree("data/example", run_dir)
+        _write(run_dir / "budget-2027.json",
+               {"budget": {"Wohnen": {"amount": 999.0, "period": "monthly"}}})
+
+        assert main([str(run_dir), "--budget", "budget-2027.json"]) == 0
+
+        out = capsys.readouterr().out
+        assert "Budget: budget-2027.json" in out
+        assert "999.00" in out
+
+    def test_missing_alternative_budget_file_exits_with_an_error(self, capsys):
+        assert main(["example", "--budget", "does-not-exist.json"]) == 1
+        assert "Budget file not found" in capsys.readouterr().out
 
     def test_missing_run_dir_exits_with_an_error(self, capsys):
         assert main(["does-not-exist"]) == 1

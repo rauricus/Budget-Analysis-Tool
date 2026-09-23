@@ -9,11 +9,12 @@ before the rest is distributed over the budget lines, and are tracked as
 pots against the transactions they cover.
 
 Usage:
-    python budget_report.py <run_dir> [--month YYYY-MM]
+    python budget_report.py <run_dir> [--month YYYY-MM] [--budget FILE]
 
 Example:
     python budget_report.py example
     python budget_report.py example --month 2025-03
+    python budget_report.py example --budget budget-2027.json
 """
 
 import argparse
@@ -592,6 +593,22 @@ def format_report(comparison: BudgetComparison, source_label: str) -> str:
     return "\n".join(out)
 
 
+def resolve_budget_path(run_dir: Path, budget_arg: Optional[str]) -> Path:
+    """The budget file to compare against.
+
+    Without *budget_arg* it is the dataset's own budget.json. Otherwise the
+    path is taken as given if it exists, else looked up inside the dataset
+    directory, so that a draft next to budget.json can be named by file name
+    alone.
+    """
+    if not budget_arg:
+        return run_dir / "budget.json"
+    given = Path(budget_arg)
+    if given.exists() or given.is_absolute():
+        return given
+    return run_dir / given
+
+
 def main(argv: Optional[Sequence[str]] = None) -> int:
     parser = argparse.ArgumentParser(
         description="Compare a dataset's budget.json against its actual spending."
@@ -604,6 +621,15 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         "--month",
         help="Month to report, as YYYY-MM (default: the dataset's last month)",
     )
+    parser.add_argument(
+        "--budget",
+        metavar="FILE",
+        help=(
+            "Alternative budget file instead of <run_dir>/budget.json, for example a "
+            "draft for next year. A relative path is looked up from the current "
+            "directory first, then inside the dataset directory."
+        ),
+    )
     args = parser.parse_args(argv)
 
     try:
@@ -612,8 +638,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         print(f"❌ {e}")
         return 1
 
-    budget_path = run_dir / "budget.json"
-    if not budget_path.exists():
+    budget_path = resolve_budget_path(run_dir, args.budget)
+    if not budget_path.is_file():
         print(f"❌ Budget file not found: {budget_path}")
         return 1
 
@@ -641,7 +667,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         print(f"❌ {e}")
         return 1
 
-    source_label = f"{run_dir} ({file_count} categorized file(s))"
+    source_label = (
+        f"{run_dir} ({file_count} categorized file(s)), Budget: {budget_path.name}"
+    )
     print(format_report(comparison, source_label))
     return 0
 

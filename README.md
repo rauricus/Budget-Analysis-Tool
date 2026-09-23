@@ -188,7 +188,14 @@ uv run python budget_report.py example
 
 # Report a specific month
 uv run python budget_report.py example --month 2025-03
+
+# Compare the same actuals against another budget file, e.g. a draft for next year
+uv run python budget_report.py example --budget budget-2027.json
 ```
+
+`--budget` replaces `<run_dir>/budget.json` for this run. A relative path is looked up from
+the current directory first, then inside the dataset directory, so a draft kept next to
+`budget.json` can be named by file name alone. The report header names the file it used.
 
 The report has up to three parts:
 
