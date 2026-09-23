@@ -25,7 +25,7 @@ generator, an Excel sheet — is still open.
 | Transaction overrides | Per-ID overrides incl. `hidden`, with fail-fast ID validation, a remap helper and an optional `_note` for documenting why an override exists |
 | Explain tooling | `explain_rule_match.py` with per-rule check breakdown, JSON output |
 | Export | 20-column structured CSV incl. matched rule key and source |
-| Analysis | Excel report with 6 sheets: summary, category overviews, per-month category and subcategory tables, every transaction in one filterable table, and the largest payees per subcategory (net of refunds, on the budget's basis) |
+| Analysis | Excel report with 6 sheets: summary, category overviews, per-month category and subcategory tables, every transaction in one filterable table, and the largest payees per subcategory (net of refunds, on the budget's basis). All figures are static and reconciled against the transactions before writing; each summary table carries a `SUMIFS` check row |
 | Budget | Minimal: `budget.json` with a planned `income`, `reserves` (pots per category or subcategory, e.g. health insurance, taxes, pension) and one `monthly`/`yearly` target per category in `budget`, compared per month and cumulated by `budget_report.py` on the console. Shows what is left of the income after reserves and budget lines. Refunds netted; income excluded; transfers excluded from budget lines but counted for reserves |
 | Tests | 17 test modules covering parsers, rules, overlays, validity windows, overrides, export, ID registry, budget comparison; no test depends on a private dataset |
 | Agent skills | 3 skills covering the rule/parser iteration loop |

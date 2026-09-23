@@ -155,9 +155,9 @@ The generated Excel file contains six sheets:
 - **Category Analysis** — one table per processed month, broken down by category.
 - **Subcategory Analysis** — one table per processed month, broken down by category and subcategory.
 - **Transactions** — every transaction as one row, with a frozen header and a filter on every
-  column: ID, date, month, transaction category, category, subcategory, payee, reference,
-  amount, matched rule and source file. Filter on a category to see the bookings behind a
-  figure. `Amount` is debit minus credit — positive for spending, like the budget report — so
+  column: ID, date, month, transaction category, category, subcategory, `Category /
+  Subcategory` as one combined filter field, payee, reference, credit, debit, amount, matched
+  rule and source file. Filter on a category to see the bookings behind a figure. `Amount` is debit minus credit — positive for spending, like the budget report — so
   the sum over a filtered category matches its actual there. Transfers are included; filter
   them out on `Transaction Category`.
 - **Top Payees** — the largest payees per category and subcategory, on the budget report's
@@ -168,6 +168,24 @@ The generated Excel file contains six sheets:
   else the reference. For grouping it is upper-cased, and branch numbers in parentheses and
   sender references are dropped. Different spellings of the same company, such as two
   addresses, stay separate.
+
+Every figure in the report is computed by the script and written as a fixed value. Excel is
+the view, not the calculation engine, so the report reads the same everywhere, including in
+previews, and the logic stays in one place, shared with `budget_report.py`. Traceability
+comes from two checks instead:
+
+- **Before writing**, the script reconciles every summary table (Summary, and each month in
+  Category and Subcategory Analysis) with the transaction rows and aborts on any difference.
+- **In the workbook**, every summary table ends with a `Total` row, a `Check (Transactions)`
+  row and a `Difference` row. The check row is the only formula in the report: a `SUMIFS` over
+  the Transactions sheet with the same criteria as the table, so the formula itself documents
+  what the table contains. `Difference` should read 0.00. In the category overviews it can
+  differ by exactly the categories left out of the pie chart because their net amount is
+  zero or negative. The check cells stay empty in viewers that do not calculate (the macOS
+  preview, for example); Excel, Numbers and LibreOffice fill them.
+
+Edits in the workbook, including in the Transactions sheet, are lost the next time the report
+is generated. Lasting corrections belong in the rules or in `transaction_overrides.json`.
 
 The Excel format lets you modify charts, add custom analysis, and adjust formatting.
 

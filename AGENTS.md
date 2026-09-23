@@ -149,7 +149,13 @@ These are the things a change must not quietly break.
    `--ignore-unknown-overrides` is passed.
 4. **Tests never depend on `data/reference` or on private data.** Anything a test needs
    goes into `data/example` or into the test itself.
-5. **The export column list is a contract.** `analyze_by_category.py` reads the categorized
+5. **Python is the only calculation engine; the Excel report only displays.** Every figure is
+   written as a fixed value, and `reconcile` in `analyze_by_category.py` checks the summary
+   tables against the transaction rows before anything is written. The only formulas are
+   the `Check (Transactions)` rows. Do not move report logic into Excel formulas: it would
+   duplicate what `budget_report.py` computes, and without an installed spreadsheet
+   application no test could verify it (openpyxl stores no calculated values).
+6. **The export column list is a contract.** `analyze_by_category.py` reads the categorized
    CSVs back and requires `Category`, `Subcategory`, `Credit in CHF`, `Debit in CHF`;
    the export is `;`-separated with `dd.mm.yyyy` dates.
 

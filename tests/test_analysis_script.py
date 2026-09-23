@@ -20,6 +20,7 @@ from analyze_by_category import (
     load_months_metadata,
     normalize_payee,
     OTHER_PAYEES_LABEL,
+    reconcile,
     top_payees,
     transaction_table,
 )
@@ -405,7 +406,9 @@ def test_excel_report_has_filterable_transactions_and_top_payees():
         assert ws.freeze_panes == 'A2'
         assert ws.auto_filter.ref.startswith('A1:')
         assert ws.max_row == len(df) + 1, "One row per transaction below the header"
-        amounts = [ws.cell(row=r, column=9).value for r in range(2, ws.max_row + 1)]
+        headers = [c.value for c in ws[1]]
+        amount_column = headers.index('Amount') + 1
+        amounts = [ws.cell(row=r, column=amount_column).value for r in range(2, ws.max_row + 1)]
         expected = (df['Debit in CHF'] - df['Credit in CHF']).sum()
         assert round(sum(amounts), 2) == round(expected, 2)
 
@@ -415,3 +418,103 @@ def test_excel_report_has_filterable_transactions_and_top_payees():
         ]
         assert ws_top.max_row > 1
         wb.close()
+
+
+# ---------------------------------------------------------------------------
+# Check rows and reconciliation
+# ---------------------------------------------------------------------------
+
+def _example_report(tmpdir):
+    run_dir = Path('data/example')
+    df, _ = load_dataset_categorized_csvs(run_dir)
+    months = load_months_metadata(run_dir)
+    output_path = Path(tmpdir) / 'analysis.xlsx'
+    create_excel_report(df, analyze_by_category(df), str(output_path), 'example', months)
+    return df, months, load_workbook(output_path)
+
+
+def _rows_labelled(ws, label):
+    return [row for row in range(1, ws.max_row + 1) if ws.cell(row=row, column=1).value == label]
+
+
+def test_transaction_table_has_credit_debit_and_a_combined_line_key():
+    df = pd.DataFrame([
+        _tx('2025-03-01', 'Expense', 'Leben', 'Familie', debit=50.0),
+        _tx('2025-03-02', 'Expense', 'Leben', '', debit=5.0),
+    ])
+
+    table = transaction_table(df)
+
+    assert list(table['Debit']) == [50.0, 5.0]
+    assert list(table['Credit']) == [0.0, 0.0]
+    assert list(table['Category / Subcategory']) == ['Leben / Familie', 'Leben']
+
+
+def test_every_summary_table_has_a_check_row_on_transactions():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        df, months, wb = _example_report(tmpdir)
+
+        summary = wb['Summary']
+        check_row = _rows_labelled(summary, 'Check (Transactions)')[0]
+        formula = summary.cell(row=check_row, column=2).value
+        assert formula.startswith('=SUMIFS(Transactions!$')
+        assert formula.count('SUMIFS') == 4, "Income, Expense, Refund and Transfer"
+        assert f'${len(df) + 1}' in formula, "Range ends on the last transaction row"
+        assert summary.cell(row=check_row + 1, column=1).value == 'Difference'
+        assert summary.cell(row=check_row + 1, column=2).value == f'=B{check_row}-B{check_row - 2}'
+
+        category = wb['Category Analysis']
+        month_checks = _rows_labelled(category, 'Check (Transactions)')
+        assert len(month_checks) == len(months)
+        first = category.cell(row=month_checks[0], column=2).value
+        assert f'"{months[0]}"' in first and '"<>Transfer"' in first
+
+        subcategory = wb['Subcategory Analysis']
+        sub_formula = subcategory.cell(row=_rows_labelled(subcategory, 'Check (Transactions)')[0], column=3).value
+        assert '"<>"' in sub_formula, "Rows without subcategory are excluded like in the table"
+
+        overview = wb['Overviews by category']
+        assert len(_rows_labelled(overview, 'Check (Transactions)')) == 3
+        wb.close()
+
+
+def test_empty_text_is_written_as_an_empty_cell():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        _, _, wb = _example_report(tmpdir)
+        ws = wb['Transactions']
+        headers = [c.value for c in ws[1]]
+        column = headers.index('Subcategory') + 1
+        values = [ws.cell(row=r, column=column).value for r in range(2, ws.max_row + 1)]
+        assert '' not in values
+        assert None in values, "The example has rows without subcategory"
+        wb.close()
+
+
+def test_reconcile_passes_on_the_example_dataset():
+    run_dir = Path('data/example')
+    df, _ = load_dataset_categorized_csvs(run_dir)
+    reconcile(df, load_months_metadata(run_dir))
+
+
+def test_reconcile_fails_when_an_aggregation_drifts(monkeypatch):
+    """A report sheet that no longer adds up to its transactions must abort."""
+    import analyze_by_category as module
+
+    df = pd.DataFrame([
+        _tx('2025-03-01', 'Expense', 'Leben', 'Familie', debit=50.0),
+        _tx('2025-03-02', 'Expense', 'Wohnen', 'Haushalt', debit=20.0),
+    ])
+    real = module.analyze_by_category
+
+    def drops_last_category(frame):
+        return real(frame).iloc[:-1]
+
+    monkeypatch.setattr(module, 'analyze_by_category', drops_last_category)
+
+    try:
+        reconcile(df, ['2025-03'])
+    except ValueError as exc:
+        assert 'Category Analysis 2025-03 debit' in str(exc)
+        assert 'report 50.00, transactions 70.00' in str(exc)
+    else:
+        raise AssertionError("reconcile should have failed")

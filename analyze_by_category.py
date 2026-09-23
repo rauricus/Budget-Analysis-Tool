@@ -29,6 +29,7 @@ import pandas as pd
 from openpyxl import Workbook
 from openpyxl.chart import PieChart, BarChart, Reference
 from openpyxl.styles import Font, PatternFill, Alignment
+from openpyxl.utils import get_column_letter
 from openpyxl.utils.dataframe import dataframe_to_rows
 
 
@@ -44,6 +45,10 @@ SHEET_TITLE_FONT_SIZE = 16
 SUBTITLE_FONT_SIZE = 14
 TOP_NOTE_CONTENT_START_ROW = 5
 HEADER_FILL = PatternFill(start_color='366092', end_color='366092', fill_type='solid')
+TRANSACTIONS_SHEET = 'Transactions'
+CHECK_LABEL = 'Check (Transactions)'
+DIFFERENCE_LABEL = 'Difference'
+AMOUNT_FORMAT = '#,##0.00'
 TOP_PAYEES_PER_SUBCATEGORY = 10
 OTHER_PAYEES_LABEL = '(übrige)'
 
@@ -274,20 +279,127 @@ def transaction_table(df: pd.DataFrame) -> pd.DataFrame:
     over a filtered category matches its actual there. Columns an older export
     lacks stay empty.
     """
+    category = _text_column(df, "Category")
+    subcategory = _text_column(df, "Subcategory")
     table = pd.DataFrame({
         "Transaction ID": _text_column(df, "Transaction ID"),
         "Date": df["Date"],
         "Month": df["Date"].dt.strftime("%Y-%m"),
         "Transaction Category": _text_column(df, "Transaction Category"),
-        "Category": _text_column(df, "Category"),
-        "Subcategory": _text_column(df, "Subcategory"),
+        "Category": category,
+        "Subcategory": subcategory,
+        # One filter field for a line; also the shape a subcategory budget key takes.
+        "Category / Subcategory": category.where(subcategory == "", category + " / " + subcategory),
         "Payee": payees(df),
         "Reference": _text_column(df, "Reference"),
+        "Credit": df["Credit in CHF"].round(2),
+        "Debit": df["Debit in CHF"].round(2),
         "Amount": net_amounts(df),
         "Rule": _text_column(df, "Matched Rule Key"),
         "Source File": _text_column(df, "Source File"),
     })
     return table.sort_values(["Date", "Transaction ID"], kind="stable").reset_index(drop=True)
+
+
+SUMMARY_TRANSACTION_CATEGORIES = ("Income", "Expense", "Refund", "Transfer")
+
+
+def _summary_sums(df: pd.DataFrame) -> dict:
+    """Credit and debit per transaction category, as the Summary sheet shows them."""
+    if 'Transaction Category' in df.columns:
+        grouped = (
+            df.assign(_tc=df['Transaction Category'].fillna('').astype(str))
+            .groupby('_tc')[['Credit in CHF', 'Debit in CHF']].sum()
+        )
+    else:
+        grouped = pd.DataFrame(columns=['Credit in CHF', 'Debit in CHF'])
+    return {
+        tc: (
+            float(grouped.loc[tc, 'Credit in CHF']) if tc in grouped.index else 0.0,
+            float(grouped.loc[tc, 'Debit in CHF']) if tc in grouped.index else 0.0,
+        )
+        for tc in SUMMARY_TRANSACTION_CATEGORIES
+    }
+
+
+def _tx_range(table: pd.DataFrame, column: str) -> str:
+    """Absolute range of one column in the Transactions sheet, e.g. for SUMIFS.
+
+    Bounded to the rows actually written rather than a whole column, which
+    Numbers does not import reliably.
+    """
+    letter = get_column_letter(list(table.columns).index(column) + 1)
+    last_row = max(len(table) + 1, 2)
+    return f"{TRANSACTIONS_SHEET}!${letter}$2:${letter}${last_row}"
+
+
+def _sumifs(table: pd.DataFrame, value_column: str, *criteria: Tuple[str, str]) -> str:
+    """SUMIFS over the Transactions sheet; criteria are (column, Excel criterion)."""
+    parts = [_tx_range(table, value_column)]
+    for column, criterion in criteria:
+        parts += [_tx_range(table, column), f'"{criterion}"']
+    return f"SUMIFS({', '.join(parts)})"
+
+
+def reconcile(df: pd.DataFrame, months: list[str]) -> None:
+    """Check the report's aggregations against the plain transaction table.
+
+    The sheets are computed through different paths (groupby per category,
+    per subcategory, per transaction category); the Transactions sheet is the
+    row-level truth. Any difference is a bug in the report, so it fails loudly
+    instead of writing figures nobody can trust.
+    """
+    table = transaction_table(df)
+    problems = []
+
+    def compare(label: str, reported: float, expected: float) -> None:
+        if round(reported - expected, 2) != 0:
+            problems.append(f"{label}: report {reported:.2f}, transactions {expected:.2f}")
+
+    tc = table["Transaction Category"]
+    summary = _summary_sums(df)
+    for transaction_category in SUMMARY_TRANSACTION_CATEGORIES:
+        credit, debit = summary[transaction_category]
+        subset = table[tc == transaction_category]
+        compare(f"Summary {transaction_category} credit", credit, subset["Credit"].sum())
+        compare(f"Summary {transaction_category} debit", debit, subset["Debit"].sum())
+
+    analysis_df = _exclude_transfer_transactions(df)
+    not_transfer = tc.str.lower() != "transfer"
+    for month in months:
+        year, mon = map(int, month.split("-"))
+        month_df = analysis_df[(analysis_df["Date"].dt.year == year) & (analysis_df["Date"].dt.month == mon)]
+        month_rows = table[not_transfer & (table["Month"] == month)]
+        category_stats = analyze_by_category(month_df)
+        compare(f"Category Analysis {month} credit", category_stats["Credit in CHF"].sum(), month_rows["Credit"].sum())
+        compare(f"Category Analysis {month} debit", category_stats["Debit in CHF"].sum(), month_rows["Debit"].sum())
+        subcategory_stats = analyze_by_subcategory(month_df)
+        with_subcategory = month_rows[month_rows["Subcategory"] != ""]
+        compare(f"Subcategory Analysis {month} credit", subcategory_stats["Credit in CHF"].sum(), with_subcategory["Credit"].sum())
+        compare(f"Subcategory Analysis {month} debit", subcategory_stats["Debit in CHF"].sum(), with_subcategory["Debit"].sum())
+
+    if problems:
+        raise ValueError("Report does not reconcile with its transactions:\n  " + "\n  ".join(problems))
+
+
+def _write_check_rows(ws, row: int, total_cells: dict, formulas: dict, label_column: int = 1) -> int:
+    """Write a check row with SUMIFS on Transactions and the difference to the table total.
+
+    The static figures above stay authoritative; this is a visible cross-check
+    that only shows a value once a spreadsheet application has calculated it.
+    *total_cells* and *formulas* map a column index to the table's total cell and
+    to the check formula. Returns the next free row.
+    """
+    ws.cell(row=row, column=label_column, value=CHECK_LABEL).font = Font(italic=True)
+    ws.cell(row=row + 1, column=label_column, value=DIFFERENCE_LABEL).font = Font(italic=True)
+    for column, formula in formulas.items():
+        check = ws.cell(row=row, column=column, value=f"={formula}")
+        check.number_format = AMOUNT_FORMAT
+        check.font = Font(italic=True)
+        difference = ws.cell(row=row + 1, column=column, value=f"={check.coordinate}-{total_cells[column]}")
+        difference.number_format = AMOUNT_FORMAT
+        difference.font = Font(italic=True)
+    return row + 2
 
 
 def analyze_by_category(df: pd.DataFrame) -> pd.DataFrame:
@@ -361,6 +473,11 @@ def create_excel_report(df: pd.DataFrame, category_stats: pd.DataFrame,
         source_label: Human-readable source label for report header
         months: Sorted list of 'YYYY-MM' strings for per-month breakdown
     """
+    # Python is the only calculation engine: every figure below is static.
+    # Fail before writing anything that does not add up to its transactions.
+    reconcile(df, months)
+    table = transaction_table(df)
+
     wb = Workbook()
 
     # Remove default sheet
@@ -368,23 +485,23 @@ def create_excel_report(df: pd.DataFrame, category_stats: pd.DataFrame,
 
     # Create summary sheet
     ws_summary = wb.create_sheet("Summary", 0)
-    _create_summary_sheet(ws_summary, df, source_label)
+    _create_summary_sheet(ws_summary, df, source_label, table)
 
     # Create first overview sheet
     ws_overview = wb.create_sheet("Overviews by category", 1)
-    _create_overview_sheet(ws_overview, df, source_label)
+    _create_overview_sheet(ws_overview, df, source_label, table)
 
     # Create Category Analysis sheet (one table per month)
     ws_category = wb.create_sheet("Category Analysis", 2)
-    _create_category_sheet(ws_category, df, months)
+    _create_category_sheet(ws_category, df, months, table)
 
     # Create Subcategory Analysis sheet (one table per month)
     ws_subcategory = wb.create_sheet("Subcategory Analysis", 3)
-    _create_subcategory_sheet(ws_subcategory, df, months)
+    _create_subcategory_sheet(ws_subcategory, df, months, table)
 
     # Every transaction behind the figures above, filterable
-    ws_transactions = wb.create_sheet("Transactions", 4)
-    _create_transactions_sheet(ws_transactions, df)
+    ws_transactions = wb.create_sheet(TRANSACTIONS_SHEET, 4)
+    _create_transactions_sheet(ws_transactions, table)
 
     # Largest payees per subcategory
     ws_top_payees = wb.create_sheet("Top Payees", 5)
@@ -399,7 +516,7 @@ def create_excel_report(df: pd.DataFrame, category_stats: pd.DataFrame,
     print(f"✓ Excel report saved to: {output_file}")
 
 
-def _create_summary_sheet(ws, df: pd.DataFrame, source_label: str):
+def _create_summary_sheet(ws, df: pd.DataFrame, source_label: str, table: pd.DataFrame):
     """Create Summary sheet with transaction-category overview and chart."""
     ws['A1'] = 'Budget Analysis Summary'
     ws['A1'].font = Font(size=SHEET_TITLE_FONT_SIZE, bold=True)
@@ -418,25 +535,11 @@ def _create_summary_sheet(ws, df: pd.DataFrame, source_label: str):
         cell.fill = PatternFill(start_color='366092', end_color='366092', fill_type='solid')
         cell.alignment = Alignment(horizontal='center')
 
-    if 'Transaction Category' in df.columns:
-        grouped = (
-            df.assign(_tc=df['Transaction Category'].fillna('').astype(str))
-            .groupby('_tc', as_index=False)
-            .agg({'Credit in CHF': 'sum', 'Debit in CHF': 'sum'})
-        )
-    else:
-        grouped = pd.DataFrame(columns=['_tc', 'Credit in CHF', 'Debit in CHF'])
-
-    def sums_for(tc: str) -> tuple[float, float]:
-        row = grouped[grouped['_tc'] == tc]
-        if row.empty:
-            return 0.0, 0.0
-        return float(row['Credit in CHF'].iloc[0]), float(row['Debit in CHF'].iloc[0])
-
-    income_credit, income_debit = sums_for('Income')
-    expense_credit, expense_debit = sums_for('Expense')
-    refund_credit, refund_debit = sums_for('Refund')
-    transfer_credit, transfer_debit = sums_for('Transfer')
+    sums = _summary_sums(df)
+    income_credit, income_debit = sums['Income']
+    expense_credit, expense_debit = sums['Expense']
+    refund_credit, refund_debit = sums['Refund']
+    transfer_credit, transfer_debit = sums['Transfer']
 
     first_data_row = header_row + 1
     summary_rows = [
@@ -472,6 +575,21 @@ def _create_summary_sheet(ws, df: pd.DataFrame, source_label: str):
     ws.cell(row=grand_total_row, column=3, value=grand_total_debit).number_format = '#,##0.00'
     ws.cell(row=grand_total_row, column=2).font = Font(bold=True)
     ws.cell(row=grand_total_row, column=3).font = Font(bold=True)
+
+    # Rows without a transaction category are not part of the Grand Total, so
+    # the check adds up exactly the four categories shown above.
+    def check(value_column: str) -> str:
+        return " + ".join(
+            _sumifs(table, value_column, ("Transaction Category", tc))
+            for tc in SUMMARY_TRANSACTION_CATEGORIES
+        )
+
+    _write_check_rows(
+        ws,
+        grand_total_row + 2,
+        total_cells={2: f"B{grand_total_row}", 3: f"C{grand_total_row}"},
+        formulas={2: check("Credit"), 3: check("Debit")},
+    )
 
     # Helper block for contiguous chart data in stacked format.
     # Use four explicit series so chart legend can represent all parts correctly.
@@ -522,7 +640,7 @@ def _create_summary_sheet(ws, df: pd.DataFrame, source_label: str):
     ws.column_dimensions['C'].width = 15
 
 
-def _create_overview_sheet(ws, df: pd.DataFrame, source_label: str):
+def _create_overview_sheet(ws, df: pd.DataFrame, source_label: str, table: pd.DataFrame):
     """Create the overview sheet with summary and pie charts."""
     # Title
     ws['A1'] = 'Budget Analysis by Category'
@@ -564,6 +682,7 @@ def _create_overview_sheet(ws, df: pd.DataFrame, source_label: str):
         amount_column='Income in CHF',
         chart_title='Income by Category',
         empty_message='No income data available.',
+        check_formula=_net_check(table, 'Income', credit_first=True),
     )
     income_header_row = current_row
 
@@ -581,6 +700,7 @@ def _create_overview_sheet(ws, df: pd.DataFrame, source_label: str):
         amount_column='Expense in CHF',
         chart_title='Expenses by Category',
         empty_message='No expense data available.',
+        check_formula=_net_check(table, 'Expense', credit_first=False),
     )
     expense_header_row = current_row
 
@@ -597,6 +717,7 @@ def _create_overview_sheet(ws, df: pd.DataFrame, source_label: str):
         amount_column='Refund in CHF',
         chart_title='Refunds by Category',
         empty_message='No refund data available.',
+        check_formula=_net_check(table, 'Refund', credit_first=True),
     )
 
     # Adjust column widths
@@ -611,8 +732,13 @@ def _add_table_and_chart(
     amount_column: str,
     chart_title: str,
     empty_message: str,
+    check_formula: Optional[str] = None,
 ):
-    """Add category/amount table with blue header and pie chart next to it."""
+    """Add category/amount table with blue header and pie chart next to it.
+
+    Below the table follow a total and, if *check_formula* is given, the
+    check rows against the Transactions sheet.
+    """
     if data.empty:
         ws.cell(row=start_row, column=1, value=empty_message)
         return
@@ -643,6 +769,26 @@ def _add_table_and_chart(
 
     chart_cell = f"D{start_row}"
     ws.add_chart(chart, chart_cell)
+
+    total_row = start_row + data_rows + 1
+    ws.cell(row=total_row, column=1, value='Total').font = Font(bold=True)
+    total = ws.cell(row=total_row, column=2, value=round(float(data[amount_column].sum()), 2))
+    total.number_format = AMOUNT_FORMAT
+    total.font = Font(bold=True)
+    if check_formula:
+        _write_check_rows(ws, total_row + 1, total_cells={2: f"B{total_row}"}, formulas={2: check_formula})
+
+
+def _net_check(table: pd.DataFrame, transaction_category: str, credit_first: bool) -> str:
+    """Net amount of one transaction category, as a formula on Transactions.
+
+    The overview tables only list categories with a positive net amount (a pie
+    chart cannot show the rest), so a difference in the check row is exactly
+    what those left-out categories add up to.
+    """
+    credit = _sumifs(table, "Credit", ("Transaction Category", transaction_category))
+    debit = _sumifs(table, "Debit", ("Transaction Category", transaction_category))
+    return f"{credit} - {debit}" if credit_first else f"{debit} - {credit}"
 
 
 def _build_transaction_category_overview(
@@ -682,7 +828,7 @@ def _exclude_transfer_transactions(df: pd.DataFrame) -> pd.DataFrame:
     return df[mask].copy()
 
 
-def _create_category_sheet(ws, df: pd.DataFrame, months: list[str]):
+def _create_category_sheet(ws, df: pd.DataFrame, months: list[str], table: pd.DataFrame):
     """Create category analysis sheet with one table per month."""
     ws['A1'] = 'Category Analysis'
     ws['A1'].font = Font(size=SHEET_TITLE_FONT_SIZE, bold=True)
@@ -714,6 +860,11 @@ def _create_category_sheet(ws, df: pd.DataFrame, months: list[str]):
                     cell.number_format = '#,##0.00'
             current_row += 1
 
+        criteria = [("Month", month_str), ("Transaction Category", "<>Transfer")]
+        current_row = _write_month_totals(
+            ws, current_row, month_stats, table, criteria, first_amount_column=2
+        )
+
         current_row += 2  # spacing between months
 
     # Adjust column widths
@@ -723,7 +874,7 @@ def _create_category_sheet(ws, df: pd.DataFrame, months: list[str]):
     ws.column_dimensions['D'].width = 15
 
 
-def _create_subcategory_sheet(ws, df: pd.DataFrame, months: list[str]):
+def _create_subcategory_sheet(ws, df: pd.DataFrame, months: list[str], table: pd.DataFrame):
     """Create subcategory analysis sheet with one table per month."""
     ws['A1'] = 'Subcategory Analysis'
     ws['A1'].font = Font(size=SHEET_TITLE_FONT_SIZE, bold=True)
@@ -758,6 +909,16 @@ def _create_subcategory_sheet(ws, df: pd.DataFrame, months: list[str]):
                     cell.number_format = '#,##0.00'
             current_row += 1
 
+        # Rows without a subcategory are not part of this table ("<>" = not empty).
+        criteria = [
+            ("Month", month_str),
+            ("Transaction Category", "<>Transfer"),
+            ("Subcategory", "<>"),
+        ]
+        current_row = _write_month_totals(
+            ws, current_row, month_stats, table, criteria, first_amount_column=3
+        )
+
         current_row += 2  # spacing between months
 
     # Adjust column widths
@@ -766,6 +927,40 @@ def _create_subcategory_sheet(ws, df: pd.DataFrame, months: list[str]):
     ws.column_dimensions['C'].width = 15
     ws.column_dimensions['D'].width = 15
     ws.column_dimensions['E'].width = 15
+
+
+def _write_month_totals(
+    ws,
+    row: int,
+    stats: pd.DataFrame,
+    table: pd.DataFrame,
+    criteria: list,
+    first_amount_column: int,
+) -> int:
+    """Write the total of a month table (credit, debit, net) and its check rows.
+
+    Returns the next free row.
+    """
+    ws.cell(row=row, column=1, value='Total').font = Font(bold=True)
+    credit_col, debit_col, net_col = (first_amount_column + i for i in range(3))
+    totals = {
+        credit_col: stats['Credit in CHF'].sum(),
+        debit_col: stats['Debit in CHF'].sum(),
+        net_col: stats['Net in CHF'].sum(),
+    }
+    for column, value in totals.items():
+        cell = ws.cell(row=row, column=column, value=round(float(value), 2))
+        cell.number_format = AMOUNT_FORMAT
+        cell.font = Font(bold=True)
+
+    credit = _sumifs(table, "Credit", *criteria)
+    debit = _sumifs(table, "Debit", *criteria)
+    return _write_check_rows(
+        ws,
+        row + 1,
+        total_cells={c: ws.cell(row=row, column=c).coordinate for c in totals},
+        formulas={credit_col: credit, debit_col: debit, net_col: f"{credit} - {debit}"},
+    )
 
 
 def _write_filterable_table(ws, table: pd.DataFrame, widths: dict, formats: dict):
@@ -782,7 +977,9 @@ def _write_filterable_table(ws, table: pd.DataFrame, widths: dict, formats: dict
 
     for row_idx, values in enumerate(table.itertuples(index=False), start=2):
         for col_idx, value in enumerate(values, start=1):
-            if value is None or (isinstance(value, float) and pd.isna(value)) or value is pd.NaT:
+            # Empty text is written as a truly empty cell, so that SUMIFS
+            # criteria like "<>" (not empty) behave the same in Excel and Numbers.
+            if value is None or value == "" or (isinstance(value, float) and pd.isna(value)) or value is pd.NaT:
                 value = None
             elif isinstance(value, pd.Timestamp):
                 value = value.to_pydatetime()
@@ -798,14 +995,15 @@ def _write_filterable_table(ws, table: pd.DataFrame, widths: dict, formats: dict
         ws.column_dimensions[letter].width = width
 
 
-def _create_transactions_sheet(ws, df: pd.DataFrame):
+def _create_transactions_sheet(ws, table: pd.DataFrame):
     """Create a sheet with every transaction, to trace any figure to its bookings."""
     _write_filterable_table(
         ws,
-        transaction_table(df),
-        widths={'A': 12, 'B': 11, 'C': 9, 'D': 12, 'E': 16, 'F': 22,
-                'G': 40, 'H': 40, 'I': 12, 'J': 28, 'K': 32},
-        formats={'Date': 'DD.MM.YYYY', 'Amount': '#,##0.00'},
+        table,
+        widths={'A': 12, 'B': 11, 'C': 9, 'D': 12, 'E': 16, 'F': 22, 'G': 32,
+                'H': 40, 'I': 40, 'J': 12, 'K': 12, 'L': 12, 'M': 28, 'N': 32},
+        formats={'Date': 'DD.MM.YYYY', 'Credit': AMOUNT_FORMAT, 'Debit': AMOUNT_FORMAT,
+                 'Amount': AMOUNT_FORMAT},
     )
 
 
