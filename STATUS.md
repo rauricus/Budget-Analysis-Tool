@@ -10,7 +10,7 @@ What the tool does today and where its known limits are. Next steps: [ROADMAP.md
 | Parsing | 15 notification parsers, 8 normalized service types |
 | Transaction IDs | Stable fingerprint registry per dataset |
 | Rules | Priority matching; service, provider, merchant, location, counterparty, IBAN, keyword, validity-window and exact-amount filters; overlays on a base rule set; rules split over any number of `rules.<topic>.json` files |
-| Overrides | Per-transaction corrections by ID, with a remap helper after ID changes |
+| Overrides | Per-transaction corrections by ID, including splitting one booking into parts with their own categories; remap helper after ID changes |
 | Diagnostics | `--debug` pipeline output and `explain_rule_match.py` |
 | Export | 20-column categorized CSV per input file |
 | Analysis | Excel report: summary, overviews, per-month category and subcategory tables, all transactions filterable, top payees per subcategory. Static figures, reconciled against the transactions, with a check row per table |

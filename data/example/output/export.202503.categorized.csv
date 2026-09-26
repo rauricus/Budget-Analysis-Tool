@@ -45,7 +45,8 @@ TX-000044;25.03.2025;Debit;Purchase/Online Shopping;Card Purchase;Apple Pay;XXXX
 TX-000045;24.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;WAKARA GMBH;SURSEE;;;;;27.6;;Expense;Einkaufen;Detail-Lebensmittel;grocery_2;data/example/rules.json
 TX-000046;24.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;THE BODY SHOP;GENEVE;;;;;4.95;;Expense;Leben;Styling und Wellness;wellness_1;data/example/rules.json
 TX-000047;24.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;COOP-5510 RIVERSIDE REST.;LUZERN;;;;;44.0;;Expense;Einkaufen;Supermärkte;supermarket_1;data/example/rules.json
-TX-000048;24.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;MIGROS MARKTHALLE (8812);SOLOTHURN;;;;;53.5;;Expense;Einkaufen;Supermärkte;supermarket_1;data/example/rules.json
+TX-000048.1;24.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;MIGROS MARKTHALLE (8812);SOLOTHURN;;;;;18.9;;Expense;Wohnen;Haushalt;supermarket_1;data/example/rules.json
+TX-000048.2;24.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;MIGROS MARKTHALLE (8812);SOLOTHURN;;;;;34.6;;Expense;Einkaufen;Supermärkte;supermarket_1;data/example/rules.json
 TX-000049;24.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;MIGROS CITY TAKE AWAY (6624);BASEL;;;;;6.8;;Expense;Freizeit;Gastronomie;gastronomy_1;data/example/rules.json
 TX-000050;24.03.2025;Debit;Payment;Direct Debit;;;;;MEDICURA PLUS AG GESUNDHEITSWEG 8 4052 BASEL;CH1830000001400099001;;;77.45;;Expense;Leben;Krankenkasse;health_2;data/example/rules.json
 TX-000051;23.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;BÄCKEREI HUG;OLTEN;;;;;17.3;;Expense;Einkaufen;Detail-Lebensmittel;grocery_1;data/example/rules.json

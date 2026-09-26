@@ -188,6 +188,11 @@ These are the things a change must not quietly break.
 - **An overlay rule keeps two identities.** `key` becomes the base key it replaces so the
   engine can match it, while `declared_key` stays what the file declared and is what the
   export and debug output show. Read both before changing overlay handling.
+- **Split rows carry a suffixed ID.** A `split` override turns `TX-000042` into
+  `TX-000042.1`, `.2`, … after ID assignment, so the export's `Transaction ID` is no longer
+  always a registry ID. Anything that maps an exported row back to its override, its rule or
+  the registry must use the part before the dot, as the `matching_rules_map` rebuild in
+  `categorize_transactions.py` does.
 - **Argument parsing is inconsistent.** `categorize_transactions.py` and
   `analyze_by_category.py` parse `sys.argv` by hand; adding a flag there means editing the
   hand-rolled block *and* both usage strings. The other tools use `argparse`.

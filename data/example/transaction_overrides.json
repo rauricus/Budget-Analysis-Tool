@@ -8,5 +8,22 @@
 		"category": "Freizeit",
 		"subcategory": "Kultur",
 		"_row": "30.03.2025;Karteneinkauf BYRO BASEL"
+	},
+	"TX-000048": {
+		"split": [
+			{ "amount": 18.90, "category": "Wohnen", "subcategory": "Haushalt", "_note": "Putzmittel" },
+			{ "category": "Einkaufen", "subcategory": "Supermärkte" }
+		],
+		"_note": "Beispiel: Einkauf mit Haushaltsartikeln, Rest bleibt Supermarkt",
+		"_row": "24.03.2025;Buchung;\"APPLE PAY KAUF/DIENSTLEISTUNG VOM 24.03.2025 KARTEN NR. XXXX4821 MIGROS MARKTHALLE (8812) SOLOTHURN SCHWEIZ\";;-53.5;;Einkaufen // Supermärkte"
+	},
+	"TX-000076": {
+		"split": [
+			{ "amount": 24.50, "category": "Freizeit", "subcategory": "Gastronomie", "_note": "Mittagessen im Restaurant" },
+			{ "amount": 31.20, "category": "Wohnen", "subcategory": "Haushalt" },
+			{ "category": "Einkaufen", "subcategory": "Supermärkte" }
+		],
+		"_note": "Beispiel: dreiteiliger Split, Rest bleibt Supermarkt",
+		"_row": "18.01.2025;Buchung;\"APPLE PAY KAUF/DIENSTLEISTUNG VOM 18.01.2025 KARTEN NR. XXXX4821 COOP-5510 RIVERSIDE REST. LUZERN SCHWEIZ\";;-132.85;;Einkaufen // Supermärkte"
 	}
 }

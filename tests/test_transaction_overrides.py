@@ -236,6 +236,107 @@ class TestApply:
 
 
 # ---------------------------------------------------------------------------
+# Split
+# ---------------------------------------------------------------------------
+
+def _split_overrides(tmp_path, split, **entry) -> TransactionOverrides:
+    f = tmp_path / "transaction_overrides.json"
+    _write(f, {"TX-000001": {"split": split, **entry}})
+    return TransactionOverrides(str(f))
+
+
+class TestSplit:
+    def test_two_parts_with_remainder(self, tmp_path):
+        ov = _split_overrides(tmp_path, [
+            {"amount": 12.5, "category": "Wohnen", "subcategory": "Haushalt"},
+            {"category": "Einkaufen", "subcategory": "Supermärkte"},
+        ])
+
+        result = ov.apply([_make_transaction("TX-000001"), _make_transaction("TX-000002")])
+
+        assert [t.transaction_id for t in result] == ["TX-000001.1", "TX-000001.2", "TX-000002"]
+        assert [(t.debit, t.credit) for t in result[:2]] == [(12.5, 0.0), (29.5, 0.0)]
+        assert [(t.auto_category, t.auto_subcategory) for t in result[:2]] == [
+            ("Wohnen", "Haushalt"), ("Einkaufen", "Supermärkte"),
+        ]
+
+    def test_three_parts_remainder_is_rounded_to_rappen(self, tmp_path):
+        ov = _split_overrides(tmp_path, [
+            {"amount": 10.1, "category": "A"},
+            {"category": "B"},
+            {"amount": 20.2, "category": "C"},
+        ])
+
+        result = ov.apply([_make_transaction("TX-000001")])
+
+        assert [t.transaction_id for t in result] == ["TX-000001.1", "TX-000001.2", "TX-000001.3"]
+        assert [t.debit for t in result] == [10.1, 11.7, 20.2]
+        assert round(sum(t.debit for t in result), 2) == 42.0
+
+    def test_part_without_subcategory_has_none(self, tmp_path):
+        ov = _split_overrides(tmp_path, [{"amount": 2.0, "category": "A"}, {"category": "B"}])
+
+        result = ov.apply([_make_transaction("TX-000001")])
+
+        assert [t.auto_subcategory for t in result] == [None, None]
+
+    def test_parts_inherit_transaction_category_unless_set(self, tmp_path):
+        ov = _split_overrides(
+            tmp_path,
+            [
+                {"amount": 2.0, "category": "A", "transaction_category": "Transfer"},
+                {"category": "B"},
+            ],
+            transaction_category="Refund",
+        )
+
+        result = ov.apply([_make_transaction("TX-000001")])
+
+        assert [t.auto_transaction_category for t in result] == ["Transfer", "Refund"]
+
+    def test_credit_side_split(self, tmp_path):
+        ov = _split_overrides(tmp_path, [{"amount": 80.0, "category": "A"}, {"category": "B"}])
+        txn = _make_transaction("TX-000001", transaction_category="Refund")
+        txn.credit, txn.debit = 120.0, 0.0
+
+        result = ov.apply([txn])
+
+        assert [(t.credit, t.debit) for t in result] == [(80.0, 0.0), (40.0, 0.0)]
+        assert all(t.transaction_type == "Credit" for t in result)
+
+    def test_amounts_reaching_the_total_raise(self, tmp_path):
+        ov = _split_overrides(tmp_path, [{"amount": 42.0, "category": "A"}, {"category": "B"}])
+
+        with pytest.raises(ValueError, match="no remainder"):
+            ov.apply([_make_transaction("TX-000001")])
+
+    @pytest.mark.parametrize("split, message", [
+        ([{"category": "A"}], "at least 2 parts"),
+        ({"category": "A"}, "at least 2 parts"),
+        (["A", {"category": "B"}], "must be an object"),
+        ([{"amount": 1.0, "category": "A", "foo": 1}, {"category": "B"}], "Unknown field"),
+        ([{"amount": 1.0}, {"category": "B"}], "needs a 'category'"),
+        ([{"amount": 0, "category": "A"}, {"category": "B"}], "positive number"),
+        ([{"amount": "1", "category": "A"}, {"category": "B"}], "positive number"),
+        ([{"amount": 1.0, "category": "A", "transaction_category": "Foo"}, {"category": "B"}],
+         "Invalid 'transaction_category'"),
+        ([{"category": "A"}, {"category": "B"}], "found 2"),
+        ([{"amount": 1.0, "category": "A"}, {"amount": 2.0, "category": "B"}], "found 0"),
+    ])
+    def test_invalid_split_raises(self, tmp_path, split, message):
+        with pytest.raises(ValueError, match=message):
+            _split_overrides(tmp_path, split)
+
+    def test_split_with_hidden_raises(self, tmp_path):
+        with pytest.raises(ValueError, match="cannot be combined with 'hidden'"):
+            _split_overrides(
+                tmp_path,
+                [{"amount": 1.0, "category": "A"}, {"category": "B"}],
+                hidden=True,
+            )
+
+
+# ---------------------------------------------------------------------------
 # load_overrides_if_present()
 # ---------------------------------------------------------------------------
 
@@ -512,6 +613,34 @@ class TestExampleDatasetOverrides:
         assert "TX-000013" in by_id
         assert by_id["TX-000013"]["Category"] == "Freizeit"
         assert by_id["TX-000013"]["Subcategory"] == "Kultur"
+
+    def test_example_splits_export_one_row_per_part(self, tmp_path):
+        """The example splits a March and a January purchase; each part becomes its own row."""
+        from categorize_transactions import main
+
+        run_dir = tmp_path / "example"
+        shutil.copytree("data/example", run_dir)
+
+        assert main([str(run_dir)]) == 0
+
+        def rows_of(month):
+            path = run_dir / "output" / f"export.{month}.categorized.csv"
+            with open(path, "r", encoding="utf-8") as f:
+                return {row["Transaction ID"]: row for row in csv.DictReader(f, delimiter=";")}
+
+        march, january = rows_of("202503"), rows_of("202501")
+        assert "TX-000048" not in march and "TX-000076" not in january
+
+        parts = [march["TX-000048.1"], march["TX-000048.2"]]
+        assert [p["Debit in CHF"] for p in parts] == ["18.9", "34.6"]
+        assert [(p["Category"], p["Subcategory"]) for p in parts] == [
+            ("Wohnen", "Haushalt"), ("Einkaufen", "Supermärkte"),
+        ]
+        assert all(p["Matched Rule Key"] == "supermarket_1" for p in parts)
+
+        parts = [january[f"TX-000076.{n}"] for n in (1, 2, 3)]
+        assert round(sum(float(p["Debit in CHF"]) for p in parts), 2) == 132.85
+        assert [p["Category"] for p in parts] == ["Freizeit", "Wohnen", "Einkaufen"]
 
 
 class TestOverrideDebugOutput:

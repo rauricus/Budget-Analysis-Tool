@@ -123,6 +123,19 @@ def _print_debug_report(
                     f"| {_transaction_debug_label(txn)} "
                     f"| pre-override: {pre_override_summary}"
                 )
+            elif "split" in entry:
+                parts = ", ".join(
+                    (f"{part['amount']:.2f}" if "amount" in part else "rest")
+                    + " "
+                    + "/".join(filter(None, [part["category"], part.get("subcategory")]))
+                    for part in entry["split"]
+                )
+                print(
+                    f"      {row_label}Override applied: '{txn.transaction_id}' "
+                    f"from transaction_overrides.json -> split into {len(entry['split'])} parts: "
+                    f"{parts} | {_transaction_debug_label(txn)} "
+                    f"| pre-override: {pre_override_summary}"
+                )
             else:
                 before_tc, before_cat, before_sub = before_state[txn.transaction_id]
                 print(
@@ -307,11 +320,13 @@ def main(argv: Optional[Sequence[str]] = None):
                 for i, t in enumerate(transactions)
             }
             transactions = transaction_overrides.apply(transactions)
-            # Rebuild matching_rules_map with new 0-based indices
+            # Rebuild matching_rules_map with new 0-based indices. Split parts carry
+            # a suffixed ID (TX-000042.1), so look them up by the base ID.
             matching_rules_map = {
-                i: id_to_rules[t.transaction_id]
+                i: id_to_rules[base_id]
                 for i, t in enumerate(transactions)
-                if id_to_rules.get(t.transaction_id) is not None
+                for base_id in [t.transaction_id.split(".", 1)[0]]
+                if id_to_rules.get(base_id) is not None
             }
 
         if debug:

@@ -19,7 +19,7 @@ Project documentation:
 - Merchant, location, counterparty, IBAN and include/exclude keyword matching
 - Optional validity window per rule (`valid_from` / `valid_to`) for rules that apply only during a defined period
 - Optional exact-amount filter per rule (`amounts`) for transactions that differ in nothing but their amount
-- Transaction-level overrides by transaction ID
+- Transaction-level overrides by transaction ID, including splitting one booking across categories
 - Structured CSV export with parsed service fields
 - Excel report across all categorized months, with every transaction and the top payees
 - Budget vs. actual per category or subcategory, with reserves set aside from planned income
@@ -227,7 +227,7 @@ uv run pytest tests/test_rule_matching.py
    -> TransactionIdRegistry.assign_batch
    -> optional strict validation of transaction_overrides.json IDs
    -> RuleEngine.categorize_batch
-   -> optional TransactionOverrides.apply (hidden/category transaction overrides)
+   -> optional TransactionOverrides.apply (hidden/category/split transaction overrides)
    -> ExportHandler.export_csv
    -> <run_dir>/output/*.categorized.csv
 ```
@@ -457,6 +457,7 @@ Behavior and constraints:
 
 - `hidden: true` removes the transaction from export.
 - `transaction_category`, `category`, `subcategory` override automatic categorization values for that transaction ID.
+- `split` divides the transaction into parts, each with its own category (see below).
 - `_row` is optional metadata that helps remap old IDs after registry resets; it does not affect categorization.
 - `_note` is optional free text documenting the reason for the override, for example the rule it belongs with; it does not affect categorization.
 - A `transaction_overrides.json` file is only valid in the top-level run dataset. One in a referenced base dataset (declared via `"base"`) is rejected.
@@ -464,6 +465,38 @@ Behavior and constraints:
 
 When unknown override IDs are detected, use `suggest_override_ids.py` (see above). It suggests
 old->new ID mappings based on `_row` hints and current input files.
+
+### Splitting a transaction
+
+A booking that covers several things, such as a supermarket receipt with household goods,
+can be split so that each part lands in its own category:
+
+```json
+{
+  "TX-000048": {
+    "split": [
+      { "amount": 18.90, "category": "Wohnen", "subcategory": "Haushalt" },
+      { "category": "Einkaufen", "subcategory": "Supermärkte" }
+    ],
+    "_row": "24.03.2025;Buchung;..."
+  }
+}
+```
+
+- Each part takes `category` (required), `subcategory`, `transaction_category`, `amount` and
+  `_note`. A part without `transaction_category` keeps the transaction's.
+- Amounts are positive CHF on the transaction's side (debit or credit). Exactly one part
+  omits `amount` and receives the remainder; the given amounts must leave a remainder above
+  zero, otherwise the run aborts.
+- The export writes one row per part, with the ID suffixed in list order: `TX-000048.1`,
+  `TX-000048.2`. All other columns, including the matched rule, are copied from the
+  original row. The override key itself stays the unsuffixed ID.
+- `split` cannot be combined with `hidden`. Top-level `transaction_category`, `category` and
+  `subcategory` are applied first.
+- The Excel report and the budget treat the parts as ordinary rows, so "Top Payees" counts a
+  split transaction once per part.
+
+`data/example` splits `TX-000048` into two and `TX-000076` into three parts.
 
 ## Budget
 
