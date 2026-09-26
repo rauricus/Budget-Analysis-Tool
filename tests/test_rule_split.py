@@ -76,7 +76,7 @@ def test_rule_without_split_has_an_empty_list():
     ([{"amount": 10.0, "category": "Leben"}], "at least 2 parts"),
     ([{"category": "Leben"}, {"category": "Leben"}], "Exactly one split part"),
     ([{"amount": 10.0}, {"amount": 20.0}], "Exactly one split part"),
-    ([{"amount": -1, "category": "Leben"}, {}], "positive number"),
+    ([{"amount": 0, "category": "Leben"}, {}], "non-zero number"),
     ([{"amount": 10.0, "category": "Leben", "percent": 5}, {}], "Unknown field"),
     ([{"amount": 10.0, "category": "Leben", "transaction_category": "Gift"}, {}], "transaction_category"),
 ])
@@ -109,6 +109,25 @@ def test_note_only_override_does_not_stop_the_rule_split():
     overrides = {"TX-000001": {"_note": "nur eine Notiz", "_row": "02.03.2026;Buchung"}}
     result = apply_rule_splits([_premium()], {"TX-000001": _rule()}, overrides)
     assert [t.transaction_id for t in result] == ["TX-000001.1", "TX-000001.2"]
+
+
+def test_negative_remainder_becomes_a_part_on_the_other_side():
+    """A collective refund that also nets out a charge: 125.00 back, 5.00 owed, 120.00 paid."""
+    rule = _rule([
+        {"amount": 125.00, "category": "Leben", "subcategory": "Familie"},
+        {"transaction_category": "Expense", "_note": "Kostenbeteiligung, verrechnet"},
+    ])
+    refund = _premium(debit=0.0)
+    refund.credit = 120.00
+    refund.auto_transaction_category = "Refund"
+
+    parts = apply_rule_splits([refund], {"TX-000001": rule})
+
+    assert [(p.credit, p.debit, p.transaction_type, p.auto_transaction_category) for p in parts] == [
+        (125.00, 0.0, "Credit", "Refund"),
+        (0.0, 5.00, "Debit", "Expense"),
+    ]
+    assert round(sum(p.amount for p in parts), 2) == 120.00
 
 
 def test_amounts_without_remainder_abort():

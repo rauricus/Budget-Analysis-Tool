@@ -4,7 +4,9 @@ Splits one transaction into parts with their own categories. Shared by split ove
 transaction_overrides.json and by the `split` field on rules.
 
 A split turns TX-000042 into TX-000042.1, TX-000042.2, ... in list order. Exactly one part
-omits `amount` and receives the remainder.
+omits `amount` and receives the remainder. A negative amount puts its part on the other side
+of the transaction: a collective refund that also nets out a charge becomes a credit part and
+a debit part.
 """
 
 from dataclasses import replace
@@ -47,10 +49,10 @@ def validate_split_parts(parts, where: str, category_optional: bool = False) -> 
             )
         if "amount" in part:
             amount = part["amount"]
-            # bool is an int subclass; reject it explicitly.
-            if isinstance(amount, bool) or not isinstance(amount, (int, float)) or amount <= 0:
+            # bool is an int subclass; reject it explicitly. Zero would export an empty row.
+            if isinstance(amount, bool) or not isinstance(amount, (int, float)) or amount == 0:
                 raise ValueError(
-                    f"'amount' in split part {idx} must be a positive number {where}."
+                    f"'amount' in split part {idx} must be a non-zero number {where}."
                 )
 
     without_amount = sum(1 for part in parts if "amount" not in part)
@@ -70,14 +72,19 @@ def split_transaction(
 ) -> list[Transaction]:
     """Return one copy of *txn* per part, each carrying its share of the amount.
 
+    Amounts are signed relative to the transaction's direction: a positive part stays on its
+    side (credit or debit), a negative part moves to the other side, so the parts net to the
+    total. The part without `amount` takes the remainder, which may therefore be negative too.
+
     Parts inherit the transaction's transaction category unless they set their own. A part
     without `category` takes *default_category* and *default_subcategory*. *source* names
     where the split is defined, for the error when the amounts leave no remainder.
     """
-    total = txn.credit if txn.transaction_type == "Credit" else txn.debit
+    is_credit = txn.transaction_type == "Credit"
+    total = txn.credit if is_credit else txn.debit
     given = sum(part["amount"] for part in parts if "amount" in part)
     remainder = round(total - given, 2)
-    if remainder <= 0:
+    if remainder == 0:
         raise ValueError(
             f"Split amounts for '{txn.transaction_id}' add up to {given:.2f}, which leaves "
             f"no remainder of the transaction total {total:.2f} ({source})."
@@ -86,12 +93,14 @@ def split_transaction(
     result: list[Transaction] = []
     for idx, part in enumerate(parts, start=1):
         amount = round(part["amount"], 2) if "amount" in part else remainder
+        # A negative part lands on the side opposite to the transaction's own direction.
+        on_credit_side = is_credit == (amount > 0)
         inherits = "category" not in part
         result.append(replace(
             txn,
             transaction_id=f"{txn.transaction_id}.{idx}",
-            credit=amount if txn.transaction_type == "Credit" else 0.0,
-            debit=amount if txn.transaction_type == "Debit" else 0.0,
+            credit=abs(amount) if on_credit_side else 0.0,
+            debit=0.0 if on_credit_side else abs(amount),
             auto_transaction_category=part.get(
                 "transaction_category", txn.auto_transaction_category
             ),

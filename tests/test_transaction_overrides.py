@@ -304,6 +304,28 @@ class TestSplit:
         assert [(t.credit, t.debit) for t in result] == [(80.0, 0.0), (40.0, 0.0)]
         assert all(t.transaction_type == "Credit" for t in result)
 
+    def test_negative_amount_moves_its_part_to_the_other_side(self, tmp_path):
+        ov = _split_overrides(tmp_path, [
+            {"amount": -8.0, "category": "A", "transaction_category": "Refund"},
+            {"category": "B"},
+        ])
+
+        result = ov.apply([_make_transaction("TX-000001")])
+
+        # 42.00 debit = 50.00 spent, 8.00 of it refunded in the same booking.
+        assert [(t.transaction_id, t.credit, t.debit, t.auto_transaction_category) for t in result] == [
+            ("TX-000001.1", 8.0, 0.0, "Refund"),
+            ("TX-000001.2", 0.0, 50.0, "Expense"),
+        ]
+        assert round(sum(t.amount for t in result), 2) == -42.0
+
+    def test_amounts_overshooting_the_total_leave_a_negative_remainder(self, tmp_path):
+        ov = _split_overrides(tmp_path, [{"amount": 45.0, "category": "A"}, {"category": "B"}])
+
+        result = ov.apply([_make_transaction("TX-000001")])
+
+        assert [(t.credit, t.debit) for t in result] == [(0.0, 45.0), (3.0, 0.0)]
+
     def test_amounts_reaching_the_total_raise(self, tmp_path):
         ov = _split_overrides(tmp_path, [{"amount": 42.0, "category": "A"}, {"category": "B"}])
 
@@ -316,8 +338,8 @@ class TestSplit:
         (["A", {"category": "B"}], "must be an object"),
         ([{"amount": 1.0, "category": "A", "foo": 1}, {"category": "B"}], "Unknown field"),
         ([{"amount": 1.0}, {"category": "B"}], "needs a 'category'"),
-        ([{"amount": 0, "category": "A"}, {"category": "B"}], "positive number"),
-        ([{"amount": "1", "category": "A"}, {"category": "B"}], "positive number"),
+        ([{"amount": 0, "category": "A"}, {"category": "B"}], "non-zero number"),
+        ([{"amount": "1", "category": "A"}, {"category": "B"}], "non-zero number"),
         ([{"amount": 1.0, "category": "A", "transaction_category": "Foo"}, {"category": "B"}],
          "Invalid 'transaction_category'"),
         ([{"category": "A"}, {"category": "B"}], "found 2"),

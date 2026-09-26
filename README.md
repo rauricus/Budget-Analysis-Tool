@@ -578,9 +578,13 @@ can be split so that each part lands in its own category:
 
 - Each part takes `category` (required), `subcategory`, `transaction_category`, `amount` and
   `_note`. A part without `transaction_category` keeps the transaction's.
-- Amounts are positive CHF on the transaction's side (debit or credit). Exactly one part
-  omits `amount` and receives the remainder; the given amounts must leave a remainder above
-  zero, otherwise the run aborts.
+- Amounts are CHF on the transaction's side (debit or credit). Exactly one part omits
+  `amount` and receives the remainder; a remainder of exactly zero aborts the run.
+- A negative amount puts its part on the other side, so the parts still net to the booking.
+  This covers a collective refund that also deducts a charge (120.00 received = 125.00
+  refunded − 5.00 owed): one part of `125.00`, and the remainder part becomes a debit of
+  5.00. Give such a part its own `transaction_category`, since it is no longer a refund. If
+  the given amounts exceed the total, the remainder part is the one that turns negative.
 - The export writes one row per part, with the ID suffixed in list order: `TX-000048.1`,
   `TX-000048.2`. All other columns, including the matched rule, are copied from the
   original row. The override key itself stays the unsuffixed ID.
