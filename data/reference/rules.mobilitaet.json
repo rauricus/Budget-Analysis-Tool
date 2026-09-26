@@ -1,0 +1,179 @@
+{
+  "rules": [
+    {
+      "key": "transport_1",
+      "name": "Mobilität: Öffentlicher Verkehr",
+      "transaction_category": "Expense",
+      "category": "Mobilität",
+      "subcategory": "Öffentlicher Verkehr",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Direct Debit",
+          "Twint"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "SBB",
+            "BLS",
+            "TRANSPORTS PUBLICS",
+            "FAIRTIQ",
+            "BODENSEESCHIFFE"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [
+            "MIGROLINO",
+            "BACKWERK"
+          ],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "transport_2",
+      "name": "Mobilität: Mobility",
+      "transaction_category": "Expense",
+      "category": "Mobilität",
+      "subcategory": "Privater Verkehr",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "MOBILITY",
+            "PARKING"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "transport_3",
+      "name": "Mobilität: Parking",
+      "transaction_category": "Expense",
+      "category": "Mobilität",
+      "subcategory": "Privater Verkehr",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Twint"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "PARKING",
+            "SAMMELPAR"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "transport_4",
+      "name": "Mobilität: Velo",
+      "transaction_category": "Expense",
+      "category": "Mobilität",
+      "subcategory": "Privater Verkehr",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "BIKE",
+            "VELO"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "transport_5",
+      "name": "Mobilität: Bergbahnen",
+      "transaction_category": "Expense",
+      "category": "Mobilität",
+      "subcategory": "Öffentlicher Verkehr",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Twint",
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "STOOSBAHNEN",
+            "SATTEL HOCHSTUCKLI",
+            "S.ANTONIO BIGLIETTO"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "refund_7",
+      "name": "Rückerstattung: ÖV-Tickets",
+      "transaction_category": "Refund",
+      "category": "Mobilität",
+      "subcategory": "Öffentlicher Verkehr",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Credit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Credit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "SBB TICKET SHOP",
+            "SBB CFF FFS"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    }
+  ]
+}

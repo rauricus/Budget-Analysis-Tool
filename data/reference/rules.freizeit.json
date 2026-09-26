@@ -1,0 +1,217 @@
+{
+  "rules": [
+    {
+      "key": "sport_1",
+      "name": "Freizeit: Fitness",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Sport",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "FITNESS",
+            "OCHSNER SPORT",
+            "TRANSA"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "leisure_1",
+      "name": "Freizeit: Kino",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Kultur",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "KULTURHAUS ODEON BRUGG"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "leisure_2",
+      "name": "Freizeit: Theater, Kino, Kultur, Museum",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Kultur",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "THEATER",
+            "CINEMA",
+            "KINO",
+            "KULTUR",
+            "PATHE",
+            "KUNSTHAUS",
+            "MUSEUM",
+            "TICKETCORNER",
+            "EVENTFROG",
+            "MOON AND STARS",
+            "LEGIONÄRSPFAD",
+            "STADTMUESUM",
+            "HAUS DER MUSEEN"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [
+            "RESTAURANT"
+          ],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "leisure_3",
+      "name": "Freizeit: Bar, Club",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Bar, Club",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "PICKWICK",
+            "PUB",
+            "BAR "
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [
+            "CAFE",
+            "CAFÉ",
+            "RESTAURANT",
+            "BURGER"
+          ],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "refund_6",
+      "name": "Rückerstattung: Veranstaltungstickets",
+      "transaction_category": "Refund",
+      "category": "Freizeit",
+      "subcategory": "Kultur",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Credit",
+        "transaction_type_detail": null,
+        "services": [
+          "PostFinance Card Refund",
+          "Credit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "UEFA"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "leisure_4",
+      "name": "Kultur: Bibliotheken",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Kultur",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Twint",
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "STADTBIBLIOTHEK"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [
+            "GETRÄNKE"
+          ],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "leisure_5",
+      "name": "Freizeit: Mitgliedschaften",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Sonstiges Freizeit",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Twint",
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "STIFTUNG SCHWEIZMOBIL"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    }
+  ]
+}

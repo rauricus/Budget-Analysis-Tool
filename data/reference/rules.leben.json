@@ -1,0 +1,250 @@
+{
+  "rules": [
+    {
+      "key": "gastronomy_6",
+      "name": "Kantine, Mensa: Gastronomie",
+      "transaction_category": "Expense",
+      "category": "Leben",
+      "subcategory": "Arbeiten und Lernen",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "SV (SCHWEIZ) AG"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "work-study_1",
+      "name": "Co-Working",
+      "transaction_category": "Expense",
+      "category": "Leben",
+      "subcategory": "Arbeiten und Lernen",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Twint"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "COWORKING",
+            "CO-WORKING"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "wellness_1",
+      "name": "Einkauf Styling/Wellness",
+      "transaction_category": "Expense",
+      "category": "Leben",
+      "subcategory": "Styling und Wellness",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "THE BODY SHOP",
+            "THEBODYSHOP"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "wellness_2",
+      "name": "Coiffeur",
+      "transaction_category": "Expense",
+      "category": "Leben",
+      "subcategory": "Styling und Wellness",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "COIFFEUR"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "work-study_2",
+      "name": "Co-Working: Lastschrift",
+      "transaction_category": "Expense",
+      "category": "Leben",
+      "subcategory": "Arbeiten und Lernen",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [
+            "COWORKING"
+          ],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "gifts_1",
+      "name": "Geschenke: Blumenversand",
+      "transaction_category": "Expense",
+      "category": "Leben",
+      "subcategory": "Geschenke",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Twint",
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "FLEUROP",
+            "INTERFLORA"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "gifts_2",
+      "name": "Geschenke: Gutscheine",
+      "transaction_category": "Expense",
+      "category": "Leben",
+      "subcategory": "Geschenke",
+      "priority": 6,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Twint",
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [
+            "GUTSCHEIN"
+          ],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "authority_1",
+      "name": "Amtsgebühren: Ausweise und Dokumente",
+      "transaction_category": "Expense",
+      "category": "Leben",
+      "subcategory": "Sonstiges Leben",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Twint",
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "AUSWEISZENTRUM"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "work-study_3",
+      "name": "Lernen: Online-Plattformen",
+      "transaction_category": "Expense",
+      "category": "Leben",
+      "subcategory": "Arbeiten und Lernen",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Twint",
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "QUIZLET"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    }
+  ]
+}

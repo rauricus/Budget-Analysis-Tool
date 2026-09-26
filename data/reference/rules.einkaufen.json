@@ -1,0 +1,395 @@
+{
+  "rules": [
+    {
+      "key": "grocery_1",
+      "name": "Detailhandel: Bäckereien",
+      "transaction_category": "Expense",
+      "category": "Einkaufen",
+      "subcategory": "Detail-Lebensmittel",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "BÄCKEREI",
+            "BACKEREI",
+            "BACK",
+            "CONFISERIE",
+            "SPRÜNGLI",
+            "JAISLI",
+            "BOULANGERIE",
+            "CONFISEUR",
+            "METZGEREI",
+            "BRAUEREI",
+            "BECK"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "grocery_2",
+      "name": "Detailhandel: Lebensmittel",
+      "transaction_category": "Expense",
+      "category": "Einkaufen",
+      "subcategory": "Detail-Lebensmittel",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "YUMIHANA",
+            "YUMI HANA"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "grocery_supermarket",
+      "name": "Einkauf Supermarkt",
+      "transaction_category": "Expense",
+      "category": "Einkaufen",
+      "subcategory": "Supermärkte",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Twint"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "MIGROS",
+            "MM ",
+            "MIGROLINO",
+            "COOP",
+            "VOI",
+            "SPAR",
+            "VOLG",
+            "ALNATURA",
+            "DENNER",
+            "LIDL"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [
+            "TAKE AWAY",
+            "RESTAURANT",
+            "DIVISION DER COOP"
+          ],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "shopping_1",
+      "name": "Kiosk, Automaten: Sonstiges Einkaufen",
+      "transaction_category": "Expense",
+      "category": "Einkaufen",
+      "subcategory": "Sonstiges Einkaufen",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "KKIOSK",
+            "KIOSK",
+            "SELECTA"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "shopping_2",
+      "name": "Einkaufen: Bücher, Filme, Musik",
+      "transaction_category": "Expense",
+      "category": "Einkaufen",
+      "subcategory": "Bücher/Filme/Musik",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "ORELL FÜSSLI THALIA",
+            "ORELL FUSSLI",
+            "ORELL FUESSLI",
+            "LÜTHY + STOCKER",
+            "FUNDUSONLIN"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "shopping_3",
+      "name": "Einkauf Tankstellen-Shop",
+      "transaction_category": "Expense",
+      "category": "Einkaufen",
+      "subcategory": "Detailhandel",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "TANKSTELLE"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "shopping_4",
+      "name": "Shopping: Detailhandel",
+      "transaction_category": "Expense",
+      "category": "Einkaufen",
+      "subcategory": "Detailhandel",
+      "priority": 3,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Twint"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "SUMUP"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "shopping_other_1",
+      "name": "Shopping: Sonstiges Einkaufen",
+      "transaction_category": "Expense",
+      "category": "Einkaufen",
+      "subcategory": "Sonstiges Einkaufen",
+      "priority": 1,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "fashion_1",
+      "name": "Mode: Bekleidung und Schuhe",
+      "transaction_category": "Expense",
+      "category": "Einkaufen",
+      "subcategory": "Mode",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Twint"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "STRELLSON",
+            "OCHSNER SHOES",
+            "OCHSNER-SHOES",
+            "NEW YORKER",
+            "INTIMISSIMI",
+            "NIKIN",
+            "WECO",
+            "WE SWITZERLAND FASHION"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "hobby_1",
+      "name": "Spiele und Hobby",
+      "transaction_category": "Expense",
+      "category": "Einkaufen",
+      "subcategory": "Spiele & Hobby",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Twint"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "MODIPHIUS",
+            "LEGO SYSTEM",
+            "LEGO STORE"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "online_1",
+      "name": "Grossmarktplätze: Inhalt nicht belegt",
+      "transaction_category": "Expense",
+      "category": "Einkaufen",
+      "subcategory": "Sonstiges Einkaufen",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "AMAZON",
+            "AMZN"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "refund_5",
+      "name": "Rückerstattung: Mode",
+      "transaction_category": "Refund",
+      "category": "Einkaufen",
+      "subcategory": "Mode",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Credit",
+        "transaction_type_detail": null,
+        "services": [
+          "PostFinance Card Refund",
+          "Credit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "STRELLSON",
+            "OCHSNER SHOES",
+            "OCHSNER-SHOES",
+            "NEW YORKER",
+            "INTIMISSIMI",
+            "NIKIN",
+            "WECO",
+            "WE SWITZERLAND FASHION"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "shopping_5",
+      "name": "Detailhandel: Drogerie- und Haushaltsketten",
+      "transaction_category": "Expense",
+      "category": "Einkaufen",
+      "subcategory": "Detailhandel",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Twint"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "MÜLLER HANDELS",
+            "SØSTRENE GRENE"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "rules": [
+    {
+      "key": "vacation_1",
+      "name": "Ferien: Reise",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Reisen und Erleben",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Twint"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "EASYJET",
+            "SWISS INTERNATIONAL",
+            "SWISS.COM",
+            "LX SWISS",
+            "HELVETIC AIRWAYS",
+            "EDELWEISS AIR",
+            "LUFTHANSA",
+            "AIR FRANCE",
+            "FLUGHAFEN ZUERICH"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "vacation_2",
+      "name": "Ferien: Unterkunft",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Reisen und Erleben",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "AIRBNB",
+            "HOTEL",
+            "BOOKING.COM"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [
+            "RESTAURANT"
+          ],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    }
+  ]
+}

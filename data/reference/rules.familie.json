@@ -1,0 +1,60 @@
+{
+  "rules": [
+    {
+      "key": "family_1",
+      "name": "Dauerauftrag: Familienkasse",
+      "transaction_category": "Expense",
+      "category": "Leben",
+      "subcategory": "Familie",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "FAMILIENKASSE"
+          ],
+          "locations": [],
+          "include_keywords": [
+            "FAMILIENZULAGE"
+          ],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "family_2",
+      "name": "Familie: Auslagen für Kinder",
+      "transaction_category": "Expense",
+      "category": "Leben",
+      "subcategory": "Familie",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Account Transfer"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "ZMITTAG",
+            "ESSEN",
+            "TICKETS"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    }
+  ]
+}

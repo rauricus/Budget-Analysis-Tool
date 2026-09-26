@@ -1,0 +1,153 @@
+{
+  "rules": [
+    {
+      "key": "gastronomy_1",
+      "name": "Take Away: Gastronomie",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Twint"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "MIGROS",
+            "COOP"
+          ],
+          "locations": [],
+          "include_keywords": [
+            "TAKE AWAY"
+          ],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "gastronomy_2",
+      "name": "Restaurant: Gastronomie",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "RESTAURANT",
+            "BISTRO",
+            "YOOJI'S",
+            "TIBITS",
+            "EAT.CH",
+            "SUSHI",
+            "TAKE AWAY",
+            "BURGER"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "gastronomy_3",
+      "name": "Cafés: Gastronomie",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "SPETTACOLO",
+            "CAFE",
+            "BARISTA",
+            "CAFÉ",
+            "CAFFÈ",
+            "CAFFE",
+            "KAFI",
+            "COFFEE",
+            "STARBUCKS",
+            "TCHIBO"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "gastronomy_4",
+      "name": "Gastronomie: Pizza, Pasta",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": "",
+        "services": [],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "PIZZA",
+            "PASTA"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "gastronomy_5",
+      "name": "Gastronomie: Fastfood",
+      "transaction_category": "Expense",
+      "category": "Freizeit",
+      "subcategory": "Gastronomie",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": "",
+        "services": [],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "MCDONALD",
+            "KEBAB",
+            "IMBISS"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    }
+  ]
+}

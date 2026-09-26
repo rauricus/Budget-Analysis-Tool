@@ -1,0 +1,351 @@
+{
+  "rules": [
+    {
+      "key": "communication_1",
+      "name": "Kommunikation: Internet, Telefon, TV",
+      "transaction_category": "Expense",
+      "category": "Wohnen",
+      "subcategory": "Kommunikation",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Direct Debit",
+          "Card Purchase",
+          "Twint"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "SUNRISE",
+            "SWISSCOM",
+            "SALT",
+            "CYON",
+            "SIPCALL"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "communication_2",
+      "name": "Subscription: Cloud Services",
+      "transaction_category": "Expense",
+      "category": "Wohnen",
+      "subcategory": "Kommunikation",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "APPLE.COM",
+            "NETFLIX",
+            "OPENAI *CHATGPT SUBSCR",
+            "RMILK.COM",
+            "GITHUB",
+            "OPENROUTER",
+            "FLEXIBITS",
+            "REMARKABLE",
+            "ANTHROPIC",
+            "CLAUDE.AI"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "communication_3",
+      "name": "Kommunikation: Serafe",
+      "transaction_category": "Expense",
+      "category": "Wohnen",
+      "subcategory": "Kommunikation",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [
+            "SERAFE AG"
+          ],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "home_1",
+      "name": "Einkauf Handwerk/Garten: Jumbo",
+      "transaction_category": "Expense",
+      "category": "Wohnen",
+      "subcategory": "Handwerk und Garten",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "JUMBO"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "home_2",
+      "name": "Einkauf Haushalt: Manor, Interdiscount & Co",
+      "transaction_category": "Expense",
+      "category": "Wohnen",
+      "subcategory": "Haushalt",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "MANOR",
+            "INTERDISCOUNT",
+            "FLYING TIGER",
+            "LETEC COMPUTER",
+            "STADLER FORM"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "home_3",
+      "name": "Einkauf Wohnen: Möbel",
+      "transaction_category": "Expense",
+      "category": "Wohnen",
+      "subcategory": "Möbel",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "IKEA",
+            "ZIGZAGZURICH",
+            "PETITE FRITURE",
+            "CONNOX"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [
+            "PARKING"
+          ],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "home_4",
+      "name": "Einkauf Haushalt: Online-Käufe",
+      "transaction_category": "Expense",
+      "category": "Wohnen",
+      "subcategory": "Haushalt",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "DIGITEC",
+            "GALAXUS"
+          ],
+          "locations": [],
+          "include_keywords": [
+            "PAYMENT ID",
+            "BESTELLNUMMER"
+          ],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "home_5",
+      "name": "Einkauf Haushalt: Online Second-Hand",
+      "transaction_category": "Expense",
+      "category": "Wohnen",
+      "subcategory": "Haushalt",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "RICARDO",
+            "EBAY"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "housing_1",
+      "name": "Wohnen: Miete und Hypothek",
+      "transaction_category": "Expense",
+      "category": "Wohnen",
+      "subcategory": "Miete und Hypothek",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [],
+          "locations": [],
+          "include_keywords": [
+            "FINANZVERWALTUNG STADT SOLOTHURN"
+          ],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "refund_4",
+      "name": "Rückerstattung Onlinehändler",
+      "transaction_category": "Refund",
+      "category": "Wohnen",
+      "subcategory": "Haushalt",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Credit",
+        "transaction_type_detail": null,
+        "services": [
+          "Credit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "DIGITEC",
+            "GALAXUS"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "post_1",
+      "name": "Post: Porto, Versand und Zoll",
+      "transaction_category": "Expense",
+      "category": "Wohnen",
+      "subcategory": "Kommunikation",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "POST CH AG",
+            "SCHWEIZERISCHE POST",
+            "POST BILLINGONLINE"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "housing_2",
+      "name": "Wohnen: Mieterverband",
+      "transaction_category": "Expense",
+      "category": "Wohnen",
+      "subcategory": "Nebenkosten",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase",
+          "Twint",
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "MIETERINNEN- UND MIETERVERBAND"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    }
+  ]
+}

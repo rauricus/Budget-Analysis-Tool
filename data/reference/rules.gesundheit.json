@@ -1,0 +1,92 @@
+{
+  "rules": [
+    {
+      "key": "health_1",
+      "name": "Einkauf Apotheke/Drogerie",
+      "transaction_category": "Expense",
+      "category": "Leben",
+      "subcategory": "Gesundheit",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Card Purchase"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "APOTHEKE",
+            "CARELAND AG",
+            "LINSENMAX",
+            "OPTIK",
+            "KANTONSSPITAL"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [
+            "CAFETERIA"
+          ],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "health_2",
+      "name": "Krankenkasse",
+      "transaction_category": "Expense",
+      "category": "Leben",
+      "subcategory": "Krankenkasse",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Debit",
+        "transaction_type_detail": null,
+        "services": [
+          "Direct Debit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "SANITAS",
+            "CSS",
+            "SYMPANY"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    },
+    {
+      "key": "refund_2",
+      "name": "Rückerstattung: Krankenkasse",
+      "transaction_category": "Refund",
+      "category": "Leben",
+      "subcategory": "Krankenkasse",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Credit",
+        "transaction_type_detail": null,
+        "services": [
+          "Credit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "SANITAS",
+            "CSS",
+            "SYMPANY"
+          ],
+          "locations": [],
+          "include_keywords": [],
+          "exclude_keywords": [],
+          "counterparties": [],
+          "counterparty_ibans": []
+        }
+      }
+    }
+  ]
+}
