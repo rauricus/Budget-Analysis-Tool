@@ -142,13 +142,26 @@ uv run python doctor.py example --json
 
 The doctor categorizes the dataset in memory and reports:
 
+- **Input:** input files that overlap (the same booking in two files gets the same ID and is
+  exported and counted twice), and calendar months without any transaction between the
+  first and the last one.
+- **Stale output:** rows in `output/*.categorized.csv` whose category differs from what the
+  current rules and overrides give, transactions missing from `output/`, output rows
+  without a transaction, and a `metadata/months.json` that does not list exactly the input
+  months (a run with `--input-file` rewrites it with that file's months only). The reports
+  read these files, not the rules: rerun the pipeline before them.
 - **To review:** transactions won by a rule with a `review` question (see
   [Notes and review questions](#notes-and-review-questions)), dated after its
   `reviewed_until` and without an override. Grouped by rule, with question and note.
 - **Uncategorized:** every transaction left without a category after overrides.
 - **Rules** of the dataset itself (base rules are left out, a baseline naturally has rules a
-  dataset never uses): rules that never match; rules that match but always lose to a
-  higher-priority rule, with the winner; `amounts` entries that no transaction matches.
+  dataset never uses): rules that never match, with a hint when they belong to another
+  period (validity window outside the data, or a year in key or name the data does not
+  cover); rules that match but always lose to a higher-priority rule, with the winner;
+  `amounts` entries that no transaction matches; a `reviewed_until` after the end of the
+  last month with data, which would mark later imports as reviewed unseen.
+- **Equal-priority ties:** transactions where the two best matching rules, from any layer,
+  share a priority but differ in result, so that load order decides.
 - **Overrides:** unknown IDs; a `_row` hint that does not fit its transaction (other date,
   or most of its words missing from the row), which means IDs have shifted and the override
   now hits another booking; overrides that change nothing (only what the rule already

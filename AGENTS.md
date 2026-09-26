@@ -49,8 +49,9 @@ uv run python budget_report.py example --month 2025-03        # budget vs. actua
 the matched rule, its key and source file, and any override that was applied on top.
 `explain_rule_match.py` is the second one — it breaks a single transaction down into the
 individual checks a rule performs and shows which one failed. `doctor.py` looks at the whole
-dataset instead: open review questions, uncategorized rows, rules that never match or never
-win, and overrides whose `_row` no longer fits their ID. It writes nothing, so it is safe to
+dataset instead: overlapping or missing input, output that no longer matches the rules,
+open review questions, uncategorized rows, rules that never match, never win or tie, and
+overrides whose `_row` no longer fits their ID. It writes nothing, so it is safe to
 run against `data/example` and the private datasets.
 
 Never point the pipeline at `data/example` while investigating something unrelated: it

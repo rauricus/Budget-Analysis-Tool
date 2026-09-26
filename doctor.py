@@ -7,12 +7,15 @@ memory from the persisted registry, exactly as the pipeline would assign them.
 """
 
 import argparse
+import calendar
 import contextlib
+import csv
 import io
 import json
 import re
 import sys
-from collections import Counter
+from collections import Counter, defaultdict
+from datetime import date
 from dataclasses import replace
 from pathlib import Path
 from typing import Optional
@@ -27,8 +30,10 @@ from rule_engine import RuleEngine, resolve_rule_files
 from transaction_overrides import load_overrides_if_present
 
 CATEGORY_FIELDS = ("transaction_category", "category", "subcategory")
+EXPORT_CATEGORY_COLUMNS = ("Transaction Category", "Category", "Subcategory")
 ROW_DATE = re.compile(r"^(\d{2}\.\d{2}\.\d{4})")
 ROW_WORD = re.compile(r"[^\W\d_]{3,}")
+YEAR_IN_NAME = re.compile(r"(?<!\d)(20\d{2})(?!\d)")
 
 
 def _amount(txn: Transaction) -> float:
@@ -70,19 +75,53 @@ def _review_items(transactions, matching_map, overrides) -> list[dict]:
     return items
 
 
-def _rule_findings(own_rules: list[Rule], transactions, matching_map) -> dict:
-    """Rules of the dataset itself that never match, never win, or carry unused amounts.
+def _outcome(rule: Rule) -> tuple:
+    return (rule.transaction_category, rule.category, rule.subcategory)
 
-    Base rules are left out: a national baseline naturally has rules a dataset never uses.
+
+def _period_reason(rule: Rule, first: date, last: date, years: set) -> str:
+    """Why a rule that never matches may belong to another period, or "" if nothing hints so.
+
+    A year in key or name is only a hint, so it is only reported for rules that never match.
     """
+    if rule.valid_to and rule.valid_to < first:
+        return f"valid_to {rule.valid_to} is before the first transaction ({first})"
+    if rule.valid_from and rule.valid_from > last:
+        return f"valid_from {rule.valid_from} is after the last transaction ({last})"
+    named = set(YEAR_IN_NAME.findall(f"{rule.declared_key} {rule.name}"))
+    if named and not any(int(year) in years for year in named):
+        covered = ", ".join(str(year) for year in sorted(years))
+        return f"names {', '.join(sorted(named))}, the data covers {covered}"
+    return ""
+
+
+def _rule_findings(own_rules: list[Rule], transactions, matching_map) -> dict:
+    """Rules of the dataset itself that never match, never win, or carry unused amounts,
+    plus review dates beyond the data and equal-priority ties across all rules.
+
+    Base rules are left out of the first three: a national baseline naturally has rules a
+    dataset never uses. Ties are reported for any rule, since they decide a result.
+    """
+    dates = [txn.date.date() for txn in transactions if txn.date]
+    first, last = min(dates, default=None), max(dates, default=None)
+    years = {d.year for d in dates}
+
     matched_amounts: dict[str, set] = {rule.key: set() for rule in own_rules}
     wins: Counter = Counter()
     beaten_by: dict[str, Counter] = {rule.key: Counter() for rule in own_rules}
+    ties: Counter = Counter()
     for idx, txn in enumerate(transactions):
         matching = matching_map.get(idx) or []
         if not matching:
             continue
         wins[matching[0].key] += 1
+        # Equal priority leaves the result to load order (see AGENTS.md, "Traps").
+        if (
+            len(matching) > 1
+            and matching[0].priority == matching[1].priority
+            and _outcome(matching[0]) != _outcome(matching[1])
+        ):
+            ties[(matching[0].declared_key, matching[1].declared_key, matching[0].priority)] += 1
         for rule in matching:
             if rule.key in matched_amounts:
                 matched_amounts[rule.key].add(_amount(txn))
@@ -92,7 +131,8 @@ def _rule_findings(own_rules: list[Rule], transactions, matching_map) -> dict:
     never_matching, never_winning, unused_amounts = [], [], []
     for rule in own_rules:
         if not matched_amounts[rule.key]:
-            never_matching.append(_rule_label(rule))
+            reason = _period_reason(rule, first, last, years) if first else ""
+            never_matching.append({**_rule_label(rule), "reason": reason})
         elif wins[rule.key] == 0:
             never_winning.append({
                 **_rule_label(rule),
@@ -102,10 +142,104 @@ def _rule_findings(own_rules: list[Rule], transactions, matching_map) -> dict:
         # A rule that never matches is already reported; its amounts add nothing.
         if unused and matched_amounts[rule.key]:
             unused_amounts.append({**_rule_label(rule), "amounts": unused})
+
+    # Transactions imported later but dated up to reviewed_until would count as reviewed
+    # without ever having been seen. Exports cover whole months, so reviewing up to the end
+    # of the last month is fine even if its last booking is earlier.
+    month_end = date(last.year, last.month, calendar.monthrange(last.year, last.month)[1]) if last else None
+    review_after_data = [
+        {**_rule_label(rule), "reviewed_until": rule.reviewed_until.isoformat(), "month_end": month_end.isoformat()}
+        for rule in own_rules
+        if rule.reviewed_until and month_end and rule.reviewed_until > month_end
+    ]
+    priority_ties = [
+        {"winner": winner, "loser": loser, "priority": priority, "transactions": count}
+        for (winner, loser, priority), count in sorted(ties.items())
+    ]
     return {
         "never_matching": never_matching,
         "never_winning": never_winning,
         "unused_amounts": unused_amounts,
+        "review_after_data": review_after_data,
+        "priority_ties": priority_ties,
+    }
+
+
+def _input_months(transactions: list[Transaction]) -> list[str]:
+    """Months with at least one transaction, as 'YYYY-MM' like metadata/months.json."""
+    return sorted({txn.date.strftime("%Y-%m") for txn in transactions if txn.date})
+
+
+def _input_findings(all_transactions: list, input_months: list[str]) -> dict:
+    """Input files that overlap, and calendar months without any transaction.
+
+    IDs are assigned per file with a per-file occurrence counter, so the same booking in two
+    files gets the same ID in both — and is exported, and counted, twice.
+    """
+    files_by_id: dict[str, set] = defaultdict(set)
+    for path, txn in all_transactions:
+        files_by_id[txn.transaction_id].add(path.name)
+    overlaps = Counter(tuple(sorted(files)) for files in files_by_id.values() if len(files) > 1)
+
+    missing_months = []
+    if input_months:
+        year, month = map(int, input_months[0].split("-"))
+        while f"{year}-{month:02d}" < input_months[-1]:
+            if f"{year}-{month:02d}" not in input_months:
+                missing_months.append(f"{year}-{month:02d}")
+            year, month = (year + 1, 1) if month == 12 else (year, month + 1)
+
+    return {
+        "overlapping_files": [
+            {"files": list(files), "transactions": count} for files, count in sorted(overlaps.items())
+        ],
+        "missing_months": missing_months,
+    }
+
+
+def _output_findings(run_dir: Path, final: list[Transaction], input_months: list[str]) -> dict:
+    """Differences between what the pipeline last wrote and the current input and rules.
+
+    budget_report.py and the Excel report read the categorized CSVs, not the rules, and
+    take their months from metadata/months.json. After a rule or override change without a
+    pipeline run, or after a run with --input-file (which rewrites months.json with that
+    file's months only), they silently work on an old or partial state.
+    Uncategorized rows are skipped: --use-input-category-fallback fills them on export.
+    """
+    months_path = run_dir / "metadata" / "months.json"
+    recorded_months = []
+    if months_path.exists():
+        with open(months_path, "r", encoding="utf-8") as f:
+            recorded_months = json.load(f)
+
+    exported: dict[str, tuple] = {}
+    for path in sorted((run_dir / "output").glob("*.categorized.csv")):
+        with open(path, "r", encoding="utf-8", newline="") as f:
+            for row in csv.DictReader(f, delimiter=";"):
+                exported[row["Transaction ID"]] = tuple(row.get(c) or "" for c in EXPORT_CATEGORY_COLUMNS)
+
+    current = {txn.transaction_id: txn for txn in final}
+    differs = []
+    for tx_id, txn in current.items():
+        if tx_id not in exported or not txn.auto_category:
+            continue
+        expected = (
+            txn.auto_transaction_category or "",
+            txn.auto_category or "",
+            txn.auto_subcategory or "",
+        )
+        if exported[tx_id] != expected:
+            differs.append({
+                **_transaction_item(txn),
+                "exported": " / ".join(exported[tx_id]),
+                "current": " / ".join(expected),
+            })
+    return {
+        "differs": differs,
+        "missing_in_output": [_transaction_item(txn) for tx_id, txn in current.items() if tx_id not in exported],
+        "extra_in_output": sorted(set(exported) - set(current)),
+        "months_not_recorded": [m for m in input_months if m not in recorded_months],
+        "recorded_months_without_input": [m for m in recorded_months if m not in input_months],
     }
 
 
@@ -176,7 +310,8 @@ def build_doctor_report(run_dir: Path) -> dict:
     with contextlib.redirect_stdout(io.StringIO()):
         engine = RuleEngine(base_rule_files, overlay_path=overlay_rule_files)
         index = _build_transactions_index(run_dir)
-    transactions = [txn for _, txn in index["all_transactions"]]
+    all_transactions = index["all_transactions"]
+    transactions = [txn for _, txn in all_transactions]
     transactions, matching_map = engine.categorize_batch(transactions)
 
     overrides_file = load_overrides_if_present(str(run_dir / "transaction_overrides.json"))
@@ -188,6 +323,7 @@ def build_doctor_report(run_dir: Path) -> dict:
     uncategorized = [_transaction_item(t) for t in final if not t.auto_category]
 
     own_rules = [rule for rule in engine.rules if rule.source in own_sources]
+    input_months = _input_months(transactions)
     return {
         "run_dir": run_dir.as_posix(),
         "transactions": len(transactions),
@@ -198,6 +334,8 @@ def build_doctor_report(run_dir: Path) -> dict:
         "uncategorized": uncategorized,
         "rules_findings": _rule_findings(own_rules, transactions, matching_map),
         "override_findings": _override_findings(overrides, transactions),
+        "input_findings": _input_findings(all_transactions, input_months),
+        "output_findings": _output_findings(run_dir, final, input_months),
     }
 
 
@@ -207,6 +345,8 @@ def count_findings(report: dict) -> int:
         + len(report["uncategorized"])
         + sum(len(v) for v in report["rules_findings"].values())
         + sum(len(v) for v in report["override_findings"].values())
+        + sum(len(v) for v in report["input_findings"].values())
+        + sum(len(v) for v in report["output_findings"].values())
     )
 
 
@@ -221,18 +361,55 @@ def _render_text_report(report: dict) -> str:
         f"({report['own_rules']} from this dataset), {report['overrides']} overrides",
     ]
 
-    def section(title: str, items: list, render, count: Optional[int] = None) -> None:
+    def section(title: str, items: list, render, count: Optional[int] = None, limit: Optional[int] = None) -> None:
         if not items:
             return
         lines.append("")
         lines.append(f"{title} ({len(items) if count is None else count})")
-        for item in items:
+        for item in items[:limit]:
             lines.extend(f"  {line}" for line in render(item))
+        if limit is not None and len(items) > limit:
+            lines.append(f"  ... and {len(items) - limit} more")
 
     # Grouped by rule, so that question and note are printed once per rule.
     by_rule: dict[str, list] = {}
     for item in report["to_review"]:
         by_rule.setdefault(item["rule"], []).append(item)
+    inputs = report["input_findings"]
+    section(
+        "Input files that overlap (their shared transactions are counted twice)",
+        inputs["overlapping_files"],
+        lambda i: [f"{' + '.join(i['files'])}: {i['transactions']} transaction(s)"],
+    )
+    section("Months without any transaction", inputs["missing_months"], lambda m: [m])
+
+    outputs = report["output_findings"]
+    stale = "rerun categorize_transactions.py before the reports"
+    section(
+        f"Output rows that differ from the current rules ({stale})",
+        outputs["differs"],
+        lambda i: [f"{_format_transaction(i)}", f"    output: {i['exported']}  now: {i['current']}"],
+        limit=10,
+    )
+    section(
+        f"Transactions missing from output/ ({stale})",
+        outputs["missing_in_output"],
+        lambda i: [_format_transaction(i)],
+        limit=10,
+    )
+    section(
+        f"Output rows without a transaction ({stale})",
+        outputs["extra_in_output"],
+        lambda tx_id: [tx_id],
+        limit=10,
+    )
+    section(f"Input months missing from metadata/months.json ({stale})", outputs["months_not_recorded"], lambda m: [m])
+    section(
+        f"Months in metadata/months.json without input ({stale})",
+        outputs["recorded_months_without_input"],
+        lambda m: [m],
+    )
+
     section(
         "To review",
         [{"rule": rule, "items": items} for rule, items in by_rule.items()],
@@ -247,7 +424,11 @@ def _render_text_report(report: dict) -> str:
     section("Uncategorized", report["uncategorized"], lambda i: [_format_transaction(i)])
 
     rules = report["rules_findings"]
-    section("Rules that never match", rules["never_matching"], lambda i: [f"{i['key']}  ({i['source']})"])
+    section(
+        "Rules that never match",
+        rules["never_matching"],
+        lambda i: [f"{i['key']}  ({i['source']})" + (f"  -- {i['reason']}" if i["reason"] else "")],
+    )
     section(
         "Rules that match but never win",
         rules["never_winning"],
@@ -260,6 +441,16 @@ def _render_text_report(report: dict) -> str:
         "Amounts that never match",
         rules["unused_amounts"],
         lambda i: [f"{i['key']}: {', '.join(f'{a:.2f}' for a in i['amounts'])}  ({i['source']})"],
+    )
+    section(
+        "Review dates after the last transaction (later imports would count as reviewed)",
+        rules["review_after_data"],
+        lambda i: [f"{i['key']}: reviewed_until {i['reviewed_until']}, data ends {i['month_end']}  ({i['source']})"],
+    )
+    section(
+        "Equal-priority rules with different results (load order decides)",
+        rules["priority_ties"],
+        lambda i: [f"{i['winner']} over {i['loser']} at priority {i['priority']}: {i['transactions']} transaction(s)"],
     )
 
     overrides = report["override_findings"]
@@ -293,8 +484,9 @@ def _render_text_report(report: dict) -> str:
 def main(argv: Optional[list[str]] = None) -> int:
     parser = argparse.ArgumentParser(
         description=(
-            "List what in a dataset needs attention: transactions to review, uncategorized "
-            "transactions, rules that never match or never win, and suspicious overrides. "
+            "List what in a dataset needs attention: overlapping or missing input, stale "
+            "output, transactions to review, uncategorized transactions, rules that never "
+            "match, never win or tie, and suspicious overrides. "
             "Writes nothing. Exits with 1 when there are findings."
         )
     )
