@@ -39,6 +39,7 @@ uv run pytest tests/test_rule_matching.py                     # one module
 uv run python categorize_transactions.py example --debug      # the main loop
 uv run python categorize_transactions.py example --input-file export.202503.csv
 uv run python explain_rule_match.py example --line-number 42  # why did/didn't a rule match
+uv run python doctor.py example                               # what needs attention, read-only
 uv run python suggest_override_ids.py example                 # after an ID registry reset
 uv run python analyze_by_category.py example                  # Excel report
 uv run python budget_report.py example --month 2025-03        # budget vs. actual
@@ -47,7 +48,10 @@ uv run python budget_report.py example --month 2025-03        # budget vs. actua
 `--debug` on the pipeline is the primary diagnostic: it prints one line per source row with
 the matched rule, its key and source file, and any override that was applied on top.
 `explain_rule_match.py` is the second one — it breaks a single transaction down into the
-individual checks a rule performs and shows which one failed.
+individual checks a rule performs and shows which one failed. `doctor.py` looks at the whole
+dataset instead: open review questions, uncategorized rows, rules that never match or never
+win, and overrides whose `_row` no longer fits their ID. It writes nothing, so it is safe to
+run against `data/example` and the private datasets.
 
 Never point the pipeline at `data/example` while investigating something unrelated: it
 rewrites that dataset's `output/` and `metadata/`, which are committed. Copy the dataset to
@@ -78,6 +82,7 @@ Entry points live at the repository root, the library under `src/`:
 |---|---|
 | `categorize_transactions.py` | pipeline driver, dataset/rule resolution, debug report |
 | `explain_rule_match.py` | per-transaction match diagnostics, text or `--json` |
+| `doctor.py` | dataset-wide findings (reviews, dead rules, suspicious overrides), text or `--json`, read-only |
 | `suggest_override_ids.py` | old→new ID suggestions after a registry reset |
 | `analyze_by_category.py` | Excel report (summary, overviews, category, subcategory, transactions, top payees); owns `spending_rows` |
 | `budget_report.py` | `budget.json` loading and validation, reserves, availability and budget vs. actual on the console |
@@ -107,7 +112,11 @@ do not introduce `from src.x import y`.
 - **Validation** of the rule schema is in `RuleEngine._parse_rules` and is strict: unknown
   or missing `transaction_category`, a `priority` outside 1–10, a malformed or inverted
   validity window, a duplicate key, an `overlay_of` pointing at a non-existent base key, or
-  an overlay key colliding with a base key all raise at load time.
+  an overlay key colliding with a base key all raise at load time. Unknown rule fields are
+  not rejected.
+- **Rule notes and review questions** (`_note`, `review`, `reviewed_until`) are parsed onto
+  `Rule` but never enter `explain_match`; only `doctor.py` reads them. Keep it that way —
+  a review marker that changed a result would make the doctor's list lie.
 - **Parsers** are regex strategies implementing `supports(text)` / `parse(text)` from
   `src/notification/base.py`. The registry in `src/notification/facade.py` tries them in
   list order and takes the first parser that claims the text, so order is significant —

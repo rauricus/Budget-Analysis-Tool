@@ -20,6 +20,7 @@ Project documentation:
 - Optional validity window per rule (`valid_from` / `valid_to`) for rules that apply only during a defined period
 - Optional exact-amount filter per rule (`amounts`) for transactions that differ in nothing but their amount
 - Transaction-level overrides by transaction ID, including splitting one booking across categories
+- Rule notes and review questions, and a read-only `doctor.py` listing what in a dataset needs attention
 - Structured CSV export with parsed service fields
 - Excel report across all categorized months, with every transaction and the top payees
 - Budget vs. actual per category or subcategory, with reserves set aside from planned income
@@ -128,6 +129,32 @@ uv run python explain_rule_match.py example --line-number 9 --no-overlays
 
 Further options: `--no-overrides` (ignore `transaction_overrides.json` for the final decision)
 and `--max-non-matching N` (how many non-matching candidate rules to include; default 5).
+
+### Check a dataset (doctor)
+
+```bash
+# List what needs attention; writes nothing to output/ or metadata/
+uv run python doctor.py example
+
+# Same report as JSON
+uv run python doctor.py example --json
+```
+
+The doctor categorizes the dataset in memory and reports:
+
+- **To review:** transactions won by a rule with a `review` question (see
+  [Notes and review questions](#notes-and-review-questions)), dated after its
+  `reviewed_until` and without an override. Grouped by rule, with question and note.
+- **Uncategorized:** every transaction left without a category after overrides.
+- **Rules** of the dataset itself (base rules are left out, a baseline naturally has rules a
+  dataset never uses): rules that never match; rules that match but always lose to a
+  higher-priority rule, with the winner; `amounts` entries that no transaction matches.
+- **Overrides:** unknown IDs; a `_row` hint that does not fit its transaction (other date,
+  or most of its words missing from the row), which means IDs have shifted and the override
+  now hits another booking; overrides that change nothing (only what the rule already
+  assigns, or only a `_note`); overrides without `_row`, which the remap helper cannot follow.
+
+Exit code 0 means no findings, 1 findings, 2 an error loading the dataset.
 
 ### Migrate override IDs
 
@@ -265,6 +292,7 @@ src/
 
 categorize_transactions.py            # Pipeline entry point
 explain_rule_match.py                 # CLI helper to explain rule matching per transaction
+doctor.py                             # CLI helper listing what in a dataset needs attention
 suggest_override_ids.py               # CLI helper for override ID remapping
 analyze_by_category.py                # Excel report generator
 budget_report.py                      # Budget vs. actual comparison (console)
@@ -420,6 +448,30 @@ enough, while *all* entries of `locations` and `include_keywords` must be presen
 with two include keywords therefore stops matching as soon as a creditor rewords half of
 its reference. `explain_rule_match.py` reports which logic applies per field, as
 `expected_any` versus `expected_all`.
+
+### Notes and review questions
+
+Three optional top-level rule fields document a rule and mark its matches for review. None
+of them affects matching; `doctor.py` reads them.
+
+```json
+{
+  "key": "health_2_private",
+  "overlay_of": "health_2",
+  "_note": "Direct debits do not name the insured person; the child's amounts have their own rule.",
+  "review": "Is this the child's cost share? Then add the amount to kk_child_2026.",
+  "reviewed_until": "2026-08-31",
+  ...
+}
+```
+
+- `_note`: free text on why the rule exists and how to maintain it. Shown with review items.
+- `review`: a question to ask about every transaction the rule wins. Meant for a default
+  rule behind which a case sometimes needs another rule or an override.
+- `reviewed_until`: ISO date; wins up to and including it count as reviewed. Move it forward
+  after each review. Requires `review`.
+
+A transaction with an override never shows up for review: the override is the decision.
 
 ### No fallback category
 
@@ -591,7 +643,8 @@ The structured export uses these columns:
 4. Add/refine parser(s) in `src/notification/parsers/` if a notification text is not parsed.
 5. Add/refine rules in the fitting rule file of your dataset (`rules.json` or a `rules.<topic>.json`).
 6. Decide explicitly for each new/changed rule whether it stays private or belongs in `data/reference` as a generic baseline improvement.
-7. Repeat until categorization quality is acceptable, then run `analyze_by_category.py`.
+7. Run `uv run python doctor.py <run_dir>` and work through its list: open review questions, rules that never match or never win, overrides that no longer fit.
+8. Repeat until categorization quality is acceptable, then run `analyze_by_category.py`.
 
 Three skills in `.agents/skills/` support this loop: `fix-uncategorized-transactions`,
 `update-rules-to-categorise-additional-entry`, and `handle-no-notification-parser-warnings`.
