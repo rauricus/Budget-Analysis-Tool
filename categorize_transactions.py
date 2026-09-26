@@ -12,7 +12,7 @@ from typing import Optional, Sequence
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 from import_handler import ImportHandler
-from rule_engine import RuleEngine, resolve_rule_files
+from rule_engine import RuleEngine, apply_rule_splits, resolve_rule_files
 from export_handler import ExportHandler
 from transaction_id_registry import TransactionIdRegistry
 from transaction_overrides import load_overrides_if_present
@@ -105,6 +105,8 @@ def _print_debug_report(
                 f"Rule matched: '{best_match.key}' '{best_match.name}' from {best_match.source} "
                 f"-> {category_label} | {_transaction_debug_label(txn)}"
             )
+            if best_match.split:
+                base_message += f" | split by rule into {len(best_match.split)} parts"
         else:
             row_text = txn.source_row_text or _transaction_debug_label(txn)
             base_message = f"No matching rule | {row_text}"
@@ -313,21 +315,27 @@ def main(argv: Optional[Sequence[str]] = None):
         transactions_before_apply = list(transactions)
         matching_rules_map_before_apply = dict(matching_rules_map)
 
+        # Build a lookup from transaction_id → matched rules before overrides and splits
+        id_to_rules = {
+            t.transaction_id: matching_rules_map.get(i)
+            for i, t in enumerate(transactions)
+        }
         if transaction_overrides:
-            # Build a lookup from transaction_id → matched rules before applying transaction overrides
-            id_to_rules = {
-                t.transaction_id: matching_rules_map.get(i)
-                for i, t in enumerate(transactions)
-            }
             transactions = transaction_overrides.apply(transactions)
-            # Rebuild matching_rules_map with new 0-based indices. Split parts carry
-            # a suffixed ID (TX-000042.1), so look them up by the base ID.
-            matching_rules_map = {
-                i: id_to_rules[base_id]
-                for i, t in enumerate(transactions)
-                for base_id in [t.transaction_id.split(".", 1)[0]]
-                if id_to_rules.get(base_id) is not None
-            }
+        # Rule splits run after overrides, so that an override can still decide instead.
+        transactions = apply_rule_splits(
+            transactions,
+            {tx_id: rules[0] if rules else None for tx_id, rules in id_to_rules.items()},
+            transaction_overrides.overrides if transaction_overrides else None,
+        )
+        # Rebuild matching_rules_map with new 0-based indices. Split parts carry
+        # a suffixed ID (TX-000042.1), so look them up by the base ID.
+        matching_rules_map = {
+            i: id_to_rules[base_id]
+            for i, t in enumerate(transactions)
+            for base_id in [t.transaction_id.split(".", 1)[0]]
+            if id_to_rules.get(base_id) is not None
+        }
 
         if debug:
             _print_debug_report(

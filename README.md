@@ -300,6 +300,7 @@ src/
 ├── rule_engine.py                    # Rule loading, overlays, categorization
 ├── models/                           # Transaction and Rule (incl. matching logic)
 ├── transaction_overrides.py          # transaction_overrides.json handling
+├── transaction_split.py              # Split parts, shared by overrides and rules
 ├── override_id_remap.py              # Old -> new ID suggestions
 └── export_handler.py                 # Categorized CSV export
 
@@ -462,6 +463,33 @@ with two include keywords therefore stops matching as soon as a creditor rewords
 its reference. `explain_rule_match.py` reports which logic applies per field, as
 `expected_any` versus `expected_all`.
 
+### Splitting every match of a rule
+
+A rule can split each transaction it wins, for bookings that always cover several things in
+fixed shares, such as one premium for two insured persons:
+
+```json
+{
+  "key": "kk_premium_2026",
+  "transaction_category": "Expense",
+  "category": "Leben",
+  "subcategory": "Krankenkasse",
+  "split": [
+    { "amount": 169.20, "category": "Leben", "subcategory": "Familie", "_note": "Child's premium" },
+    { "_note": "Own premium" }
+  ],
+  ...
+}
+```
+
+- The parts follow the rules of [splitting a transaction](#splitting-a-transaction) by override,
+  with one addition: a part without `category` takes the rule's category and subcategory.
+- The split never affects matching. It runs after the overrides: a transaction whose override
+  sets `transaction_category`, `category`, `subcategory`, `split` or `hidden` is not split by
+  the rule; an override with only `_note` or `_row` does not stop it.
+- Pair it with `amounts` and a validity window: the parts are fixed amounts, and a transaction
+  smaller than their sum aborts the run.
+
 ### Notes and review questions
 
 Three optional top-level rule fields document a rule and mark its matches for review. None
@@ -560,6 +588,8 @@ can be split so that each part lands in its own category:
   `subcategory` are applied first.
 - The Excel report and the budget treat the parts as ordinary rows, so "Top Payees" counts a
   split transaction once per part.
+- A rule can split all its matches the same way; see
+  [Splitting every match of a rule](#splitting-every-match-of-a-rule).
 
 `data/example` splits `TX-000048` into two and `TX-000076` into three parts.
 

@@ -4,6 +4,7 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Optional, Union
 from models import Rule, Transaction
+from transaction_split import split_transaction, validate_split_parts
 
 
 logger = logging.getLogger(__name__)
@@ -42,6 +43,35 @@ def resolve_rule_files(run_dir: Path) -> tuple[Optional[str], list[Path], list[P
     if not base_name:
         return None, run_files, []
     return base_name, discover_rule_files(Path("data") / base_name), run_files
+
+
+# Override fields that decide a transaction's categories; with one of them present the
+# override wins and the rule's split is not applied.
+OVERRIDE_DECIDING_FIELDS = ("hidden", "split", "transaction_category", "category", "subcategory")
+
+
+def apply_rule_splits(
+    transactions: list[Transaction],
+    winners: dict[str, Optional[Rule]],
+    overrides: Optional[dict] = None,
+) -> list[Transaction]:
+    """Split every transaction whose winning rule carries a `split`, after overrides ran.
+
+    *winners* maps a transaction ID to the rule that won it. A transaction whose override
+    sets categories, `split` or `hidden` is left alone: the override is the decision. An
+    override with only `_note` or `_row` does not stop the split.
+    """
+    result: list[Transaction] = []
+    for txn in transactions:
+        rule = winners.get(txn.transaction_id)
+        entry = (overrides or {}).get(txn.transaction_id) or {}
+        if rule is None or not rule.split or any(field in entry for field in OVERRIDE_DECIDING_FIELDS):
+            result.append(txn)
+            continue
+        result.extend(split_transaction(
+            txn, rule.split, rule.source, rule.category or None, rule.subcategory or None,
+        ))
+    return result
 
 
 def _as_path_list(paths: Optional[PathsArg]) -> list[Path]:
@@ -155,6 +185,14 @@ class RuleEngine:
                     f"'{rule_data.get('key', '?')}' ('{rule_data.get('name', '')}') in {source}"
                 )
 
+            split = rule_data.get("split")
+            if split is not None:
+                validate_split_parts(
+                    split,
+                    f"in rule '{rule_data.get('key', '?')}' ('{rule_data.get('name', '')}') in {source}",
+                    category_optional=True,
+                )
+
             key = rule_data["key"]
             if key in result:
                 raise ValueError(
@@ -192,6 +230,7 @@ class RuleEngine:
                 note=rule_data.get("_note") or "",
                 review=rule_data.get("review") or "",
                 reviewed_until=reviewed_until,
+                split=split or [],
 
                 source=source,
             )

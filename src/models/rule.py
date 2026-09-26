@@ -37,6 +37,10 @@ class Rule:
     review: str = ""  # Question to ask about every transaction this rule wins
     reviewed_until: Optional[date] = None  # Transactions up to this date are already reviewed
 
+    # Parts to split every transaction this rule wins into, applied after overrides. Never
+    # affects matching; a part without category takes the rule's category and subcategory.
+    split: list[dict] = field(default_factory=list)
+
     source: str = ""  # originating rules file (set by RuleEngine)
 
     @staticmethod

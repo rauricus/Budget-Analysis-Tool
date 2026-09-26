@@ -26,7 +26,7 @@ from categorize_transactions import _resolve_run_directory
 from explain_rule_match import _build_transactions_index
 from models import Rule, Transaction
 from override_id_remap import normalize_row_text
-from rule_engine import RuleEngine, resolve_rule_files
+from rule_engine import RuleEngine, apply_rule_splits, resolve_rule_files
 from transaction_overrides import load_overrides_if_present
 
 CATEGORY_FIELDS = ("transaction_category", "category", "subcategory")
@@ -320,6 +320,10 @@ def build_doctor_report(run_dir: Path) -> dict:
     final = [replace(txn) for txn in transactions]
     if overrides_file:
         final = overrides_file.apply(final)
+    winners = {
+        txn.transaction_id: (matching_map.get(idx) or [None])[0] for idx, txn in enumerate(transactions)
+    }
+    final = apply_rule_splits(final, winners, overrides)
     uncategorized = [_transaction_item(t) for t in final if not t.auto_category]
 
     own_rules = [rule for rule in engine.rules if rule.source in own_sources]

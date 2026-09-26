@@ -94,6 +94,7 @@ Entry points live at the repository root, the library under `src/`:
 | `src/rule_engine.py` | rule file discovery (`resolve_rule_files`), loading, schema validation, overlay merge, candidate filtering |
 | `src/transaction_id_registry.py` | fingerprint → ID mapping, persisted per dataset |
 | `src/transaction_overrides.py` | override file loading, validation, application |
+| `src/transaction_split.py` | split validation and application, shared by overrides and rules |
 | `src/override_id_remap.py` | `_row`-hint-based remap suggestions |
 
 ### Import convention
@@ -198,11 +199,13 @@ These are the things a change must not quietly break.
 - **An overlay rule keeps two identities.** `key` becomes the base key it replaces so the
   engine can match it, while `declared_key` stays what the file declared and is what the
   export and debug output show. Read both before changing overlay handling.
-- **Split rows carry a suffixed ID.** A `split` override turns `TX-000042` into
-  `TX-000042.1`, `.2`, … after ID assignment, so the export's `Transaction ID` is no longer
+- **Split rows carry a suffixed ID.** A `split` override or a rule with `split` turns
+  `TX-000042` into `TX-000042.1`, `.2`, … after ID assignment, so the export's `Transaction ID` is no longer
   always a registry ID. Anything that maps an exported row back to its override, its rule or
   the registry must use the part before the dot, as the `matching_rules_map` rebuild in
-  `categorize_transactions.py` does.
+  `categorize_transactions.py` does. Rule splits run after the overrides (`apply_rule_splits`
+  in `src/rule_engine.py`), and an override that sets categories, `split` or `hidden` stops
+  them; both share `src/transaction_split.py`.
 - **Argument parsing is inconsistent.** `categorize_transactions.py` and
   `analyze_by_category.py` parse `sys.argv` by hand; adding a flag there means editing the
   hand-rolled block *and* both usage strings. The other tools use `argparse`.
