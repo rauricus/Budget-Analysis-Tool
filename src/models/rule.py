@@ -31,7 +31,12 @@ class Rule:
     valid_from: Optional[date] = None  # Optional filter: rule applies only from this date (inclusive)
     valid_to: Optional[date] = None  # Optional filter: rule applies only up to this date (inclusive)
     amounts: list[float] = field(default_factory=list)  # Optional filter; exact amount in CHF, one must match
-    
+
+    # Documentation and review markers. They never affect matching; doctor.py reads them.
+    note: str = ""  # `_note`: why the rule exists and how to maintain it
+    review: str = ""  # Question to ask about every transaction this rule wins
+    reviewed_until: Optional[date] = None  # Transactions up to this date are already reviewed
+
     source: str = ""  # originating rules file (set by RuleEngine)
 
     @staticmethod

@@ -138,6 +138,23 @@ class RuleEngine:
                     f"{amounts!r}. Expected a list of positive numbers"
                 )
 
+            for text_field in ("_note", "review"):
+                value = rule_data.get(text_field)
+                if value is not None and not isinstance(value, str):
+                    raise ValueError(
+                        f"Invalid '{text_field}' for rule "
+                        f"'{rule_data.get('key', '?')}' ('{rule_data.get('name', '')}') in {source}: "
+                        f"{value!r}. Expected a string"
+                    )
+            reviewed_until = RuleEngine._parse_validity_date(
+                rule_data.get("reviewed_until"), "reviewed_until", rule_data, source
+            )
+            if reviewed_until and not rule_data.get("review"):
+                raise ValueError(
+                    "'reviewed_until' without 'review' for rule "
+                    f"'{rule_data.get('key', '?')}' ('{rule_data.get('name', '')}') in {source}"
+                )
+
             key = rule_data["key"]
             if key in result:
                 raise ValueError(
@@ -171,7 +188,11 @@ class RuleEngine:
                 valid_from=valid_from,
                 valid_to=valid_to,
                 amounts=[float(a) for a in amounts],
-                
+
+                note=rule_data.get("_note") or "",
+                review=rule_data.get("review") or "",
+                reviewed_until=reviewed_until,
+
                 source=source,
             )
             result[rule.key] = rule
