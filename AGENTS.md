@@ -85,7 +85,7 @@ Entry points live at the repository root, the library under `src/`:
 | `src/transaction_parser.py` | row → `Transaction`, PostFinance amount/date formats |
 | `src/notification/` | parser interface, registry facade, one parser per service |
 | `src/models/` | `Transaction` and `Rule` dataclasses; `Rule` owns the matching logic |
-| `src/rule_engine.py` | rule loading, schema validation, overlay merge, candidate filtering |
+| `src/rule_engine.py` | rule file discovery (`resolve_rule_files`), loading, schema validation, overlay merge, candidate filtering |
 | `src/transaction_id_registry.py` | fingerprint → ID mapping, persisted per dataset |
 | `src/transaction_overrides.py` | override file loading, validation, application |
 | `src/override_id_remap.py` | `_row`-hint-based remap suggestions |
@@ -119,7 +119,11 @@ do not introduce `from src.x import y`.
 ## Datasets
 
 A run dataset is any directory with `rules.json` and `input/`; `output/` and `metadata/`
-are generated, and `budget.json` is optional. Three live here:
+are generated, and `budget.json` is optional. Any `rules.<topic>.json` next to `rules.json`
+is discovered and loaded as part of the same rule set; only `rules.json` may carry `"base"`,
+and keys must be unique across the files. `resolve_rule_files` in `src/rule_engine.py` is
+the one place that resolves a dataset into base and overlay files — use it rather than
+reading `rules.json` directly. Three datasets live here:
 
 - `data/example` — standalone, committed, used by tests and documentation. Keep it stable
   and reproducible: changing it moves test expectations. Merchants may be synthetic.
@@ -128,8 +132,10 @@ are generated, and `budget.json` is optional. Three live here:
   datasets inside. Each declares `"base": "reference"` and overlays it.
 
 Rules for changes: parser examples and test fixtures go to `data/example`; generic,
-nationally reusable rules go to `data/reference/rules.json`; anything personal, local or
-contributor-specific goes to the private dataset's own `rules.json`.
+nationally reusable rules go to the fitting file in `data/reference`; anything personal,
+local or contributor-specific goes to the fitting file of the private dataset.
+`data/reference` and the private datasets are split by topic (`rules.ferien.json`,
+`rules.gastro.json`, `rules.wohnen.json`, …); `data/example` stays a single file.
 
 ## Invariants
 
@@ -173,6 +179,12 @@ These are the things a change must not quietly break.
   check what is left, not only what was removed.
 - **Rules are evaluated by descending priority, not by file order.** Sorting a rules file
   by key is a readability choice only.
+- **Ties between equal priorities are resolved by load order.** `sorted` is stable, so of
+  two matching rules with the same priority the one loaded first wins: base before overlay,
+  `rules.json` before the `rules.<topic>.json` files, those alphabetically. Moving a rule to
+  another file can therefore change a result. Most reference rules share priority 5, so
+  when a rule should win a known conflict, give it a higher priority or add an
+  `exclude_keywords` entry to the other; do not rely on file placement.
 - **An overlay rule keeps two identities.** `key` becomes the base key it replaces so the
   engine can match it, while `declared_key` stays what the file declared and is what the
   export and debug output show. Read both before changing overlay handling.

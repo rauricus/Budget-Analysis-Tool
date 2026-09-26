@@ -11,31 +11,18 @@ sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 from categorize_transactions import _resolve_run_directory
 from import_handler import ImportHandler
-from rule_engine import RuleEngine
+from rule_engine import RuleEngine, resolve_rule_files
 from transaction_id_registry import TransactionIdRegistry
 from transaction_overrides import load_overrides_if_present
 
 
-def _resolve_rules(run_dir: Path) -> tuple[str, Optional[str], Optional[str]]:
-    """Resolve base rules, overlay path, and overrides path for a run directory."""
-    rules_file = run_dir / "rules.json"
-    if not rules_file.exists():
-        raise FileNotFoundError(f"Rules file not found: {rules_file}")
-
-    with open(rules_file, "r", encoding="utf-8") as f:
-        rules_data = json.load(f)
-
-    base_name = rules_data.get("base")
-    if base_name:
-        base_rules_path = str(Path("data") / base_name / "rules.json")
-        overlay_path: Optional[str] = str(rules_file)
-    else:
-        base_rules_path = str(rules_file)
-        overlay_path = None
+def _resolve_rules(run_dir: Path) -> tuple[list[Path], list[Path], Optional[str]]:
+    """Resolve base rule files, overlay rule files, and overrides path for a run directory."""
+    _, base_rule_files, overlay_rule_files = resolve_rule_files(run_dir)
 
     overrides_file = run_dir / "transaction_overrides.json"
     overrides_path = str(overrides_file) if overrides_file.exists() else None
-    return base_rules_path, overlay_path, overrides_path
+    return base_rule_files, overlay_rule_files, overrides_path
 
 
 def _build_transactions_index(run_dir: Path) -> dict:
@@ -239,11 +226,11 @@ def build_explain_report(
     max_non_matching: int,
 ) -> dict:
     """Build full explain report for one selected transaction."""
-    base_rules_path, overlay_path, overrides_path = _resolve_rules(run_dir)
+    base_rule_files, overlay_rule_files, overrides_path = _resolve_rules(run_dir)
 
-    effective_overlay_path = None if no_overlays else overlay_path
-    overlay_source = Path(effective_overlay_path).as_posix() if effective_overlay_path else None
-    engine = RuleEngine(base_rules_path, overlay_path=effective_overlay_path, debug=False)
+    effective_overlay_files = [] if no_overlays else overlay_rule_files
+    overlay_sources = {path.as_posix() for path in effective_overlay_files}
+    engine = RuleEngine(base_rule_files, overlay_path=effective_overlay_files, debug=False)
     index_data = _build_transactions_index(run_dir)
     selected_file, txn = _select_transaction(index_data, transaction_id, line_number, input_file)
 
@@ -253,7 +240,7 @@ def build_explain_report(
     matched_rules = []
     for rule in candidate_rules:
         explanation = rule.explain_match(txn)
-        is_overlay_rule = overlay_source is not None and rule.source == overlay_source
+        is_overlay_rule = rule.source in overlay_sources
         item = {
             "key": rule.declared_key,
             "name": rule.name,
@@ -318,7 +305,7 @@ def build_explain_report(
             "name": target_rule.name,
             "priority": target_rule.priority,
             "source": target_rule.source,
-            "rule_layer": "overlay" if (overlay_source is not None and target_rule.source == overlay_source) else "base",
+            "rule_layer": "overlay" if target_rule.source in overlay_sources else "base",
             "overlay_of": target_rule.overlay_of,
             "in_candidate_scope": target_rule.key in candidate_keys or target_rule.declared_key in candidate_keys,
             "matched": target_explanation["matched"],

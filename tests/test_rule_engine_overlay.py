@@ -10,7 +10,7 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from models import Transaction
-from rule_engine import RuleEngine
+from rule_engine import RuleEngine, discover_rule_files, resolve_rule_files
 
 
 def _rule(key, category="Kategorie A", subcategory="", priority=5, merchant="TESTLADEN", name=None, overlay_of=None):
@@ -183,7 +183,7 @@ class TestOverlay:
         RuleEngine(str(base), overlay_path=str(overlay), debug=True)
 
         captured = capsys.readouterr()
-        assert f"Applied overlay {overlay}: 1 replaced, 0 added" in captured.out
+        assert "Applied overlay (1 file(s)): 1 replaced, 0 added" in captured.out
         assert f"Overlay replacement 'rule_1': 'Regel rule_1' from {base} -> 'Neu' from {overlay}" in captured.out
 
     def test_categorize_batch_emits_no_per_row_debug_output(self, tmp_path, capsys):
@@ -324,3 +324,81 @@ class TestOverlay:
 
         categorized, _ = engine.categorize_batch([transaction])
         assert categorized[0].auto_transaction_category == "Expense"
+
+
+def _write_data(path, data):
+    path.write_text(json.dumps(data), encoding="utf-8")
+
+
+class TestSplitRuleFiles:
+    def test_discover_lists_main_file_first_then_parts_by_name(self, tmp_path):
+        _write(tmp_path / "rules.json", [])
+        _write(tmp_path / "rules.zeta.json", [])
+        _write(tmp_path / "rules.alpha.json", [])
+        _write(tmp_path / "other.json", [])
+
+        files = discover_rule_files(tmp_path)
+
+        assert [f.name for f in files] == ["rules.json", "rules.alpha.json", "rules.zeta.json"]
+
+    def test_discover_requires_main_file(self, tmp_path):
+        _write(tmp_path / "rules.alpha.json", [])
+
+        with pytest.raises(FileNotFoundError):
+            discover_rule_files(tmp_path)
+
+    def test_parts_are_merged_into_one_layer_with_their_own_source(self, tmp_path):
+        _write(tmp_path / "rules.json", [_rule("rule_1")])
+        _write(tmp_path / "rules.ferien.json", [_rule("rule_2")])
+
+        engine = RuleEngine(discover_rule_files(tmp_path))
+
+        sources = {r.key: r.source for r in engine.rules}
+        assert sources == {
+            "rule_1": (tmp_path / "rules.json").as_posix(),
+            "rule_2": (tmp_path / "rules.ferien.json").as_posix(),
+        }
+
+    def test_duplicate_key_across_parts_raises(self, tmp_path):
+        _write(tmp_path / "rules.json", [_rule("rule_1")])
+        _write(tmp_path / "rules.ferien.json", [_rule("rule_1", category="Duplikat")])
+
+        with pytest.raises(ValueError, match="Duplicate key 'rule_1'.*rules.ferien.json"):
+            RuleEngine(discover_rule_files(tmp_path))
+
+    def test_base_field_in_part_raises(self, tmp_path):
+        _write(tmp_path / "rules.json", [])
+        _write_data(tmp_path / "rules.ferien.json", {"base": "reference", "rules": []})
+
+        with pytest.raises(ValueError, match="'base' is only allowed in rules.json"):
+            RuleEngine(discover_rule_files(tmp_path))
+
+    def test_overlay_part_replaces_rule_from_base_part(self, tmp_path, monkeypatch):
+        base_dir = tmp_path / "data" / "mybase"
+        base_dir.mkdir(parents=True)
+        _write(base_dir / "rules.json", [_rule("rule_1")])
+        _write(base_dir / "rules.ferien.json", [_rule("rule_2", category="Alt")])
+        run_dir = tmp_path / "run"
+        run_dir.mkdir()
+        _write_data(run_dir / "rules.json", {"base": "mybase", "rules": []})
+        _write(run_dir / "rules.ferien.json", [_rule("rule_2_overlay", category="Neu", overlay_of="rule_2")])
+        monkeypatch.chdir(tmp_path)
+
+        base_name, base_files, overlay_files = resolve_rule_files(run_dir)
+        engine = RuleEngine(base_files, overlay_path=overlay_files)
+
+        assert base_name == "mybase"
+        rule = next(r for r in engine.rules if r.key == "rule_2")
+        assert rule.category == "Neu"
+        assert rule.declared_key == "rule_2_overlay"
+        assert rule.source == (run_dir / "rules.ferien.json").as_posix()
+
+    def test_resolve_standalone_dataset_has_no_overlay(self, tmp_path):
+        _write(tmp_path / "rules.json", [_rule("rule_1")])
+        _write(tmp_path / "rules.ferien.json", [_rule("rule_2")])
+
+        base_name, base_files, overlay_files = resolve_rule_files(tmp_path)
+
+        assert base_name is None
+        assert [f.name for f in base_files] == ["rules.json", "rules.ferien.json"]
+        assert overlay_files == []

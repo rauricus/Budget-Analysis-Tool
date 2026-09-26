@@ -81,12 +81,13 @@ def test_build_explain_report_for_target_rule():
 
 
 
-def _overlay_run_dir(tmp_path):
+def _overlay_run_dir(tmp_path, overlay_file_name="rules.json"):
     """Build a run directory that overlays `data/reference`, mirroring a real dataset.
 
     The tests below need a base/overlay pair, which `data/example` cannot provide: it is a
     standalone rule set. Building the overlay here keeps the fixture in the public repository
-    and next to the assertions that depend on it.
+    and next to the assertions that depend on it. With `overlay_file_name` set to a part such
+    as `rules.wohnen.json`, the overlay rule goes there and `rules.json` only declares the base.
     """
     run_dir = tmp_path / "overlay_dataset"
     (run_dir / "input").mkdir(parents=True)
@@ -119,9 +120,17 @@ def _overlay_run_dir(tmp_path):
             },
         },
     }
-    (run_dir / "rules.json").write_text(
-        json.dumps({"base": "reference", "rules": [overlay_rule]}), encoding="utf-8"
-    )
+    if overlay_file_name == "rules.json":
+        (run_dir / "rules.json").write_text(
+            json.dumps({"base": "reference", "rules": [overlay_rule]}), encoding="utf-8"
+        )
+    else:
+        (run_dir / "rules.json").write_text(
+            json.dumps({"base": "reference", "rules": []}), encoding="utf-8"
+        )
+        (run_dir / overlay_file_name).write_text(
+            json.dumps({"rules": [overlay_rule]}), encoding="utf-8"
+        )
     return run_dir
 
 
@@ -158,6 +167,26 @@ def test_build_explain_report_uses_overlay_declared_key_for_overrides(tmp_path):
     text_report = _render_text_report(report)
     assert "Rule Layer: overlay" in text_report
     assert "Overlay Of: housing_1" in text_report
+
+
+def test_build_explain_report_reports_overlay_rule_from_part_file(tmp_path):
+    """An overlay rule in a `rules.*.json` part belongs to the overlay layer, too."""
+    run_dir = _overlay_run_dir(tmp_path, overlay_file_name="rules.wohnen.json")
+    report = build_explain_report(
+        run_dir=run_dir,
+        transaction_id=None,
+        line_number=_overlay_line_number(),
+        input_file='export.202503.csv',
+        rule_id='housing_1_private',
+        no_overlays=False,
+        no_overrides=False,
+        max_non_matching=3,
+    )
+
+    assert report["pre_override"]["winning_rule"] == 'housing_1_private'
+    assert report["pre_override"]["winning_rule_source"] == (run_dir / "rules.wohnen.json").as_posix()
+    assert report["pre_override"]["winning_rule_layer"] == 'overlay'
+    assert report["target_rule"]["rule_layer"] == 'overlay'
 
 
 def test_build_explain_report_can_disable_overlays(tmp_path):

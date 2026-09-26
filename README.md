@@ -62,6 +62,7 @@ A dataset directory can hold:
 ```text
 <run_dir>/
 ├── rules.json                       # required; standalone or overlay (see "Rules")
+├── rules.<topic>.json               # optional; more rules of the same set (see "Splitting rules across files")
 ├── transaction_overrides.json       # optional; per-transaction corrections
 ├── input/                           # required; source CSV files
 ├── output/                          # generated categorized CSVs + Excel report
@@ -73,14 +74,14 @@ A dataset directory can hold:
 Datasets in this repository:
 
 - `data/example` — canonical standalone dataset for tests and documentation. May contain synthetic/fictive merchants and counterparties. Keep it stable and reproducible.
-- `data/reference` — global baseline rules for overlay datasets (`data/reference/rules.json`). Not runnable on its own; it has no `input/`.
+- `data/reference` — global baseline rules for overlay datasets (`data/reference/rules.json` plus `rules.<topic>.json`). Not runnable on its own; it has no `input/`.
 - `data/private` — gitignored space for personal datasets. Its layout is up to you: put one run dataset directly inside it, or group several (for example per year) as `data/private/<name>/`. Every such directory follows the structure above and is addressed by its own path.
 
 Decision guide for changes:
 
 - New parser behavior examples, test fixtures, and documentation examples → `data/example`.
-- Generic rule improvements intended for everyone → `data/reference/rules.json`.
-- Personal or sensitive categorization logic → your private dataset's `rules.json`.
+- Generic rule improvements intended for everyone → the fitting rule file in `data/reference`.
+- Personal or sensitive categorization logic → the fitting rule file of your private dataset.
 
 Repository policy:
 
@@ -247,7 +248,8 @@ data/
 │ ├── output/
 │ └── metadata/
 ├── reference/                        # Global base rules for overlays (no input/)
-│ └── rules.json
+│ ├── rules.json
+│ └── rules.<topic>.json              # ferien, gastro, einkaufen, wohnen, ...
 └── private/                          # Personal datasets (gitignored)
 
 src/
@@ -298,7 +300,7 @@ through from the source text, unlike the other details.
 `data/reference/rules.json` is the shared baseline for overlay-based datasets.
 A private dataset's `rules.json` is typically an overlay on `reference` and is not committed.
 
-Each rule has a required string `key`. Keys must be unique within a file.
+Each rule has a required string `key`. Keys must be unique within a dataset's rule files.
 Recommended format: `group_number` (for example `gastronomy_1`, `transport_2`).
 
 ### Standalone vs. overlay datasets
@@ -309,9 +311,28 @@ A `rules.json` file can declare a dependency on another dataset's rules via a to
 { "base": "reference", "rules": [] }
 ```
 
-When `"base"` is set, the named dataset's `rules.json` (resolved as `data/<base>/rules.json`)
-is loaded first, and the current file is applied as an overlay on top. Without `"base"`, the
-file is treated as a complete standalone rule set.
+When `"base"` is set, the named dataset's rules (resolved as `data/<base>/`) are loaded first,
+and the current dataset's rules are applied as an overlay on top. Without `"base"`, the
+dataset's rules are treated as a complete standalone rule set.
+
+### Splitting rules across files
+
+Besides `rules.json`, a dataset may hold any number of `rules.<topic>.json` files, for example
+`rules.ferien.json`, `rules.gastro.json` or `rules.wohnen.json`. They are discovered
+automatically and loaded together with `rules.json` as one rule set:
+
+- `rules.json` stays required; it is the only file that may declare `"base"`.
+- Each file has the same shape, `{ "rules": [...] }`.
+- Keys must be unique across all files of the dataset; a duplicate is an error that names
+  both files.
+- The split applies to both layers: a base dataset such as `data/reference` is split the same
+  way, and `"overlay_of"` in any overlay file may target a rule in any base file.
+- Which file a rule lives in is organization only. The engine evaluates by `priority`; files
+  are read in a fixed order (`rules.json`, then the others alphabetically) only so that runs
+  are reproducible. Do not rely on that order to break ties between two matching rules with
+  the same priority — give the intended winner a higher priority or exclude the other.
+
+`--debug` and `explain_rule_match.py` show the file each rule comes from.
 
 ### Replacing a base rule via overlay
 
@@ -366,7 +387,7 @@ a base rule without `"overlay_of"` is an error, as is referencing an unknown bas
 
 ### Matching behavior
 
-- Rules in `rules.json` can be kept sorted by `key` for readability; at runtime the engine evaluates them by descending `priority`.
+- Rules can be kept sorted by `key` for readability; at runtime the engine evaluates them by descending `priority`, across all rule files.
 - `transaction_category` is required and must be one of: `Income`, `Expense`, `Refund`, `Transfer`.
 - Category assignment uses two levels: `category` and `subcategory`. Both are optional per rule (empty values are allowed).
 - `priority` is a required integer from 1 to 10. Use `5` as the default "medium" value.
@@ -535,8 +556,8 @@ The structured export uses these columns:
 2. Run `uv run python categorize_transactions.py <run_dir> --debug` and watch for warnings about missing parsers and uncategorized transactions.
 3. Inspect `<run_dir>/output/*.categorized.csv`.
 4. Add/refine parser(s) in `src/notification/parsers/` if a notification text is not parsed.
-5. Add/refine rules in your dataset's `rules.json`.
-6. Decide explicitly for each new/changed rule whether it stays private or belongs in `data/reference/rules.json` as a generic baseline improvement.
+5. Add/refine rules in the fitting rule file of your dataset (`rules.json` or a `rules.<topic>.json`).
+6. Decide explicitly for each new/changed rule whether it stays private or belongs in `data/reference` as a generic baseline improvement.
 7. Repeat until categorization quality is acceptable, then run `analyze_by_category.py`.
 
 Three skills in `.agents/skills/` support this loop: `fix-uncategorized-transactions`,

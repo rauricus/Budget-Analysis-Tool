@@ -2,7 +2,7 @@ import json
 import logging
 from datetime import date, datetime
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 from models import Rule, Transaction
 
 
@@ -11,6 +11,46 @@ logger = logging.getLogger(__name__)
 VALID_TRANSACTION_CATEGORIES = {"Income", "Expense", "Refund", "Transfer"}
 MIN_RULE_PRIORITY = 1
 MAX_RULE_PRIORITY = 10
+MAIN_RULES_FILE = "rules.json"
+RULE_PART_PATTERN = "rules.*.json"
+
+PathsArg = Union[str, Path, list]
+
+
+def discover_rule_files(dataset_dir: Path) -> list[Path]:
+    """Return a dataset's rule files: `rules.json` first, then every `rules.*.json`.
+
+    The parts are sorted by name only so that reruns load rules in the same order;
+    which part a rule lives in carries no meaning.
+    """
+    main_file = Path(dataset_dir) / MAIN_RULES_FILE
+    if not main_file.exists():
+        raise FileNotFoundError(f"Rules file not found: {main_file}")
+    return [main_file] + sorted(Path(dataset_dir).glob(RULE_PART_PATTERN))
+
+
+def resolve_rule_files(run_dir: Path) -> tuple[Optional[str], list[Path], list[Path]]:
+    """Resolve a run dataset's rule layers as (base name, base files, overlay files).
+
+    The `"base"` field of the dataset's `rules.json` decides the layering: without it the
+    dataset's own files form the only layer; with it, `data/<base>/` becomes the base layer
+    (relative to the current working directory) and the dataset's files the overlay.
+    """
+    run_files = discover_rule_files(run_dir)
+    with open(run_files[0], "r", encoding="utf-8") as f:
+        base_name = json.load(f).get("base")
+    if not base_name:
+        return None, run_files, []
+    return base_name, discover_rule_files(Path("data") / base_name), run_files
+
+
+def _as_path_list(paths: Optional[PathsArg]) -> list[Path]:
+    """Accept a single path or a list of paths and return a list of Paths."""
+    if paths is None:
+        return []
+    if isinstance(paths, (str, Path)):
+        return [Path(paths)]
+    return [Path(p) for p in paths]
 
 
 class RuleEngine:
@@ -18,12 +58,12 @@ class RuleEngine:
     
     def __init__(
         self,
-        rules_path: str = "data/reference/rules.json",
-        overlay_path: Optional[str] = None,
+        rules_path: PathsArg = "data/reference/rules.json",
+        overlay_path: Optional[PathsArg] = None,
         debug: bool = False,
     ):
-        self.rules_path = Path(rules_path)
-        self.overlay_path = Path(overlay_path) if overlay_path else None
+        self.rules_paths = _as_path_list(rules_path)
+        self.overlay_paths = _as_path_list(overlay_path)
         self.debug = debug
         self.rules: list[Rule] = []
         self.load_rules()
@@ -151,18 +191,38 @@ class RuleEngine:
             f"{counterparty}"
         )
 
+    def _load_layer(self, paths: list[Path], layer: str) -> dict[str, Rule]:
+        """Parse several rule files into one layer; keys must be unique across all of them."""
+        merged: dict[str, Rule] = {}
+        for path in paths:
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            if path.name != MAIN_RULES_FILE and data.get("base"):
+                raise ValueError(
+                    f"'base' is only allowed in {MAIN_RULES_FILE}, not in {path.as_posix()}."
+                )
+            rules = self._parse_rules(data, source=path.as_posix())
+            for key, rule in rules.items():
+                if key in merged:
+                    raise ValueError(
+                        f"Duplicate key '{key}' in {path.as_posix()} and {merged[key].source}. "
+                        "Each rule key must be unique across the rule files of a dataset."
+                    )
+                merged[key] = rule
+            print(f"   Loaded {len(rules)} {layer} rules from {path}")
+        return merged
+
     def load_rules(self):
         """Load base rules, then apply overlay rules (replacements plus additions)."""
-        if not self.rules_path.exists():
-            raise FileNotFoundError(f"Rules file not found: {self.rules_path}")
-        
-        with open(self.rules_path, "r", encoding="utf-8") as f:
-            base_rules = self._parse_rules(json.load(f), source=self.rules_path.as_posix())
-        print(f"   Loaded {len(base_rules)} base rules from {self.rules_path}")
+        for path in self.rules_paths:
+            if not path.exists():
+                raise FileNotFoundError(f"Rules file not found: {path}")
+        base_rules = self._load_layer(self.rules_paths, "base")
 
-        if self.overlay_path and self.overlay_path.exists():
-            with open(self.overlay_path, "r", encoding="utf-8") as f:
-                overlay_rules = self._parse_rules(json.load(f), source=self.overlay_path.as_posix())
+        # A missing overlay file is ignored, as a dataset without overlay rules is valid
+        overlay_paths = [p for p in self.overlay_paths if p.exists()]
+        if overlay_paths:
+            overlay_rules = self._load_layer(overlay_paths, "overlay")
 
             replacing_overlay_rules: list[tuple[Rule, Rule]] = []
             for overlay_rule in overlay_rules.values():
@@ -171,7 +231,7 @@ class RuleEngine:
                     target_key = overlay_rule.overlay_of
                     if target_key not in base_rules:
                         raise ValueError(
-                            f"Rule '{overlay_rule.key}' in {self.overlay_path} declares "
+                            f"Rule '{overlay_rule.key}' in {overlay_rule.source} declares "
                             f"overlay_of: '{target_key}', but no such key exists in base rules."
                         )
                     replacing_overlay_rules.append((base_rules[target_key], overlay_rule))
@@ -179,7 +239,7 @@ class RuleEngine:
                     # New rule: must not collide with an existing base key
                     if overlay_rule.key in base_rules:
                         raise ValueError(
-                            f"Rule '{overlay_rule.key}' in {self.overlay_path} uses a key that already "
+                            f"Rule '{overlay_rule.key}' in {overlay_rule.source} uses a key that already "
                             f"exists in base rules. Use 'overlay_of: \"{overlay_rule.key}\"' to replace it explicitly."
                         )
 
@@ -193,7 +253,7 @@ class RuleEngine:
 
             replaced = len(replacing_overlay_rules)
             added = len(new_rules)
-            print(f"   Applied overlay {self.overlay_path}: {replaced} replaced, {added} added")
+            print(f"   Applied overlay ({len(overlay_paths)} file(s)): {replaced} replaced, {added} added")
             if self.debug:
                 for previous_rule, new_rule in replacing_overlay_rules:
                     print(

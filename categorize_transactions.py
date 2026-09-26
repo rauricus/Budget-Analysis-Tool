@@ -12,7 +12,7 @@ from typing import Optional, Sequence
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 from import_handler import ImportHandler
-from rule_engine import RuleEngine
+from rule_engine import RuleEngine, resolve_rule_files
 from export_handler import ExportHandler
 from transaction_id_registry import TransactionIdRegistry
 from transaction_overrides import load_overrides_if_present
@@ -187,20 +187,15 @@ def main(argv: Optional[Sequence[str]] = None):
     metadata_dir = run_dir / "metadata"
     registry_path = metadata_dir / "transaction_id_registry.json"
 
-    # Resolve rules: read "base" field from dataset's rules.json
-    rules_file = run_dir / "rules.json"
-    if not rules_file.exists():
-        print(f"❌ Rules file not found: {rules_file}")
+    # Resolve rules: rules.json plus rules.*.json, layered on top of "base" if declared
+    try:
+        base_name, base_rule_files, overlay_rule_files = resolve_rule_files(run_dir)
+    except FileNotFoundError as e:
+        print(f"❌ {e}")
         return 1
 
-    with open(rules_file, "r", encoding="utf-8") as f:
-        rules_data = json.load(f)
-
-    base_name = rules_data.get("base")
     transaction_overrides_file = run_dir / "transaction_overrides.json"
     if base_name:
-        base_rules_path = str(Path("data") / base_name / "rules.json")
-        overlay_path: Optional[str] = str(rules_file)
         base_transaction_overrides_file = Path("data") / base_name / "transaction_overrides.json"
         if base_transaction_overrides_file.exists():
             print(
@@ -208,9 +203,6 @@ def main(argv: Optional[Sequence[str]] = None):
                 f"Place transaction overrides in the top-level dataset only."
             )
             return 1
-    else:
-        base_rules_path = str(rules_file)
-        overlay_path = None
     
     print("=" * 60)
     print("  Budget Tool - Categorization Pipeline")
@@ -240,7 +232,7 @@ def main(argv: Optional[Sequence[str]] = None):
     # 2. Load rules (plus optional overlay) and transaction overrides
     print("\n2. Loading Rules...")
     try:
-        engine = RuleEngine(base_rules_path, overlay_path=overlay_path, debug=debug)
+        engine = RuleEngine(base_rule_files, overlay_path=overlay_rule_files, debug=debug)
     except FileNotFoundError as e:
         print(f"❌ {e}")
         return 1

@@ -9,7 +9,7 @@ What the tool does today and where its known limits are. Next steps: [ROADMAP.md
 | Import | PostFinance CSV, German column layout |
 | Parsing | 15 notification parsers, 8 normalized service types |
 | Transaction IDs | Stable fingerprint registry per dataset |
-| Rules | Priority matching; service, provider, merchant, location, counterparty, IBAN, keyword, validity-window and exact-amount filters; overlays on a base rule set |
+| Rules | Priority matching; service, provider, merchant, location, counterparty, IBAN, keyword, validity-window and exact-amount filters; overlays on a base rule set; rules split over any number of `rules.<topic>.json` files |
 | Overrides | Per-transaction corrections by ID, with a remap helper after ID changes |
 | Diagnostics | `--debug` pipeline output and `explain_rule_match.py` |
 | Export | 20-column categorized CSV per input file |
@@ -17,7 +17,8 @@ What the tool does today and where its known limits are. Next steps: [ROADMAP.md
 | Budget | `budget.json` with planned income, reserves (pots) and budget lines per category or subcategory; `budget_report.py` compares one month and the cumulated period on the console |
 | Tests | 17 modules, independent of `data/reference` and private data |
 
-Rule sets: 70 baseline rules in `data/reference`, 38 in `data/example`.
+Rule sets: 70 baseline rules in `data/reference`, split by topic into `rules.json` and
+`rules.<topic>.json` files; 38 in `data/example`, in a single `rules.json`.
 
 ## Known gaps
 
