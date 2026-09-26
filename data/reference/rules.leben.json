@@ -97,7 +97,8 @@
         "providers": [],
         "notification_filters": {
           "merchants": [
-            "COIFFEUR"
+            "COIFFEUR",
+            "COIFFURE"
           ],
           "locations": [],
           "include_keywords": [],
