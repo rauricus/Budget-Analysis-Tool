@@ -167,6 +167,14 @@ The doctor categorizes the dataset in memory and reports:
   now hits another booking; overrides that change nothing (only what the rule already
   assigns, or only a `_note`); overrides without `_row`, which the remap helper cannot follow.
 
+- **Budget** (with a `budget.json`, or `--budget FILE` for another one, resolved like in
+  `budget_report.py`): reserves and budget lines whose category or subcategory no rule,
+  rule split or override produces — the report shows these as an actual of zero, which looks
+  like a quiet month — with the closest existing name when it is a typo; and months whose
+  income is more than 20% above the planned monthly income, as a question (bonus, refunded
+  expenses, or something else). A yearly income is compared per month, so a planned yearly
+  payment shows up in its month.
+
 Exit code 0 means no findings, 1 findings, 2 an error loading the dataset.
 
 ### Migrate override IDs
@@ -681,9 +689,10 @@ How actuals are derived:
   draws on the reserve.
 - Rows that no rule categorized stay visible under `Uncategorized`.
 
-There is no validation against `rules.json`. A category that does not exist simply shows
-up under "Ohne Ist-Werte" with an actual of zero, which surfaces a typo just as clearly.
-A reserve on a mistyped category stays at an actual of zero in the reserves table.
+The report itself does not check the entries against the rules. A category that does not
+exist shows up under "Ohne Ist-Werte" with an actual of zero, and a reserve on a mistyped
+category stays at zero in the reserves table. `doctor.py` reports such entries explicitly
+(see [Check a dataset](#check-a-dataset-doctor)).
 
 Budget files follow the same privacy rule as the rest of a dataset: `data/example/budget.json`
 holds fictitious amounts for documentation and tests, real target values belong in

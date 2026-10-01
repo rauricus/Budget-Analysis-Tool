@@ -9,7 +9,7 @@
     "Einkaufen": { "amount": 400.00, "period": "monthly", "group": "essential" },
     "Freizeit": { "amount": 50.00, "period": "monthly", "group": "discretionary", "_note": "Ohne Gastronomie, die hat eine eigene Zeile" },
     "Freizeit / Gastronomie": { "amount": 100.00, "period": "monthly", "group": "discretionary" },
-    "Freizeit / Kultur": { "amount": 360.00, "period": "yearly", "group": "discretionary", "_note": "Geplant, aber keine Regel erzeugt diese Unterkategorie (Fall für die Doctor-Prüfung)" },
+    "Freizeit / Sport": { "amount": 360.00, "period": "yearly", "group": "discretionary", "_note": "Geplant, aber nichts im Beispiel erzeugt diese Unterkategorie (Fall für die Doctor-Prüfung)" },
     "Leben": { "amount": 250.00, "period": "monthly", "group": "essential", "_note": "Ohne Krankenkasse, die läuft über die Reservation" },
     "Finanzen": { "amount": 2400.00, "period": "yearly", "group": "fixed", "_note": "Versicherungen und Gebühren, jährlich veranschlagt" }
   }

@@ -10,6 +10,7 @@ import argparse
 import calendar
 import contextlib
 import csv
+import difflib
 import io
 import json
 import re
@@ -22,6 +23,13 @@ from typing import Optional
 
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
+from budget_report import (
+    SUBCATEGORY_SEPARATOR,
+    load_budget,
+    monthly_target,
+    resolve_budget_path,
+    split_budget_key,
+)
 from categorize_transactions import _resolve_run_directory
 from explain_rule_match import _build_transactions_index
 from models import Rule, Transaction
@@ -34,6 +42,8 @@ EXPORT_CATEGORY_COLUMNS = ("Transaction Category", "Category", "Subcategory")
 ROW_DATE = re.compile(r"^(\d{2}\.\d{2}\.\d{4})")
 ROW_WORD = re.compile(r"[^\W\d_]{3,}")
 YEAR_IN_NAME = re.compile(r"(?<!\d)(20\d{2})(?!\d)")
+# A month's income above this multiple of the planned monthly income is worth a question.
+INCOME_ABOVE_PLAN = 1.2
 
 
 def _amount(txn: Transaction) -> float:
@@ -301,8 +311,72 @@ def _override_findings(overrides: dict, transactions: list[Transaction]) -> dict
     }
 
 
-def build_doctor_report(run_dir: Path) -> dict:
-    """Categorize the dataset in memory and collect everything that needs attention."""
+def _produced_categories(rules: list[Rule], final: list[Transaction]) -> set:
+    """(category, subcategory) pairs the dataset can produce: every rule's result, its split
+    parts, and what overrides and splits actually gave to a transaction."""
+    produced = set()
+    for rule in rules:
+        produced.add((rule.category, rule.subcategory or ""))
+        for part in rule.split:
+            produced.add((part.get("category", rule.category), part.get("subcategory", rule.subcategory) or ""))
+    produced.update((txn.auto_category, txn.auto_subcategory or "") for txn in final)
+    return {pair for pair in produced if pair[0]}
+
+
+def _budget_findings(budget: dict, rules: list[Rule], final: list[Transaction], input_months: list[str]) -> dict:
+    """Budget entries that cannot receive any transaction, and months with surprising income.
+
+    The budget report shows both as an actual of zero or a plain income figure, which looks
+    like a quiet month. A category that no rule, override or split produces is a typo or a
+    missing rule; the closest existing name is offered for the typo.
+    """
+    produced = _produced_categories(rules, final)
+    categories = {category for category, _ in produced}
+    scopes = sorted(categories | {f"{c}{SUBCATEGORY_SEPARATOR}{s}" for c, s in produced if s})
+
+    entries = [("budget", key, *split_budget_key(key)) for key in budget["budget"]]
+    entries += [
+        ("reserves", name, entry["category"], entry.get("subcategory"))
+        for name, entry in budget["reserves"].items()
+    ]
+    unproduced = []
+    for section, name, category, subcategory in entries:
+        exists = category in categories if subcategory is None else (category, subcategory) in produced
+        if exists:
+            continue
+        scope = category if subcategory is None else f"{category}{SUBCATEGORY_SEPARATOR}{subcategory}"
+        close = difflib.get_close_matches(scope, scopes, n=1, cutoff=0.8)
+        unproduced.append({
+            "section": section,
+            "name": name,
+            "scope": scope,
+            "suggestion": close[0] if close else None,
+        })
+
+    income_above_plan = []
+    income = budget["income"]
+    if income is not None:
+        planned = monthly_target(income)
+        actual: Counter = Counter()
+        for txn in final:
+            if (txn.auto_transaction_category or "").lower() == "income" and txn.date:
+                actual[txn.date.strftime("%Y-%m")] += txn.credit - txn.debit
+        for month in input_months:
+            if planned > 0 and actual[month] > planned * INCOME_ABOVE_PLAN:
+                income_above_plan.append({
+                    "month": month,
+                    "planned": round(planned, 2),
+                    "actual": round(actual[month], 2),
+                })
+    return {"unproduced_entries": unproduced, "income_above_plan": income_above_plan}
+
+
+def build_doctor_report(run_dir: Path, budget_path: Optional[Path] = None) -> dict:
+    """Categorize the dataset in memory and collect everything that needs attention.
+
+    The budget is checked when *budget_path* names a file, or else when the dataset has a
+    budget.json.
+    """
     _, base_rule_files, overlay_rule_files = resolve_rule_files(run_dir)
     own_sources = {p.as_posix() for p in (overlay_rule_files or base_rule_files)}
 
@@ -328,6 +402,10 @@ def build_doctor_report(run_dir: Path) -> dict:
 
     own_rules = [rule for rule in engine.rules if rule.source in own_sources]
     input_months = _input_months(transactions)
+    budget_path = budget_path or run_dir / "budget.json"
+    budget_findings = {"unproduced_entries": [], "income_above_plan": []}
+    if budget_path.is_file():
+        budget_findings = _budget_findings(load_budget(budget_path), engine.rules, final, input_months)
     return {
         "run_dir": run_dir.as_posix(),
         "transactions": len(transactions),
@@ -340,6 +418,7 @@ def build_doctor_report(run_dir: Path) -> dict:
         "override_findings": _override_findings(overrides, transactions),
         "input_findings": _input_findings(all_transactions, input_months),
         "output_findings": _output_findings(run_dir, final, input_months),
+        "budget_findings": budget_findings,
     }
 
 
@@ -351,6 +430,7 @@ def count_findings(report: dict) -> int:
         + sum(len(v) for v in report["override_findings"].values())
         + sum(len(v) for v in report["input_findings"].values())
         + sum(len(v) for v in report["output_findings"].values())
+        + sum(len(v) for v in report["budget_findings"].values())
     )
 
 
@@ -479,6 +559,21 @@ def _render_text_report(report: dict) -> str:
     )
     section("Overrides without _row", overrides["without_row"], lambda i: [_format_transaction(i)])
 
+    budget = report["budget_findings"]
+    section(
+        "Budget entries that no rule or override produces (typo, or a rule is missing?)",
+        budget["unproduced_entries"],
+        lambda i: [
+            f"{i['section']} '{i['name']}': {i['scope']}"
+            + (f"  -- did you mean '{i['suggestion']}'?" if i["suggestion"] else "")
+        ],
+    )
+    section(
+        "Months with income well above the plan (bonus, refunded expenses, or something else?)",
+        budget["income_above_plan"],
+        lambda i: [f"{i['month']}: {i['actual']:.2f} against {i['planned']:.2f} planned"],
+    )
+
     total = count_findings(report)
     lines.append("")
     lines.append("No findings." if total == 0 else f"{total} finding(s).")
@@ -490,17 +585,26 @@ def main(argv: Optional[list[str]] = None) -> int:
         description=(
             "List what in a dataset needs attention: overlapping or missing input, stale "
             "output, transactions to review, uncategorized transactions, rules that never "
-            "match, never win or tie, and suspicious overrides. "
+            "match, never win or tie, suspicious overrides, and budget entries that cannot "
+            "receive a transaction. "
             "Writes nothing. Exits with 1 when there are findings."
         )
     )
     parser.add_argument("run_dir", help="Run directory (e.g. 'example' or 'data/private/2026')")
     parser.add_argument("--json", action="store_true", help="Output report as JSON")
+    parser.add_argument(
+        "--budget",
+        metavar="FILE",
+        help="Check this budget file instead of <run_dir>/budget.json (resolved like budget_report.py)",
+    )
     args = parser.parse_args(argv)
 
     try:
         run_dir = _resolve_run_directory(args.run_dir)
-        report = build_doctor_report(run_dir)
+        budget_path = resolve_budget_path(run_dir, args.budget) if args.budget else None
+        if budget_path and not budget_path.is_file():
+            raise FileNotFoundError(f"Budget file not found: {budget_path}")
+        report = build_doctor_report(run_dir, budget_path)
     except (FileNotFoundError, ValueError, json.JSONDecodeError) as e:
         print(f"❌ {e}")
         return 2

@@ -150,6 +150,8 @@ def test_abbreviated_row_hint_is_accepted(tmp_path):
 
 def test_exit_code_is_zero_without_findings(tmp_path):
     run_dir = _copy_example(tmp_path)
+    # The example budget carries deliberate findings of its own.
+    (run_dir / "budget.json").unlink()
     overrides = json.loads((run_dir / "transaction_overrides.json").read_text(encoding="utf-8"))
     for item in build_doctor_report(run_dir)["uncategorized"]:
         year, month, day = item["date"].split("-")
@@ -249,3 +251,90 @@ def test_equal_priority_rules_with_different_results_are_reported(tmp_path):
         "priority": json.loads((run_dir / "rules.json").read_text(encoding="utf-8"))["rules"][-1]["priority"],
         "transactions": 4,
     }]
+
+
+def _edit_budget(run_dir: Path, edit, name: str = "budget.json") -> None:
+    path = run_dir / name
+    data = json.loads(path.read_text(encoding="utf-8"))
+    edit(data)
+    path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+
+
+def test_example_budget_has_one_unproduced_entry_and_one_income_question(tmp_path):
+    findings = build_doctor_report(_copy_example(tmp_path))["budget_findings"]
+
+    assert findings["unproduced_entries"] == [{
+        "section": "budget",
+        "name": "Freizeit / Sport",
+        "scope": "Freizeit / Sport",
+        "suggestion": None,
+    }]
+    assert findings["income_above_plan"] == [{"month": "2025-03", "planned": 4200.0, "actual": 5700.0}]
+
+
+def test_category_only_an_override_produces_counts_as_produced(tmp_path):
+    run_dir = _copy_example(tmp_path)
+    _edit_budget(run_dir, lambda b: b["budget"].update({
+        "Freizeit / Kultur": {"amount": 1, "period": "monthly", "group": "discretionary"},
+    }))
+
+    names = [i["name"] for i in build_doctor_report(run_dir)["budget_findings"]["unproduced_entries"]]
+    assert "Freizeit / Kultur" not in names
+
+
+def test_unknown_reserve_and_whole_category_are_reported(tmp_path):
+    run_dir = _copy_example(tmp_path)
+
+    def edit(budget):
+        budget["reserves"]["Säule 3a"]["subcategory"] = "Saeule 3a"
+        budget["budget"]["Freizeitt"] = {"amount": 1, "period": "monthly", "group": "discretionary"}
+
+    _edit_budget(run_dir, edit)
+
+    items = {i["name"]: i for i in build_doctor_report(run_dir)["budget_findings"]["unproduced_entries"]}
+    assert items["Säule 3a"]["section"] == "reserves"
+    assert items["Säule 3a"]["suggestion"] == "Vorsorge / Säule 3a"
+    assert items["Freizeitt"]["suggestion"] == "Freizeit"
+
+
+def test_income_within_the_margin_is_not_questioned(tmp_path):
+    run_dir = _copy_example(tmp_path)
+    _edit_budget(run_dir, lambda b: b["income"].update(amount=5000))
+
+    assert build_doctor_report(run_dir)["budget_findings"]["income_above_plan"] == []
+
+
+def test_budget_without_income_is_not_checked_for_income(tmp_path):
+    run_dir = _copy_example(tmp_path)
+    _edit_budget(run_dir, lambda b: b.pop("income"))
+
+    assert build_doctor_report(run_dir)["budget_findings"]["income_above_plan"] == []
+
+
+def test_dataset_without_budget_has_no_budget_findings(tmp_path):
+    run_dir = _copy_example(tmp_path)
+    (run_dir / "budget.json").unlink()
+
+    report = build_doctor_report(run_dir)
+
+    assert report["budget_findings"] == {"unproduced_entries": [], "income_above_plan": []}
+
+
+def test_budget_flag_checks_another_file(tmp_path, capsys):
+    run_dir = _copy_example(tmp_path)
+    (run_dir / "budget.json").rename(run_dir / "budget-draft.json")
+    _edit_budget(
+        run_dir,
+        lambda b: b["budget"].update({"Mobilitaet": {"amount": 1, "period": "monthly", "group": "essential"}}),
+        "budget-draft.json",
+    )
+
+    assert main([str(run_dir), "--budget", "budget-draft.json", "--json"]) == 1
+
+    out = json.loads(capsys.readouterr().out)
+    assert "Mobilitaet" in [i["name"] for i in out["budget_findings"]["unproduced_entries"]]
+
+
+def test_missing_budget_file_is_an_error(tmp_path, capsys):
+    assert main([str(_copy_example(tmp_path)), "--budget", "nope.json"]) == 2
+    assert "Budget file not found" in capsys.readouterr().out
