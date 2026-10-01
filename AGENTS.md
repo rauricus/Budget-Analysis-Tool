@@ -131,9 +131,11 @@ do not introduce `from src.x import y`.
 
 A run dataset is any directory with `rules.json` and `input/`; `output/` and `metadata/`
 are generated, and `budget.json` is optional. Any `rules.<topic>.json` next to `rules.json`
-is discovered and loaded as part of the same rule set; only `rules.json` may carry `"base"`,
-and keys must be unique across the files. `resolve_rule_files` in `src/rule_engine.py` is
-the one place that resolves a dataset into base and overlay files — use it rather than
+is discovered and loaded as part of the same rule set; only `rules.json` may carry `"base"`
+or `"include"`, and keys must be unique across the files. `"include"` lists directories under
+`data/` whose rule files join the dataset's own layer, between its `rules.json` and its topic
+files. `resolve_rule_files` in `src/rule_engine.py` is the one place that resolves a dataset
+into base and overlay files — use it rather than
 reading `rules.json` directly. Three datasets live here:
 
 - `data/example` — standalone, committed, used by tests and documentation. Keep it stable

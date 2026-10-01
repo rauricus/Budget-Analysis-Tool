@@ -402,3 +402,131 @@ class TestSplitRuleFiles:
         assert base_name is None
         assert [f.name for f in base_files] == ["rules.json", "rules.ferien.json"]
         assert overlay_files == []
+
+
+class TestIncludedRules:
+    """`"include"` adds shared directories to a dataset's own layer."""
+
+    def _setup(self, tmp_path, monkeypatch, main_extra=None, base=None):
+        common = tmp_path / "data" / "common"
+        common.mkdir(parents=True)
+        _write(common / "rules.json", [_rule("shared_1")])
+        _write(common / "rules.aaa.json", [_rule("shared_2")])
+        run_dir = tmp_path / "run"
+        run_dir.mkdir()
+        main = {"include": ["common"], "rules": [_rule("own_1")], **(main_extra or {})}
+        if base:
+            main["base"] = base
+        _write_data(run_dir / "rules.json", main)
+        _write(run_dir / "rules.zzz.json", [_rule("own_2")])
+        monkeypatch.chdir(tmp_path)
+        return run_dir
+
+    def test_included_files_load_between_main_and_topic_files(self, tmp_path, monkeypatch):
+        run_dir = self._setup(tmp_path, monkeypatch)
+
+        base_name, base_files, overlay_files = resolve_rule_files(run_dir)
+
+        assert base_name is None and overlay_files == []
+        assert [(f.parent.name, f.name) for f in base_files] == [
+            ("run", "rules.json"),
+            ("common", "rules.json"),
+            ("common", "rules.aaa.json"),
+            ("run", "rules.zzz.json"),
+        ]
+        assert [r.key for r in RuleEngine(base_files).rules] == ["own_1", "shared_1", "shared_2", "own_2"]
+
+    def test_included_files_join_the_overlay_layer_of_a_dataset_with_a_base(self, tmp_path, monkeypatch):
+        (tmp_path / "data" / "mybase").mkdir(parents=True)
+        _write(tmp_path / "data" / "mybase" / "rules.json", [_rule("base_1")])
+        run_dir = self._setup(tmp_path, monkeypatch, base="mybase")
+
+        _, base_files, overlay_files = resolve_rule_files(run_dir)
+
+        assert [f.parent.name for f in base_files] == ["mybase"]
+        assert [f.name for f in overlay_files] == ["rules.json", "rules.json", "rules.aaa.json", "rules.zzz.json"]
+
+    def test_key_collision_with_an_included_file_is_an_error(self, tmp_path, monkeypatch):
+        run_dir = self._setup(tmp_path, monkeypatch)
+        _write(run_dir / "rules.zzz.json", [_rule("shared_1")])
+
+        _, base_files, _ = resolve_rule_files(run_dir)
+
+        with pytest.raises(ValueError, match="Duplicate key 'shared_1'"):
+            RuleEngine(base_files)
+
+    def test_missing_included_directory_is_an_error(self, tmp_path, monkeypatch):
+        run_dir = self._setup(tmp_path, monkeypatch, main_extra={"include": ["nope"]})
+        with pytest.raises(FileNotFoundError, match="Included rules directory not found"):
+            resolve_rule_files(run_dir)
+
+    @pytest.mark.parametrize("value", ["common", [1], [""], ["common", "common"]])
+    def test_malformed_include_is_an_error(self, tmp_path, monkeypatch, value):
+        run_dir = self._setup(tmp_path, monkeypatch, main_extra={"include": value})
+        with pytest.raises(ValueError, match="'include'"):
+            resolve_rule_files(run_dir)
+
+    @pytest.mark.parametrize("field", ["base", "include"])
+    def test_included_file_may_not_layer_further(self, tmp_path, monkeypatch, field):
+        run_dir = self._setup(tmp_path, monkeypatch)
+        _write_data(tmp_path / "data" / "common" / "rules.aaa.json", {field: ["x"] if field == "include" else "x", "rules": []})
+        with pytest.raises(ValueError, match=f"'{field}' is not allowed in an included rule file"):
+            resolve_rule_files(run_dir)
+
+    def test_topic_file_may_not_declare_include(self, tmp_path, monkeypatch):
+        run_dir = self._setup(tmp_path, monkeypatch)
+        _write_data(run_dir / "rules.zzz.json", {"include": ["common"], "rules": []})
+        _, base_files, _ = resolve_rule_files(run_dir)
+        with pytest.raises(ValueError, match="'include' is only allowed in rules.json"):
+            RuleEngine(base_files)
+
+    def test_base_dataset_may_not_declare_include(self, tmp_path, monkeypatch):
+        (tmp_path / "data" / "mybase").mkdir(parents=True)
+        _write_data(tmp_path / "data" / "mybase" / "rules.json", {"include": ["common"], "rules": []})
+        run_dir = self._setup(tmp_path, monkeypatch, base="mybase")
+        with pytest.raises(ValueError, match="not supported in a base dataset"):
+            resolve_rule_files(run_dir)
+
+    def test_dataset_without_include_is_unchanged(self, tmp_path):
+        _write(tmp_path / "rules.json", [_rule("rule_1")])
+        _, base_files, _ = resolve_rule_files(tmp_path)
+        assert [f.name for f in base_files] == ["rules.json"]
+
+
+class TestIncludedRulesInThePipeline:
+    def test_rules_moved_to_an_included_directory_categorize_the_same(self, tmp_path, monkeypatch):
+        import shutil
+        from categorize_transactions import main as run_pipeline
+
+        monkeypatch.chdir(os.path.join(os.path.dirname(__file__), ".."))
+        plain = tmp_path / "plain"
+        shutil.copytree("data/example", plain)
+        run_pipeline([str(plain)])
+
+        split = tmp_path / "split"
+        shutil.copytree("data/example", split)
+        rules = json.loads((split / "rules.json").read_text(encoding="utf-8"))
+        moved, kept = rules["rules"][:10], rules["rules"][10:]
+        common = tmp_path / "data" / "common"
+        common.mkdir(parents=True)
+        _write_data(common / "rules.json", {"rules": moved})
+        _write_data(split / "rules.json", {**rules, "include": ["common"], "rules": kept})
+        monkeypatch.chdir(tmp_path)
+
+        assert run_pipeline([str(split), "--ignore-unknown-overrides"]) == 0
+        for name in ("export.202501", "export.202503"):
+            assert (split / "output" / f"{name}.categorized.csv").read_text(encoding="utf-8").count(";Expense;") == \
+                (plain / "output" / f"{name}.categorized.csv").read_text(encoding="utf-8").count(";Expense;")
+
+    def test_pipeline_reports_a_missing_included_directory(self, tmp_path, monkeypatch, capsys):
+        import shutil
+        from categorize_transactions import main as run_pipeline
+
+        monkeypatch.chdir(os.path.join(os.path.dirname(__file__), ".."))
+        run_dir = tmp_path / "run"
+        shutil.copytree("data/example", run_dir)
+        rules = json.loads((run_dir / "rules.json").read_text(encoding="utf-8"))
+        _write_data(run_dir / "rules.json", {**rules, "include": ["nope"]})
+
+        assert run_pipeline([str(run_dir)]) == 1
+        assert "Included rules directory not found" in capsys.readouterr().out

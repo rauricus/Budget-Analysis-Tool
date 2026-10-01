@@ -205,7 +205,7 @@ def main(argv: Optional[Sequence[str]] = None):
     # Resolve rules: rules.json plus rules.*.json, layered on top of "base" if declared
     try:
         base_name, base_rule_files, overlay_rule_files = resolve_rule_files(run_dir)
-    except FileNotFoundError as e:
+    except (FileNotFoundError, ValueError) as e:
         print(f"❌ {e}")
         return 1
 

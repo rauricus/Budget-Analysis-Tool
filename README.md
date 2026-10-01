@@ -388,6 +388,31 @@ automatically and loaded together with `rules.json` as one rule set:
 
 `--debug` and `explain_rule_match.py` show the file each rule comes from.
 
+### Sharing rules between datasets (include)
+
+Datasets split by year start from the same rules. Rules that apply to every year can live
+in one directory that each year includes, so a correction is made once. `rules.json` names
+the directories in a top-level `"include"` field, resolved like `"base"` as `data/<name>/`:
+
+```json
+{ "base": "reference", "include": ["private/common"], "rules": [] }
+```
+
+- The included directory is an ordinary rule directory: `rules.json` plus any
+  `rules.<topic>.json`. Its files join the dataset's own rules, in the overlay layer when
+  the dataset has a `"base"`.
+- Keys must be unique across the dataset's own files and the included ones; a duplicate is
+  an error that names both files.
+- Load order, which only matters for ties between equal priorities, is the dataset's
+  `rules.json`, the included files (in the order of the list, each directory as usual),
+  then the dataset's `rules.<topic>.json` files.
+- Only the dataset's own `rules.json` may declare `"include"`. Included files and base
+  datasets cannot declare `"base"` or `"include"` themselves: layering stays two levels deep.
+- Transaction IDs, overrides, budgets and reports stay per dataset. `doctor.py` treats the
+  included rules as the dataset's own, so a shared rule that one year does not use is
+  reported as a rule that never matches there.
+- Keep period-specific rules (a trip, an amount that changes yearly) in the year's own files.
+
 ### Replacing a base rule via overlay
 
 An overlay rule that replaces a base rule must declare `"overlay_of": "<base_key>"` and carry

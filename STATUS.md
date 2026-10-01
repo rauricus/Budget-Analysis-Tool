@@ -9,7 +9,7 @@ What the tool does today and where its known limits are. Next steps: [ROADMAP.md
 | Import | PostFinance CSV, German column layout |
 | Parsing | 15 notification parsers, 8 normalized service types |
 | Transaction IDs | Stable fingerprint registry per dataset |
-| Rules | Priority matching; service, provider, merchant, location, counterparty, IBAN, keyword, validity-window and exact-amount filters; overlays on a base rule set; rules split over any number of `rules.<topic>.json` files; a rule can split every match into fixed parts |
+| Rules | Priority matching; service, provider, merchant, location, counterparty, IBAN, keyword, validity-window and exact-amount filters; overlays on a base rule set; rules split over any number of `rules.<topic>.json` files; shared rule directories included by several datasets; a rule can split every match into fixed parts |
 | Overrides | Per-transaction corrections by ID, including splitting one booking into parts with their own categories; remap helper after ID changes |
 | Diagnostics | `--debug` pipeline output, `explain_rule_match.py` per transaction, `doctor.py` per dataset (overlapping or missing input, stale output, review questions on rules, dead, shadowed and tied rules, unused amounts, overrides that no longer fit, budget entries no rule produces, months with income well above plan) |
 | Export | 20-column categorized CSV per input file |

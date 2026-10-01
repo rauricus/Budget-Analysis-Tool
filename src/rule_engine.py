@@ -30,19 +30,62 @@ def discover_rule_files(dataset_dir: Path) -> list[Path]:
     return [main_file] + sorted(Path(dataset_dir).glob(RULE_PART_PATTERN))
 
 
+def _included_rule_files(names, own_main: Path) -> list[Path]:
+    """Rule files of the directories named by a dataset's `"include"`, in list order.
+
+    Each name resolves like `"base"` to `data/<name>/` and contributes its `rules.json` plus
+    its `rules.<topic>.json` files. Included files are plain rule files: they may not
+    declare `"base"` or `"include"` themselves, which keeps the layering at two levels.
+    """
+    if not isinstance(names, list) or not all(isinstance(n, str) and n for n in names):
+        raise ValueError(f"'include' must be a list of dataset names in {own_main.as_posix()}.")
+    if len(set(names)) != len(names):
+        raise ValueError(f"'include' names a dataset twice in {own_main.as_posix()}.")
+
+    files: list[Path] = []
+    for name in names:
+        directory = Path("data") / name
+        if not directory.is_dir():
+            raise FileNotFoundError(
+                f"Included rules directory not found: {directory} (from 'include' in {own_main.as_posix()})"
+            )
+        for path in discover_rule_files(directory):
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            for field in ("base", "include"):
+                if data.get(field):
+                    raise ValueError(
+                        f"'{field}' is not allowed in an included rule file: {path.as_posix()}."
+                    )
+            files.append(path)
+    return files
+
+
 def resolve_rule_files(run_dir: Path) -> tuple[Optional[str], list[Path], list[Path]]:
     """Resolve a run dataset's rule layers as (base name, base files, overlay files).
 
     The `"base"` field of the dataset's `rules.json` decides the layering: without it the
     dataset's own files form the only layer; with it, `data/<base>/` becomes the base layer
     (relative to the current working directory) and the dataset's files the overlay.
+
+    `"include"` adds shared directories to the dataset's own layer. The load order, which
+    decides ties between equal priorities, is the dataset's `rules.json`, then the included
+    files, then the dataset's `rules.<topic>.json` files.
     """
     run_files = discover_rule_files(run_dir)
     with open(run_files[0], "r", encoding="utf-8") as f:
-        base_name = json.load(f).get("base")
+        main = json.load(f)
+    included = _included_rule_files(main["include"], run_files[0]) if "include" in main else []
+    run_files = run_files[:1] + included + run_files[1:]
+
+    base_name = main.get("base")
     if not base_name:
         return None, run_files, []
-    return base_name, discover_rule_files(Path("data") / base_name), run_files
+    base_files = discover_rule_files(Path("data") / base_name)
+    with open(base_files[0], "r", encoding="utf-8") as f:
+        if json.load(f).get("include"):
+            raise ValueError(f"'include' is not supported in a base dataset: {base_files[0].as_posix()}.")
+    return base_name, base_files, run_files
 
 
 # Override fields that decide a transaction's categories; with one of them present the
@@ -257,10 +300,11 @@ class RuleEngine:
         for path in paths:
             with open(path, "r", encoding="utf-8") as f:
                 data = json.load(f)
-            if path.name != MAIN_RULES_FILE and data.get("base"):
-                raise ValueError(
-                    f"'base' is only allowed in {MAIN_RULES_FILE}, not in {path.as_posix()}."
-                )
+            for field in ("base", "include"):
+                if path.name != MAIN_RULES_FILE and data.get(field):
+                    raise ValueError(
+                        f"'{field}' is only allowed in {MAIN_RULES_FILE}, not in {path.as_posix()}."
+                    )
             rules = self._parse_rules(data, source=path.as_posix())
             for key, rule in rules.items():
                 if key in merged:

@@ -45,30 +45,11 @@ Income is a single figure today, so a bonus and reimbursed expenses look alike.
 - **Offset by a matching inflow** — expenses reimbursed by an employer or someone else, or
   paid from a pot funded elsewhere — must leave the budget on both sides, or the same money
   counts twice. Where a rule can recognize the inflow, the refund mirrors the expense
-  category (as today). Where it cannot, the transaction is marked (see item 4).
-
-### 3. Shared rule files across years (decide before the next year starts)
-
-Each year's dataset starts as a copy of the previous rule set. Most rules apply to every
-year; only a few are tied to a period (trips, amounts that change yearly). The copies drift
-apart, and a correction has to be made in every year that is still re-run.
-
-- A dataset's `rules.json` may name directories whose rule files are loaded as part of its
-  own layer, e.g. `"include": ["private/common"]`, resolved like `base`. The files join the
-  dataset's own files: keys must be unique across all of them, and load order (own
-  `rules.json`, then included files, then own `rules.<topic>.json`, each alphabetically)
-  decides ties as today.
-- Year-specific rules stay in the year's own files; rules shared by all years move to the
-  included directory.
-- Datasets stay split by year: transaction IDs, overrides, budget files and reports are
-  unchanged.
-- Not pursued: one dataset for all years (renumbers IDs, and reports would need to separate
-  years), and a recursive `base` (a third overlay layer through engine, doctor and explain
-  output).
+  category (as today). Where it cannot, the transaction is marked (see item 3).
 
 ## Later
 
-### 4. Mark special spending
+### 3. Mark special spending
 
 Two kinds of spending need a marking per transaction when no rule can tell them apart:
 
@@ -80,12 +61,12 @@ Two kinds of spending need a marking per transaction when no rule can tell them 
 The marking lives in its own `{TX-id: {...}}` file next to `transaction_overrides.json`,
 using the same ID-remap helper.
 
-### 5. Due dates for reserves
+### 4. Due dates for reserves
 
 A tax bill due in a given month should not read as an overdrawn pot until the year catches
 up. A reserve may name its due months; the pot is compared against what is due by then.
 
-### 6. Budget proposal
+### 5. Budget proposal
 
 `propose_budget.py <run_dir>` writes a draft `budget.json` from the categorized history, for
 manual review, never applied automatically:
@@ -94,16 +75,16 @@ manual review, never applied automatically:
 - categories present in only a few months proposed as `yearly`;
 - fixed costs detected from recurring standing orders and direct debits;
 - groups carried over from the current budget;
-- marked one-off and offset spending (item 4) left out of the derivation;
+- marked one-off and offset spending (item 3) left out of the derivation;
 - more than one year of history, by reading several year datasets.
 
-### 7. Trips from a trip file
+### 6. Trips from a trip file
 
 A trip needs two to four rules today (country marker, prepayment window, places), and cash
 withdrawn during the trip still lands in finance. A `trips.json` with name, period and
 country generates those rules and assigns cash withdrawals within the period to the trip.
 
-### 8. Monthly routine
+### 7. Monthly routine
 
 - The budgeting workflow documented in `README.md`: import, categorize, doctor, report,
   review.
@@ -111,7 +92,7 @@ country generates those rules and assigns cash withdrawals within the period to 
   per group.
 - Budget targets revisited at a fixed cadence (quarterly, say) rather than edited ad hoc.
 
-### 9. Budget in the Excel report
+### 8. Budget in the Excel report
 
 A sheet "Budget vs. Actual" with the same figures as `budget_report.py`, including groups
 and the consumption figure. Computed in Python and written as values, like the other sheets.
