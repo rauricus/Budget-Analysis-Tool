@@ -30,6 +30,7 @@ TX-000030;27.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;COF
 TX-000032;27.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;YUMIHANA;FRIBOURG;;;;;18.55;;Expense;Einkaufen;Detail-Lebensmittel;grocery_2;data/example/rules.json
 TX-000033;27.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;YUMI HANA;FRIBOURG;;;;;26.8;;Expense;Einkaufen;Detail-Lebensmittel;grocery_2;data/example/rules.json
 TX-000034;27.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;COOP - 7811 QUAI WEST;BERN;;;;;7.75;;Expense;Einkaufen;Supermärkte;supermarket_1;data/example/rules.json
+TX-000093;26.03.2025;Debit;Standing Order;Direct Debit;;;;;VORSORGESTIFTUNG MUSTERHAUSEN SENDER REFERENZ: SAEULE 3A;CH5809000000201234567;90-11223344;;200.0;;Transfer;Vorsorge;Säule 3a;savings_1;data/example/rules.json
 TX-000035;26.03.2025;Debit;Purchase/Online Shopping;Card Purchase;;XXXX4821;TRANSPORTS PUBLICS FRIBOURGEOIS (FAIRTIQ) N/A PAYMENT ID 250326064915818975ZX BESTELLNUMMER;ZUNCTYVS45RXNGTQIH;;;;;62.6;;Expense;Mobilität;Öffentlicher Verkehr;transport_1;data/example/rules.json
 TX-000036;26.03.2025;Debit;Purchase/Service;Card Purchase;Apple Pay;XXXX4821;JUMBO-7782 INDUSTRIEPARK;WINTERTHUR;;;;;10.9;;Expense;Wohnen;Handwerk und Garten;home_1;data/example/rules.json
 TX-000037;26.03.2025;Debit;Send Money;Twint;Twint;;;;+41796666222 KEBAB, IMBISS;;MITTEILUNGEN: KEBAB;;14.0;;Expense;Freizeit;Gastronomie;gastronomy_4;data/example/rules.json

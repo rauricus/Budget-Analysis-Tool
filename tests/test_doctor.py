@@ -204,7 +204,7 @@ def test_overlapping_input_files_are_reported(tmp_path):
     shutil.copy(run_dir / "input" / "export.202504.csv", run_dir / "input" / "export.202504-copy.csv")
 
     assert build_doctor_report(run_dir)["input_findings"]["overlapping_files"] == [
-        {"files": ["export.202504-copy.csv", "export.202504.csv"], "transactions": 15},
+        {"files": ["export.202504-copy.csv", "export.202504.csv"], "transactions": 16},
     ]
 
 

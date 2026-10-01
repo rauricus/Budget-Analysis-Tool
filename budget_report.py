@@ -36,8 +36,19 @@ from analyze_by_category import (
 
 VALID_PERIODS = {"monthly", "yearly"}
 ALLOWED_SECTIONS = {"income", "reserves", "budget"}
-ALLOWED_BUDGET_FIELDS = {"amount", "period", "_note"}
+ALLOWED_INCOME_FIELDS = {"amount", "period", "_note"}
+ALLOWED_BUDGET_FIELDS = ALLOWED_INCOME_FIELDS | {"group"}
 ALLOWED_RESERVE_FIELDS = ALLOWED_BUDGET_FIELDS | {"category", "subcategory"}
+# What a line is for, in report order. The set is fixed so that the consumption
+# figure means the same in every dataset: everything except SAVINGS_GROUP.
+GROUPS = ("fixed", "essential", "discretionary", "savings")
+SAVINGS_GROUP = "savings"
+GROUP_LABELS = {
+    "fixed": "Fixkosten",
+    "essential": "Grundbedarf",
+    "discretionary": "Wahlbedarf",
+    "savings": "Sparen",
+}
 # A budget key is a category, or 'Category / Subcategory' for a subcategory
 # line. Spaces around the slash keep names like 'Bücher/Filme/Musik' intact.
 SUBCATEGORY_SEPARATOR = " / "
@@ -48,6 +59,7 @@ class BudgetLine:
     """One budgeted category, compared for a single month and cumulated."""
 
     category: str
+    group: str
     target: float
     actual: float
     ytd_target: float
@@ -74,6 +86,7 @@ class ReserveLine:
     """One reserve: money set aside for a known cost, compared as a pot."""
 
     name: str
+    group: str
     category: str
     subcategory: Optional[str]
     target: float
@@ -129,6 +142,22 @@ class Availability:
 
 
 @dataclass
+class GroupTotal:
+    """Reserves and budget lines of one group added up. *group* is None for the
+    spending no budget line claims, which has an actual but no target."""
+
+    group: Optional[str]
+    target: float
+    actual: float
+    ytd_target: float
+    ytd_actual: float
+
+    @property
+    def label(self) -> str:
+        return GROUP_LABELS.get(self.group, "Ohne Budgetzeile")
+
+
+@dataclass
 class BudgetComparison:
     """Result of comparing a budget against one month of actuals."""
 
@@ -138,10 +167,12 @@ class BudgetComparison:
     without_actuals: list  # budgeted categories that never occur in the data
     reserves: list = field(default_factory=list)
     availability: Optional[Availability] = None
+    groups: list = field(default_factory=list)  # GroupTotal, in GROUPS order
 
 
 def _validate_entry(entry, label: str, allowed_fields: set, path: Path) -> None:
-    """Check the fields every budget entry shares: 'amount', 'period', '_note'."""
+    """Check the fields every budget entry shares: 'amount', 'period', '_note',
+    and 'group' where the entry may carry one (everything but the income)."""
     if not isinstance(entry, dict):
         raise ValueError(
             f"{label} must be an object, got {type(entry).__name__}: {path}"
@@ -171,6 +202,12 @@ def _validate_entry(entry, label: str, allowed_fields: set, path: Path) -> None:
     if note is not None and not isinstance(note, str):
         raise ValueError(f"'_note' in {label} must be a string in {path}.")
 
+    if "group" in allowed_fields and entry.get("group") not in GROUPS:
+        raise ValueError(
+            f"'group' in {label} must be one of {list(GROUPS)} in {path}, "
+            f"got {entry.get('group')!r}."
+        )
+
 
 def _validate_section(raw: dict, section: str, path: Path) -> dict:
     value = raw.get(section, {})
@@ -189,6 +226,7 @@ def load_budget(budget_path) -> dict:
     - 'reserves': name -> entry with 'category' and optional 'subcategory';
       the money is set aside first, and matching transactions draw on it.
     - 'budget': category -> entry, distributing what is left.
+    Reserves and budget lines each name their 'group' (see GROUPS).
 
     Returns the three sections normalized, with 'income' None when absent.
     """
@@ -210,7 +248,7 @@ def load_budget(budget_path) -> dict:
 
     income = raw.get("income")
     if income is not None:
-        _validate_entry(income, "'income'", ALLOWED_BUDGET_FIELDS, path)
+        _validate_entry(income, "'income'", ALLOWED_INCOME_FIELDS, path)
 
     budget = _validate_section(raw, "budget", path)
     for key, entry in budget.items():
@@ -430,6 +468,7 @@ def compare_budget_to_actuals(
         lines.append(
             BudgetLine(
                 category=category,
+                group=lines_budget[category]["group"],
                 target=target,
                 actual=actuals.get(category, 0.0),
                 ytd_target=target * n_months,
@@ -444,6 +483,7 @@ def compare_budget_to_actuals(
         reserve_lines.append(
             ReserveLine(
                 name=name,
+                group=entry["group"],
                 category=entry["category"],
                 subcategory=entry.get("subcategory"),
                 target=target,
@@ -488,6 +528,58 @@ def compare_budget_to_actuals(
         without_actuals=without_actuals,
         reserves=reserve_lines,
         availability=availability,
+        groups=group_totals(lines, reserve_lines, unbudgeted),
+    )
+
+
+def group_totals(lines: list, reserves: list, unbudgeted: list) -> list:
+    """Reserves and budget lines added up per group, in GROUPS order, for the
+    groups that occur. Spending without a budget line follows as its own entry:
+    it is consumption all the same, and leaving it out would flatter the figure.
+    """
+    totals = []
+    for group in GROUPS:
+        members = [m for m in (*lines, *reserves) if m.group == group]
+        if members:
+            totals.append(GroupTotal(
+                group=group,
+                target=sum(m.target for m in members),
+                actual=sum(m.actual for m in members),
+                ytd_target=sum(m.ytd_target for m in members),
+                ytd_actual=sum(m.ytd_actual for m in members),
+            ))
+    if unbudgeted:
+        totals.append(GroupTotal(
+            group=None,
+            target=0.0,
+            actual=sum(actual for _, actual, _ in unbudgeted),
+            ytd_target=0.0,
+            ytd_actual=sum(ytd for _, _, ytd in unbudgeted),
+        ))
+    return totals
+
+
+def consumption(groups: list) -> GroupTotal:
+    """Everything except the savings group: what the income is spent on."""
+    rest = [g for g in groups if g.group != SAVINGS_GROUP]
+    return GroupTotal(
+        group=None,
+        target=sum(g.target for g in rest),
+        actual=sum(g.actual for g in rest),
+        ytd_target=sum(g.ytd_target for g in rest),
+        ytd_actual=sum(g.ytd_actual for g in rest),
+    )
+
+
+def savings(groups: list) -> GroupTotal:
+    """The savings group alone; all zero if the budget has none."""
+    own = [g for g in groups if g.group == SAVINGS_GROUP]
+    return GroupTotal(
+        group=SAVINGS_GROUP,
+        target=sum(g.target for g in own),
+        actual=sum(g.actual for g in own),
+        ytd_target=sum(g.ytd_target for g in own),
+        ytd_actual=sum(g.ytd_actual for g in own),
     )
 
 
@@ -502,6 +594,73 @@ def _fmt_pct(value: Optional[float]) -> str:
     if value is None:
         return "—"
     return f"{value:+.0f}%"
+
+
+def _fmt_share(value: Optional[float]) -> str:
+    if value is None:
+        return "—"
+    return f"{value:.0f}%"
+
+
+def _ratio(part: float, whole: float) -> Optional[float]:
+    """*part* as a percentage of *whole*; None if there is no income to relate to."""
+    if not whole:
+        return None
+    return part / whole * 100
+
+
+def _format_groups(comparison: BudgetComparison) -> list:
+    """The group subtotals, and with an income the consumption measures."""
+    out = ["", f"{'Gruppe':<24}{'Soll':>12}{'Ist':>12}{'Kum. Soll':>14}{'Kum. Ist':>12}",
+           "-" * 74]
+    for g in comparison.groups:
+        label = g.label if g.group else f"{g.label} *"
+        out.append(
+            f"{label:<24}{_fmt(g.target):>12}{_fmt(g.actual):>12}"
+            f"{_fmt(g.ytd_target):>14}{_fmt(g.ytd_actual):>12}"
+        )
+
+    if any(g.group is None for g in comparison.groups):
+        out.append("* zählt automatisch zum Konsum")
+
+    a = comparison.availability
+    if a is None:
+        return out
+
+    c = consumption(comparison.groups)
+    s = savings(comparison.groups)
+    out.append("-" * 74)
+    columns = (
+        (c.target, a.income_target),
+        (c.actual, a.income_actual),
+        (c.ytd_target, a.ytd_income_target),
+        (c.ytd_actual, a.ytd_income_actual),
+    )
+    savings_columns = (s.target, s.actual, s.ytd_target, s.ytd_actual)
+    widths = (12, 12, 14, 12)
+    out.append(
+        f"{'Konsum':<24}"
+        + "".join(f"{_fmt(cons):>{w}}" for (cons, _), w in zip(columns, widths))
+    )
+    out.append(
+        f"{'Einkommen − Konsum':<24}"
+        + "".join(f"{_fmt(inc - cons):>{w}}" for (cons, inc), w in zip(columns, widths))
+    )
+    out.append(
+        f"{'Konsum in % Einkommen':<24}"
+        + "".join(
+            f"{_fmt_share(_ratio(cons, inc)):>{w}}"
+            for (cons, inc), w in zip(columns, widths)
+        )
+    )
+    out.append(
+        f"{'Sparquote':<24}"
+        + "".join(
+            f"{_fmt_share(_ratio(sav, inc)):>{w}}"
+            for sav, (_, inc), w in zip(savings_columns, columns, widths)
+        )
+    )
+    return out
 
 
 def format_report(comparison: BudgetComparison, source_label: str) -> str:
@@ -523,6 +682,9 @@ def format_report(comparison: BudgetComparison, source_label: str) -> str:
             ("= Nicht verplant", a.unplanned, a.ytd_unplanned),
         ):
             out.append(f"{label:<20}{_fmt(value):>12}{_fmt(ytd_value):>14}")
+
+    if comparison.groups:
+        out.extend(_format_groups(comparison))
 
     if comparison.reserves:
         out.append("")

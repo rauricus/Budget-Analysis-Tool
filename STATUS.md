@@ -14,11 +14,11 @@ What the tool does today and where its known limits are. Next steps: [ROADMAP.md
 | Diagnostics | `--debug` pipeline output, `explain_rule_match.py` per transaction, `doctor.py` per dataset (overlapping or missing input, stale output, review questions on rules, dead, shadowed and tied rules, unused amounts, overrides that no longer fit) |
 | Export | 20-column categorized CSV per input file |
 | Analysis | Excel report: summary, overviews, per-month category and subcategory tables, all transactions filterable, top payees per subcategory. Static figures, reconciled against the transactions, with a check row per table |
-| Budget | `budget.json` with planned income, reserves (pots) and budget lines per category or subcategory; `budget_report.py` compares one month and the cumulated period on the console |
+| Budget | `budget.json` with planned income, reserves (pots) and budget lines per category or subcategory, each in a fixed group; `budget_report.py` compares one month and the cumulated period on the console, with group subtotals, consumption and savings rate |
 | Tests | 20 modules, independent of `data/reference` and private data |
 
 Rule sets: 70 baseline rules in `data/reference`, split by topic into `rules.json` and
-`rules.<topic>.json` files; 38 in `data/example`, in a single `rules.json`.
+`rules.<topic>.json` files; 39 in `data/example`, in a single `rules.json`.
 
 ## Known gaps
 

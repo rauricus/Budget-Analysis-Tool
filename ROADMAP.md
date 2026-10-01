@@ -14,20 +14,7 @@ Ground rules for every item below:
 
 ## Now
 
-### 1. Budget groups and a consumption figure
-
-Budget lines and reserves get an optional `group` field (e.g. `discretionary`, `essential`,
-`fixed`, `savings`); unknown values are rejected. `budget_report.py` then shows:
-
-- a subtotal per group, so the discretionary lines read as one block;
-- **consumption** — everything except the `savings` group — against income, which is the
-  measure of whether the budget is self-sustaining;
-- the **savings rate**: the `savings` group against income.
-
-Savings such as pension contributions or an ETF plan leave the account as transfers, so they
-are reserves; the group is what separates them from fixed costs like rent.
-
-### 2. Budget checks in `doctor.py`
+### 1. Budget checks in `doctor.py`
 
 The doctor already reads the whole dataset; with a `budget.json` present it also reports:
 
@@ -39,7 +26,7 @@ The doctor already reads the whole dataset; with a `budget.json` present it also
 
 ## Next
 
-### 3. Tags on rules
+### 2. Tags on rules
 
 Discretionary spending often cuts across the category tree: digital subscriptions sit next to
 the phone bill in one subcategory, devices sit in household goods, a subscription exists in
@@ -57,7 +44,7 @@ each time.
 This replaces a budget line per payee or per rule: several rules can share a tag, and a tag
 survives a rule being split or renamed.
 
-### 4. Income by source, and offsets
+### 3. Income by source, and offsets
 
 Income is a single figure today, so a bonus and reimbursed expenses look alike.
 
@@ -66,9 +53,9 @@ Income is a single figure today, so a bonus and reimbursed expenses look alike.
 - **Offset by a matching inflow** — expenses reimbursed by an employer or someone else, or
   paid from a pot funded elsewhere — must leave the budget on both sides, or the same money
   counts twice. Where a rule can recognize the inflow, the refund mirrors the expense
-  category (as today). Where it cannot, the transaction is marked (see item 6).
+  category (as today). Where it cannot, the transaction is marked (see item 5).
 
-### 5. Shared rule files across years (decide before the next year starts)
+### 4. Shared rule files across years (decide before the next year starts)
 
 Each year's dataset starts as a copy of the previous rule set. Most rules apply to every
 year; only a few are tied to a period (trips, amounts that change yearly). The copies drift
@@ -89,24 +76,24 @@ apart, and a correction has to be made in every year that is still re-run.
 
 ## Later
 
-### 6. Mark special spending
+### 5. Mark special spending
 
 Two kinds of spending need a marking per transaction when no rule can tell them apart:
 
 - **One-off individually, recurring as a class** (furniture, appliances): not a target but a
-  provision — a monthly rate into a pot, sized from history. Tags (item 3) cover the cases a
+  provision — a monthly rate into a pot, sized from history. Tags (item 2) cover the cases a
   rule can recognize; the marking covers the rest.
-- **Offset by a matching inflow** that no rule can pair (item 4).
+- **Offset by a matching inflow** that no rule can pair (item 3).
 
 The marking lives in its own `{TX-id: {...}}` file next to `transaction_overrides.json`,
 using the same ID-remap helper.
 
-### 7. Due dates for reserves
+### 6. Due dates for reserves
 
 A tax bill due in a given month should not read as an overdrawn pot until the year catches
 up. A reserve may name its due months; the pot is compared against what is due by then.
 
-### 8. Budget proposal
+### 7. Budget proposal
 
 `propose_budget.py <run_dir>` writes a draft `budget.json` from the categorized history, for
 manual review, never applied automatically:
@@ -114,17 +101,17 @@ manual review, never applied automatically:
 - median rather than mean, so single outliers do not set a target;
 - categories present in only a few months proposed as `yearly`;
 - fixed costs detected from recurring standing orders and direct debits;
-- groups (item 1) carried over from the current budget;
-- marked one-off and offset spending (item 6) left out of the derivation;
+- groups carried over from the current budget;
+- marked one-off and offset spending (item 5) left out of the derivation;
 - more than one year of history, by reading several year datasets.
 
-### 9. Trips from a trip file
+### 8. Trips from a trip file
 
 A trip needs two to four rules today (country marker, prepayment window, places), and cash
 withdrawn during the trip still lands in finance. A `trips.json` with name, period and
 country generates those rules and assigns cash withdrawals within the period to the trip.
 
-### 10. Monthly routine
+### 9. Monthly routine
 
 - The budgeting workflow documented in `README.md`: import, categorize, doctor, report,
   review.
@@ -132,7 +119,7 @@ country generates those rules and assigns cash withdrawals within the period to 
   per group.
 - Budget targets revisited at a fixed cadence (quarterly, say) rather than edited ad hoc.
 
-### 11. Budget in the Excel report
+### 10. Budget in the Excel report
 
 A sheet "Budget vs. Actual" with the same figures as `budget_report.py`, including groups
 and the consumption figure. Computed in Python and written as values, like the other sheets.

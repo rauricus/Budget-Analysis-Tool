@@ -14,11 +14,13 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from budget_report import (
     assign_reserves,
     compare_budget_to_actuals,
+    consumption,
     format_report,
     load_budget,
     main,
     monthly_target,
     net_by_category,
+    savings,
     spending_rows,
 )
 
@@ -70,8 +72,8 @@ class TestLoading:
     def test_loads_entries(self, tmp_path):
         f = tmp_path / "budget.json"
         _write(f, {"budget": {
-            "Wohnen": {"amount": 1900.0, "period": "monthly"},
-            "Finanzen": {"amount": 2400, "period": "yearly", "_note": "jährlich"},
+            "Wohnen": {"amount": 1900.0, "period": "monthly", "group": "fixed"},
+            "Finanzen": {"amount": 2400, "period": "yearly", "group": "fixed", "_note": "jährlich"},
         }})
         budget = load_budget(f)["budget"]
         assert budget["Wohnen"]["amount"] == 1900.0
@@ -91,13 +93,13 @@ class TestLoading:
 
     def test_rejects_unknown_field(self, tmp_path):
         f = tmp_path / "budget.json"
-        _write(f, {"budget": {"Wohnen": {"amount": 1, "period": "monthly", "type": "fixed"}}})
+        _write(f, {"budget": {"Wohnen": {"amount": 1, "period": "monthly", "group": "fixed", "type": "fixed"}}})
         with pytest.raises(ValueError, match="Unknown field"):
             load_budget(f)
 
     def test_rejects_invalid_period(self, tmp_path):
         f = tmp_path / "budget.json"
-        _write(f, {"budget": {"Wohnen": {"amount": 1, "period": "quarterly"}}})
+        _write(f, {"budget": {"Wohnen": {"amount": 1, "period": "quarterly", "group": "fixed"}}})
         with pytest.raises(ValueError, match="Invalid 'period'"):
             load_budget(f)
 
@@ -109,25 +111,25 @@ class TestLoading:
 
     def test_rejects_non_numeric_amount(self, tmp_path):
         f = tmp_path / "budget.json"
-        _write(f, {"budget": {"Wohnen": {"amount": "1900", "period": "monthly"}}})
+        _write(f, {"budget": {"Wohnen": {"amount": "1900", "period": "monthly", "group": "fixed"}}})
         with pytest.raises(ValueError, match="must be a number"):
             load_budget(f)
 
     def test_rejects_boolean_amount(self, tmp_path):
         f = tmp_path / "budget.json"
-        _write(f, {"budget": {"Wohnen": {"amount": True, "period": "monthly"}}})
+        _write(f, {"budget": {"Wohnen": {"amount": True, "period": "monthly", "group": "fixed"}}})
         with pytest.raises(ValueError, match="must be a number"):
             load_budget(f)
 
     def test_rejects_non_string_note(self, tmp_path):
         f = tmp_path / "budget.json"
-        _write(f, {"budget": {"Wohnen": {"amount": 1, "period": "monthly", "_note": 5}}})
+        _write(f, {"budget": {"Wohnen": {"amount": 1, "period": "monthly", "group": "fixed", "_note": 5}}})
         with pytest.raises(ValueError, match="must be a string"):
             load_budget(f)
 
     def test_rejects_unknown_top_level_field(self, tmp_path):
         f = tmp_path / "budget.json"
-        _write(f, {"Wohnen": {"amount": 1900, "period": "monthly"}})
+        _write(f, {"Wohnen": {"amount": 1900, "period": "monthly", "group": "fixed"}})
         with pytest.raises(ValueError, match="Unknown field"):
             load_budget(f)
 
@@ -141,7 +143,7 @@ class TestLoading:
         f = tmp_path / "budget.json"
         _write(f, {
             "income": {"amount": 8000, "period": "monthly"},
-            "reserves": {"Steuern": {"amount": 9000, "period": "yearly",
+            "reserves": {"Steuern": {"amount": 9000, "period": "yearly", "group": "fixed",
                                      "category": "Steuern"}},
         })
         budget = load_budget(f)
@@ -157,20 +159,20 @@ class TestLoading:
 
     def test_rejects_reserve_without_category(self, tmp_path):
         f = tmp_path / "budget.json"
-        _write(f, {"reserves": {"Steuern": {"amount": 1, "period": "yearly"}}})
+        _write(f, {"reserves": {"Steuern": {"amount": 1, "period": "yearly", "group": "fixed"}}})
         with pytest.raises(ValueError, match="'category'"):
             load_budget(f)
 
     def test_rejects_empty_subcategory(self, tmp_path):
         f = tmp_path / "budget.json"
-        _write(f, {"reserves": {"KK": {"amount": 1, "period": "yearly",
+        _write(f, {"reserves": {"KK": {"amount": 1, "period": "yearly", "group": "fixed",
                                        "category": "Leben", "subcategory": ""}}})
         with pytest.raises(ValueError, match="'subcategory'"):
             load_budget(f)
 
     def test_rejects_two_reserves_on_the_same_scope(self, tmp_path):
         f = tmp_path / "budget.json"
-        entry = {"amount": 1, "period": "yearly",
+        entry = {"amount": 1, "period": "yearly", "group": "fixed",
                  "category": "Leben", "subcategory": "Krankenkasse"}
         _write(f, {"reserves": {"Prämien": entry, "Franchise": entry}})
         with pytest.raises(ValueError, match="both cover"):
@@ -179,9 +181,9 @@ class TestLoading:
     def test_rejects_reserve_and_budget_line_on_the_same_category(self, tmp_path):
         f = tmp_path / "budget.json"
         _write(f, {
-            "reserves": {"Steuern": {"amount": 1, "period": "yearly",
+            "reserves": {"Steuern": {"amount": 1, "period": "yearly", "group": "fixed",
                                      "category": "Steuern"}},
-            "budget": {"Steuern": {"amount": 1, "period": "monthly"}},
+            "budget": {"Steuern": {"amount": 1, "period": "monthly", "group": "fixed"}},
         })
         with pytest.raises(ValueError, match="covered by reserve"):
             load_budget(f)
@@ -189,9 +191,9 @@ class TestLoading:
     def test_allows_reserved_subcategory_next_to_a_budget_line(self, tmp_path):
         f = tmp_path / "budget.json"
         _write(f, {
-            "reserves": {"KK": {"amount": 1, "period": "yearly",
+            "reserves": {"KK": {"amount": 1, "period": "yearly", "group": "fixed",
                                 "category": "Leben", "subcategory": "Krankenkasse"}},
-            "budget": {"Leben": {"amount": 1, "period": "monthly"}},
+            "budget": {"Leben": {"amount": 1, "period": "monthly", "group": "fixed"}},
         })
         assert "Leben" in load_budget(f)["budget"]
 
@@ -202,10 +204,10 @@ class TestLoading:
 
 class TestTargetsAndActuals:
     def test_monthly_target_is_the_amount(self):
-        assert monthly_target({"amount": 150.0, "period": "monthly"}) == 150.0
+        assert monthly_target({"amount": 150.0, "period": "monthly", "group": "fixed"}) == 150.0
 
     def test_yearly_target_is_pro_rata(self):
-        assert monthly_target({"amount": 2400.0, "period": "yearly"}) == 200.0
+        assert monthly_target({"amount": 2400.0, "period": "yearly", "group": "fixed"}) == 200.0
 
     def test_spending_rows_exclude_income_and_transfers(self):
         df = _rows(
@@ -250,7 +252,7 @@ class TestTargetsAndActuals:
 class TestComparison:
     def test_target_actual_and_variance(self):
         df = _rows(("2025-01", "Expense", "Wohnen", 1950.0, 0.0))
-        budget = _budget({"Wohnen": {"amount": 1900.0, "period": "monthly"}})
+        budget = _budget({"Wohnen": {"amount": 1900.0, "period": "monthly", "group": "fixed"}})
 
         line = compare_budget_to_actuals(df, budget, MONTHS, "2025-01").lines[0]
 
@@ -261,7 +263,7 @@ class TestComparison:
 
     def test_variance_pct_is_none_for_a_zero_target(self):
         df = _rows(("2025-01", "Expense", "Wohnen", 10.0, 0.0))
-        budget = _budget({"Wohnen": {"amount": 0.0, "period": "monthly"}})
+        budget = _budget({"Wohnen": {"amount": 0.0, "period": "monthly", "group": "fixed"}})
 
         line = compare_budget_to_actuals(df, budget, MONTHS, "2025-01").lines[0]
 
@@ -269,7 +271,7 @@ class TestComparison:
 
     def test_yearly_line_is_compared_pro_rata(self):
         df = _rows(("2025-01", "Expense", "Finanzen", 2400.0, 0.0))
-        budget = _budget({"Finanzen": {"amount": 2400.0, "period": "yearly"}})
+        budget = _budget({"Finanzen": {"amount": 2400.0, "period": "yearly", "group": "fixed"}})
 
         line = compare_budget_to_actuals(df, budget, MONTHS, "2025-01").lines[0]
 
@@ -282,7 +284,7 @@ class TestComparison:
             ("2025-02", "Expense", "Wohnen", 200.0, 0.0),
             ("2025-03", "Expense", "Wohnen", 400.0, 0.0),
         )
-        budget = _budget({"Wohnen": {"amount": 150.0, "period": "monthly"}})
+        budget = _budget({"Wohnen": {"amount": 150.0, "period": "monthly", "group": "fixed"}})
 
         line = compare_budget_to_actuals(df, budget, MONTHS, "2025-02").lines[0]
 
@@ -293,7 +295,7 @@ class TestComparison:
 
     def test_months_after_the_selected_one_are_ignored(self):
         df = _rows(("2025-03", "Expense", "Wohnen", 999.0, 0.0))
-        budget = _budget({"Wohnen": {"amount": 150.0, "period": "monthly"}})
+        budget = _budget({"Wohnen": {"amount": 150.0, "period": "monthly", "group": "fixed"}})
 
         line = compare_budget_to_actuals(df, budget, MONTHS, "2025-01").lines[0]
 
@@ -302,8 +304,8 @@ class TestComparison:
 
     def test_lines_are_sorted_by_category(self):
         budget = _budget({
-            "Wohnen": {"amount": 1.0, "period": "monthly"},
-            "Einkaufen": {"amount": 1.0, "period": "monthly"},
+            "Wohnen": {"amount": 1.0, "period": "monthly", "group": "fixed"},
+            "Einkaufen": {"amount": 1.0, "period": "monthly", "group": "fixed"},
         })
         comparison = compare_budget_to_actuals(_rows(), budget, MONTHS, "2025-01")
 
@@ -322,14 +324,14 @@ class TestComparison:
         assert comparison.unbudgeted == [("Mobilität", 0.0, 96.9)]
 
     def test_budget_lines_without_any_actuals_are_listed(self):
-        budget = _budget({"Mobilität": {"amount": 100.0, "period": "monthly"}})
+        budget = _budget({"Mobilität": {"amount": 100.0, "period": "monthly", "group": "fixed"}})
         comparison = compare_budget_to_actuals(_rows(), budget, MONTHS, "2025-01")
 
         assert comparison.without_actuals == ["Mobilität"]
 
     def test_budget_line_with_actuals_is_not_listed_as_missing(self):
         df = _rows(("2025-01", "Expense", "Mobilität", 10.0, 0.0))
-        budget = _budget({"Mobilität": {"amount": 100.0, "period": "monthly"}})
+        budget = _budget({"Mobilität": {"amount": 100.0, "period": "monthly", "group": "fixed"}})
         comparison = compare_budget_to_actuals(df, budget, MONTHS, "2025-01")
 
         assert comparison.without_actuals == []
@@ -343,7 +345,7 @@ class TestComparison:
             ("2025-01", "Expense", "Wohnen", 1950.0, 0.0),
             ("2025-01", "Expense", "Mobilität", 96.9, 0.0),
         )
-        budget = _budget({"Wohnen": {"amount": 1900.0, "period": "monthly"}})
+        budget = _budget({"Wohnen": {"amount": 1900.0, "period": "monthly", "group": "fixed"}})
         comparison = compare_budget_to_actuals(df, budget, MONTHS, "2025-01")
 
         text = format_report(comparison, "data/test")
@@ -366,8 +368,8 @@ class TestSubcategoryLines:
             ("2025-01", "Expense", "Freizeit", 20.0, 0.0, "Kultur"),
         )
         budget = _budget({
-            "Freizeit": {"amount": 50.0, "period": "monthly"},
-            "Freizeit / Gastronomie": {"amount": 100.0, "period": "monthly"},
+            "Freizeit": {"amount": 50.0, "period": "monthly", "group": "fixed"},
+            "Freizeit / Gastronomie": {"amount": 100.0, "period": "monthly", "group": "fixed"},
         })
 
         lines = compare_budget_to_actuals(df, budget, MONTHS, "2025-01").lines
@@ -382,7 +384,7 @@ class TestSubcategoryLines:
             ("2025-01", "Expense", "Freizeit", 80.0, 0.0, "Gastronomie"),
             ("2025-01", "Refund", "Freizeit", 0.0, 30.0, "Gastronomie"),
         )
-        budget = _budget({"Freizeit / Gastronomie": {"amount": 100.0, "period": "monthly"}})
+        budget = _budget({"Freizeit / Gastronomie": {"amount": 100.0, "period": "monthly", "group": "fixed"}})
 
         line = compare_budget_to_actuals(df, budget, MONTHS, "2025-01").lines[0]
 
@@ -393,7 +395,7 @@ class TestSubcategoryLines:
             ("2025-01", "Expense", "Freizeit", 80.0, 0.0, "Gastronomie"),
             ("2025-01", "Expense", "Freizeit", 20.0, 0.0, "Kultur"),
         )
-        budget = _budget({"Freizeit / Gastronomie": {"amount": 100.0, "period": "monthly"}})
+        budget = _budget({"Freizeit / Gastronomie": {"amount": 100.0, "period": "monthly", "group": "fixed"}})
 
         comparison = compare_budget_to_actuals(df, budget, MONTHS, "2025-01")
 
@@ -401,13 +403,13 @@ class TestSubcategoryLines:
         assert comparison.without_actuals == []
 
     def test_subcategory_line_without_actuals_is_listed(self):
-        budget = _budget({"Freizeit / Gastronomie": {"amount": 100.0, "period": "monthly"}})
+        budget = _budget({"Freizeit / Gastronomie": {"amount": 100.0, "period": "monthly", "group": "fixed"}})
         comparison = compare_budget_to_actuals(_rows(), budget, MONTHS, "2025-01")
         assert comparison.without_actuals == ["Freizeit / Gastronomie"]
 
     def test_slash_without_spaces_stays_part_of_the_name(self):
         df = _rows(("2025-01", "Expense", "Einkaufen", 10.0, 0.0, "Bücher/Filme/Musik"))
-        budget = _budget({"Einkaufen / Bücher/Filme/Musik": {"amount": 1.0, "period": "monthly"}})
+        budget = _budget({"Einkaufen / Bücher/Filme/Musik": {"amount": 1.0, "period": "monthly", "group": "fixed"}})
 
         line = compare_budget_to_actuals(df, budget, MONTHS, "2025-01").lines[0]
 
@@ -415,16 +417,16 @@ class TestSubcategoryLines:
 
     def test_rejects_an_empty_part_in_the_key(self, tmp_path):
         f = tmp_path / "budget.json"
-        _write(f, {"budget": {"Freizeit / ": {"amount": 1, "period": "monthly"}}})
+        _write(f, {"budget": {"Freizeit / ": {"amount": 1, "period": "monthly", "group": "fixed"}}})
         with pytest.raises(ValueError, match="must be 'Category' or"):
             load_budget(f)
 
     def test_rejects_a_line_on_a_reserved_subcategory(self, tmp_path):
         f = tmp_path / "budget.json"
         _write(f, {
-            "reserves": {"KK": {"amount": 1, "period": "yearly",
+            "reserves": {"KK": {"amount": 1, "period": "yearly", "group": "fixed",
                                 "category": "Leben", "subcategory": "Krankenkasse"}},
-            "budget": {"Leben / Krankenkasse": {"amount": 1, "period": "monthly"}},
+            "budget": {"Leben / Krankenkasse": {"amount": 1, "period": "monthly", "group": "fixed"}},
         })
         with pytest.raises(ValueError, match="covered by reserve"):
             load_budget(f)
@@ -432,15 +434,15 @@ class TestSubcategoryLines:
     def test_rejects_a_subcategory_line_in_a_fully_reserved_category(self, tmp_path):
         f = tmp_path / "budget.json"
         _write(f, {
-            "reserves": {"Steuern": {"amount": 1, "period": "yearly", "category": "Steuern"}},
-            "budget": {"Steuern / Bund": {"amount": 1, "period": "monthly"}},
+            "reserves": {"Steuern": {"amount": 1, "period": "yearly", "group": "fixed", "category": "Steuern"}},
+            "budget": {"Steuern / Bund": {"amount": 1, "period": "monthly", "group": "fixed"}},
         })
         with pytest.raises(ValueError, match="covered by reserve"):
             load_budget(f)
 
     def test_report_renders_a_long_line_key(self):
         df = _rows(("2025-01", "Expense", "Freizeit", 80.0, 0.0, "Reisen und Erleben"))
-        budget = _budget({"Freizeit / Reisen und Erleben": {"amount": 100.0, "period": "monthly"}})
+        budget = _budget({"Freizeit / Reisen und Erleben": {"amount": 100.0, "period": "monthly", "group": "fixed"}})
         comparison = compare_budget_to_actuals(df, budget, MONTHS, "2025-01")
 
         text = format_report(comparison, "data/test")
@@ -452,7 +454,7 @@ class TestSubcategoryLines:
 # Reserves and availability
 # ---------------------------------------------------------------------------
 
-HEALTH = {"amount": 1200.0, "period": "yearly",
+HEALTH = {"amount": 1200.0, "period": "yearly", "group": "fixed",
           "category": "Leben", "subcategory": "Krankenkasse"}
 
 
@@ -463,7 +465,7 @@ class TestReserves:
             ("2025-01", "Expense", "Leben", 20.0, 0.0, "Familie"),
         )
         reserves = {
-            "Leben": {"amount": 1, "period": "yearly", "category": "Leben"},
+            "Leben": {"amount": 1, "period": "yearly", "group": "fixed", "category": "Leben"},
             "KK": HEALTH,
         }
         assert list(assign_reserves(df, reserves)) == ["KK", "Leben"]
@@ -474,7 +476,7 @@ class TestReserves:
 
     def test_transfer_with_a_reserved_category_counts(self):
         df = _rows(("2025-01", "Transfer", "Vorsorge", 588.0, 0.0))
-        reserves = {"3a": {"amount": 7056, "period": "yearly", "category": "Vorsorge"}}
+        reserves = {"3a": {"amount": 7056, "period": "yearly", "group": "fixed", "category": "Vorsorge"}}
 
         comparison = compare_budget_to_actuals(
             df, _budget(reserves=reserves), MONTHS, "2025-01"
@@ -489,10 +491,10 @@ class TestReserves:
             ("2025-01", "Expense", "Steuern", 500.0, 0.0),
         )
         budget = _budget(
-            lines={"Leben": {"amount": 50.0, "period": "monthly"}},
+            lines={"Leben": {"amount": 50.0, "period": "monthly", "group": "fixed"}},
             reserves={
                 "KK": HEALTH,
-                "Steuern": {"amount": 6000, "period": "yearly", "category": "Steuern"},
+                "Steuern": {"amount": 6000, "period": "yearly", "group": "fixed", "category": "Steuern"},
             },
         )
 
@@ -528,7 +530,7 @@ class TestReserves:
         budget = _budget(
             income={"amount": 5000.0, "period": "monthly"},
             reserves={"KK": HEALTH},
-            lines={"Wohnen": {"amount": 1900.0, "period": "monthly"}},
+            lines={"Wohnen": {"amount": 1900.0, "period": "monthly", "group": "fixed"}},
         )
 
         a = compare_budget_to_actuals(df, budget, MONTHS, "2025-02").availability
@@ -543,7 +545,7 @@ class TestReserves:
     def test_overplanning_shows_as_negative(self):
         budget = _budget(
             income={"amount": 1000.0, "period": "monthly"},
-            lines={"Wohnen": {"amount": 1900.0, "period": "monthly"}},
+            lines={"Wohnen": {"amount": 1900.0, "period": "monthly", "group": "fixed"}},
         )
         a = compare_budget_to_actuals(_rows(), budget, MONTHS, "2025-01").availability
         assert a.unplanned == -900.0
@@ -574,6 +576,148 @@ class TestReserves:
 
         assert "Verfügbarkeit" not in text
         assert "Reservation" not in text
+
+
+# ---------------------------------------------------------------------------
+# Groups, consumption and savings rate
+# ---------------------------------------------------------------------------
+
+def _line(group, amount=100.0, period="monthly"):
+    return {"amount": amount, "period": period, "group": group}
+
+
+class TestGroups:
+    def test_group_is_required_on_budget_lines(self, tmp_path):
+        f = tmp_path / "budget.json"
+        _write(f, {"budget": {"Wohnen": {"amount": 1, "period": "monthly"}}})
+        with pytest.raises(ValueError, match="'group'"):
+            load_budget(f)
+
+    def test_group_is_required_on_reserves(self, tmp_path):
+        f = tmp_path / "budget.json"
+        _write(f, {"reserves": {"Steuern": {"amount": 1, "period": "yearly",
+                                            "category": "Steuern"}}})
+        with pytest.raises(ValueError, match="'group'"):
+            load_budget(f)
+
+    def test_rejects_an_unknown_group(self, tmp_path):
+        f = tmp_path / "budget.json"
+        _write(f, {"budget": {"Wohnen": _line("luxury")}})
+        with pytest.raises(ValueError, match="must be one of"):
+            load_budget(f)
+
+    def test_income_takes_no_group(self, tmp_path):
+        f = tmp_path / "budget.json"
+        _write(f, {"income": {"amount": 1, "period": "monthly", "group": "fixed"}})
+        with pytest.raises(ValueError, match="Unknown field"):
+            load_budget(f)
+
+    def test_totals_add_lines_and_reserves_per_group(self):
+        df = _rows(
+            ("2025-01", "Expense", "Wohnen", 900.0, 0.0),
+            ("2025-01", "Expense", "Freizeit", 30.0, 0.0),
+            ("2025-01", "Transfer", "Säule 3a", 500.0, 0.0),
+        )
+        budget = _budget(
+            lines={"Wohnen": _line("fixed", 1000.0), "Freizeit": _line("discretionary", 80.0)},
+            reserves={"3a": {**_line("savings", 6000.0, "yearly"), "category": "Säule 3a"}},
+        )
+
+        groups = {
+            g.group: g
+            for g in compare_budget_to_actuals(df, budget, MONTHS, "2025-01").groups
+        }
+
+        assert list(groups) == ["fixed", "discretionary", "savings"]
+        assert (groups["fixed"].target, groups["fixed"].actual) == (1000.0, 900.0)
+        assert (groups["discretionary"].target, groups["discretionary"].actual) == (80.0, 30.0)
+        assert (groups["savings"].target, groups["savings"].actual) == (500.0, 500.0)
+
+    def test_consumption_is_everything_except_savings(self):
+        df = _rows(
+            ("2025-01", "Expense", "Wohnen", 900.0, 0.0),
+            ("2025-01", "Transfer", "Säule 3a", 500.0, 0.0),
+        )
+        budget = _budget(
+            lines={"Wohnen": _line("fixed", 1000.0)},
+            reserves={"3a": {**_line("savings", 6000.0, "yearly"), "category": "Säule 3a"}},
+        )
+
+        groups = compare_budget_to_actuals(df, budget, MONTHS, "2025-01").groups
+
+        assert (consumption(groups).target, consumption(groups).actual) == (1000.0, 900.0)
+        assert (savings(groups).target, savings(groups).actual) == (500.0, 500.0)
+
+    def test_spending_without_a_line_counts_as_consumption(self):
+        df = _rows(
+            ("2025-01", "Expense", "Wohnen", 900.0, 0.0),
+            ("2025-01", "Expense", "Mobilität", 60.0, 0.0),
+        )
+        budget = _budget(lines={"Wohnen": _line("fixed", 1000.0)})
+
+        groups = compare_budget_to_actuals(df, budget, MONTHS, "2025-01").groups
+
+        assert groups[-1].group is None
+        assert (groups[-1].target, groups[-1].actual) == (0.0, 60.0)
+        assert consumption(groups).actual == 960.0
+
+    def test_savings_without_a_savings_group_are_zero(self):
+        budget = _budget(lines={"Wohnen": _line("fixed")})
+        groups = compare_budget_to_actuals(_rows(), budget, MONTHS, "2025-01").groups
+        assert savings(groups).target == 0.0
+
+    def test_cumulated_totals_follow_the_months(self):
+        df = _rows(
+            ("2025-01", "Expense", "Wohnen", 900.0, 0.0),
+            ("2025-02", "Expense", "Wohnen", 800.0, 0.0),
+        )
+        budget = _budget(lines={"Wohnen": _line("fixed", 1000.0)})
+
+        fixed = compare_budget_to_actuals(df, budget, MONTHS, "2025-02").groups[0]
+
+        assert (fixed.ytd_target, fixed.ytd_actual) == (2000.0, 1700.0)
+
+    def test_report_shows_consumption_and_savings_rate_against_income(self):
+        df = _rows(
+            ("2025-01", "Income", "Einkommen", 0.0, 5000.0),
+            ("2025-01", "Expense", "Wohnen", 3000.0, 0.0),
+            ("2025-01", "Transfer", "Säule 3a", 1000.0, 0.0),
+        )
+        budget = _budget(
+            income={"amount": 5000.0, "period": "monthly"},
+            lines={"Wohnen": _line("fixed", 3500.0)},
+            reserves={"3a": {**_line("savings", 12000.0, "yearly"), "category": "Säule 3a"}},
+        )
+
+        text = format_report(compare_budget_to_actuals(df, budget, MONTHS, "2025-01"), "t")
+
+        assert "Fixkosten" in text
+        konsum = next(l for l in text.splitlines() if l.startswith("Konsum "))
+        assert konsum.split()[1] == "3'500.00"
+        assert next(l for l in text.splitlines() if l.startswith("Konsum in %")).split()[-4:] == [
+            "70%", "60%", "70%", "60%"]
+        assert next(l for l in text.splitlines() if l.startswith("Sparquote")).split()[-4:] == [
+            "20%", "20%", "20%", "20%"]
+
+    def test_report_without_income_lists_groups_only(self):
+        budget = _budget(lines={"Wohnen": _line("fixed")})
+        text = format_report(compare_budget_to_actuals(_rows(), budget, MONTHS, "2025-01"), "t")
+        assert "Fixkosten" in text
+        assert "Sparquote" not in text
+        assert "zählt automatisch zum Konsum" not in text
+
+    def test_report_marks_spending_without_a_line_as_consumption(self):
+        df = _rows(("2025-01", "Expense", "Mobilität", 60.0, 0.0))
+        budget = _budget(lines={"Wohnen": _line("fixed")})
+        text = format_report(compare_budget_to_actuals(df, budget, MONTHS, "2025-01"), "t")
+        assert "Ohne Budgetzeile *" in text
+        assert "* zählt automatisch zum Konsum" in text
+
+    def test_example_dataset_shows_the_groups(self, capsys):
+        assert main(["example"]) == 0
+        out = capsys.readouterr().out
+        for label in ("Fixkosten", "Grundbedarf", "Wahlbedarf", "Konsum"):
+            assert label in out
 
 
 # ---------------------------------------------------------------------------
@@ -611,7 +755,7 @@ class TestCli:
 
     def test_alternative_budget_file_by_path(self, tmp_path, capsys):
         draft = tmp_path / "draft.json"
-        _write(draft, {"budget": {"Wohnen": {"amount": 1234.0, "period": "monthly"}}})
+        _write(draft, {"budget": {"Wohnen": {"amount": 1234.0, "period": "monthly", "group": "fixed"}}})
 
         assert main(["example", "--budget", str(draft)]) == 0
 
@@ -624,7 +768,7 @@ class TestCli:
         run_dir = tmp_path / "dataset"
         shutil.copytree("data/example", run_dir)
         _write(run_dir / "budget-2027.json",
-               {"budget": {"Wohnen": {"amount": 999.0, "period": "monthly"}}})
+               {"budget": {"Wohnen": {"amount": 999.0, "period": "monthly", "group": "fixed"}}})
 
         assert main([str(run_dir), "--budget", "budget-2027.json"]) == 0
 

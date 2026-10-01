@@ -238,10 +238,14 @@ uv run python budget_report.py example --budget budget-2027.json
 the current directory first, then inside the dataset directory, so a draft kept next to
 `budget.json` can be named by file name alone. The report header names the file it used.
 
-The report has up to three parts:
+The report has up to four parts:
 
 - **Availability** (with an `income`): planned and actual income, minus reserves, minus
   budget lines, and what is left unplanned.
+- **Groups**: reserves and budget lines added up per `group`, followed by the spending no
+  line claims. With an `income` it adds **consumption** (everything except the `savings`
+  group), what is left of the income after it, consumption as a share of income, and the
+  **savings rate** (the `savings` group against income).
 - **Reserves** (with `reserves`): target, actual, cumulated values and the pot balance.
 - **Budget lines**: target, actual and variance for the month and cumulated over the
   dataset's months, followed by categories without a line and lines without actuals —
@@ -607,13 +611,13 @@ each optional:
   "income": { "amount": 4200.00, "period": "monthly", "_note": "Nettolohn" },
   "reserves": {
     "Krankenkasse": {
-      "amount": 3600.00, "period": "yearly",
+      "amount": 3600.00, "period": "yearly", "group": "fixed",
       "category": "Leben", "subcategory": "Krankenkasse"
     }
   },
   "budget": {
-    "Wohnen": { "amount": 1900.00, "period": "monthly" },
-    "Leben": { "amount": 250.00, "period": "monthly" }
+    "Wohnen": { "amount": 1900.00, "period": "monthly", "group": "fixed" },
+    "Leben": { "amount": 250.00, "period": "monthly", "group": "essential" }
   }
 }
 ```
@@ -635,7 +639,19 @@ each optional:
   subcategory `Bücher/Filme/Musik`.
 
 Every entry has an `amount` (a number) and a `period` (`monthly` or `yearly`), and may have
-an optional `_note` that does not affect anything. A yearly amount counts one twelfth per
+an optional `_note` that does not affect anything. Reserves and budget lines also need a
+`group`, which says what the money is for:
+
+| `group` | Meaning |
+|---|---|
+| `fixed` | Costs that hardly move: rent, insurance, taxes |
+| `essential` | Everyday needs: groceries, transport |
+| `discretionary` | Spending that can shrink: leisure, restaurants |
+| `savings` | Money set aside, such as pension contributions or an ETF plan |
+
+The list is fixed and any other value is rejected. Savings often leave the account as
+transfers, so they are usually reserves; the group is what separates them from fixed costs
+like rent. The `income` takes no group. A yearly amount counts one twelfth per
 month, with the cumulated columns showing whether the year as a whole is on track. Unknown
 fields and unknown sections are rejected at load time.
 
