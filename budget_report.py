@@ -639,7 +639,7 @@ def _format_groups(comparison: BudgetComparison) -> list:
     savings_columns = (s.target, s.actual, s.ytd_target, s.ytd_actual)
     widths = (12, 12, 14, 12)
     out.append(
-        f"{'Konsum':<24}"
+        f"{'Konsum (ohne Sparen)':<24}"
         + "".join(f"{_fmt(cons):>{w}}" for (cons, _), w in zip(columns, widths))
     )
     out.append(

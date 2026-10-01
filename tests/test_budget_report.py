@@ -692,8 +692,8 @@ class TestGroups:
         text = format_report(compare_budget_to_actuals(df, budget, MONTHS, "2025-01"), "t")
 
         assert "Fixkosten" in text
-        konsum = next(l for l in text.splitlines() if l.startswith("Konsum "))
-        assert konsum.split()[1] == "3'500.00"
+        konsum = next(l for l in text.splitlines() if l.startswith("Konsum (ohne Sparen)"))
+        assert konsum.split()[3] == "3'500.00"
         assert next(l for l in text.splitlines() if l.startswith("Konsum in %")).split()[-4:] == [
             "70%", "60%", "70%", "60%"]
         assert next(l for l in text.splitlines() if l.startswith("Sparquote")).split()[-4:] == [
