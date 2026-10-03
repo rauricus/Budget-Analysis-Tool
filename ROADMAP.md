@@ -89,7 +89,7 @@ country generates those rules and assigns cash withdrawals within the period to 
 - The budgeting workflow documented in `README.md`: import, categorize, doctor, report,
   review.
 - Optional skill `/monthly-budget-review` running those steps and summarizing the variances
-  per group.
+  per group; once item 9 exists, it ends with the review report and its analysis.
 - Budget targets revisited at a fixed cadence (quarterly, say) rather than edited ad hoc.
 
 ### 8. Budget in the Excel report
@@ -97,6 +97,37 @@ country generates those rules and assigns cash withdrawals within the period to 
 A sheet "Budget vs. Actual" with the same figures as `budget_report.py`, including groups
 and the consumption figure. Computed in Python and written as values, like the other sheets.
 Lower priority as long as the console report covers the monthly review.
+
+### 9. Review report with an AI analysis
+
+A budget review happens offline and on paper: a plan for next year checked against this
+year and the last, with the doctor's findings and a list of decisions to make. Today that
+document is assembled by hand from the console output of five tools.
+
+**Report.** `review_report.py <run_dir> [--budget FILE] [--compare <run_dir>]` writes a
+self-contained HTML page, printable to PDF from any browser, into
+`<run_dir>/review/<date>/`, next to a copy of the Excel report:
+
+- Every figure comes from the existing code paths — `budget_report.py` and `doctor.py` return
+  structured results that the console output and the report both render; nothing parses
+  console text, and the report computes nothing of its own.
+- Visualized: each budget line and reserve as plan, pro-rata target and actual, with the
+  share of the yearly plan already used; group totals; income against consumption per month
+  and cumulated; reserve pots. `--compare` adds a previous year's actuals against the same
+  plan.
+- Appendix: the doctor findings and the console output of the tools, unchanged.
+- A `report.json` beside the page holds every figure the page shows. It is the only input
+  the analysis step may cite numbers from.
+
+**Analysis.** A skill (`/budget-review-analysis`) reads `report.json` together with the
+dataset's own notes (budget `_note` fields, a dataset's markdown) and writes an analysis
+file the report embeds as its own section: findings, deadlines and open questions, and
+next steps as a checklist. It interprets, it does not calculate: any figure it cites must
+be in `report.json`, and its section is marked as generated. The tool itself stays
+offline; the skill runs in the agent session.
+
+The report without the analysis is the MVP; the skill follows once the `report.json`
+format has settled.
 
 ## Out of scope
 
