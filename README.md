@@ -638,7 +638,9 @@ can be split so that each part lands in its own category:
 - A rule can split all its matches the same way; see
   [Splitting every match of a rule](#splitting-every-match-of-a-rule).
 
-`data/example` splits `TX-000048` into two and `TX-000076` into three parts.
+`data/example` splits `TX-000048` into two and `TX-000076` into three parts, and the salary
+paydays `TX-000071` and `TX-000095` as described in
+[Salary with reimbursed expenses](#salary-with-reimbursed-expenses).
 
 ## Budget
 
@@ -784,6 +786,13 @@ past a bonus month without an override books the bonus as a refund, unnoticed by
 income-above-plan check because it is no longer income; the remainder shown in the review
 is the safeguard. Expenses reimbursed a quarter later make the category swing month by
 month; the cumulated columns are the ones to read.
+
+`data/example` shows every case with the rules `income_1` (salary) and `income_2` (separate
+bonus): January has no expenses, February splits train and hotel by override, March keeps
+the default and has the separate bonus, April carries a bonus with the salary. January and
+March are confirmed by `reviewed_until`, February and April by their overrides, so the
+review list stays empty. A side income from another rule has no income source in the
+budget and shows up as income without a plan.
 
 ## Export format
 

@@ -821,14 +821,17 @@ class TestCli:
         assert "Wohnen" in out
         assert "Krankenkasse" in out
 
-    def test_example_income_is_the_planned_salary_plus_a_bonus(self, capsys):
-        # Four months at the planned 4'200 plus one bonus of 1'500 in March.
+    def test_example_income_is_salary_bonus_and_side_income(self, capsys):
+        # Four months of Lohn and Familienzulage at 4'200, a bonus of 1'500 in
+        # March and of 1'000 with the April salary, and a side income of 4'200
+        # in April. Reimbursed expenses are refunds, not income.
         assert main(["example"]) == 0
-        line = next(
-            l for l in capsys.readouterr().out.splitlines()
-            if l.startswith("Einkommen Ist")
-        )
-        assert line.split()[-1] == "18'300.00"
+        out = capsys.readouterr().out.splitlines()
+        line = next(l for l in out if l.startswith("Einkommen Ist"))
+        assert line.split()[-1] == "23'500.00"
+        bonus = next(l for l in out if l.startswith("Einkommen / Bonus"))
+        assert bonus.split()[-1] == "2'500.00"
+        assert any(l.startswith("Einkommen / Nebenerwerb *") for l in out)
 
     def test_month_flag_selects_the_month(self, capsys):
         assert main(["example", "--month", "2025-03"]) == 0

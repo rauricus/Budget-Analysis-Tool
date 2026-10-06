@@ -1,5 +1,9 @@
 {
-  "income": { "amount": 4200.00, "period": "monthly", "_note": "Fiktiver Nettolohn" },
+  "income": {
+    "Einkommen / Lohn": { "amount": 4000.00, "period": "monthly", "_note": "Fiktiver Nettolohn" },
+    "Einkommen / Familienzulage": { "amount": 200.00, "period": "monthly" },
+    "Einkommen / Bonus": { "amount": 2500.00, "period": "yearly", "_note": "Separat im März und mit dem Aprillohn" }
+  },
   "reserves": {
     "Krankenkasse": { "amount": 3600.00, "period": "yearly", "group": "fixed", "category": "Leben", "subcategory": "Krankenkasse", "_note": "Prämien und Franchise" },
     "Säule 3a": { "amount": 2400.00, "period": "yearly", "group": "savings", "category": "Vorsorge", "subcategory": "Säule 3a", "_note": "Dauerauftrag an die Vorsorgestiftung, läuft als Transfer" }

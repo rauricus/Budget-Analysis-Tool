@@ -65,7 +65,7 @@ def test_review_lists_wins_after_reviewed_until_without_override(tmp_path):
     _edit_rules(run_dir, edit)
     _write_overrides(run_dir, {"TX-000088": {"category": "Wohnen", "_row": "30.04.2025;Buchung"}})
 
-    items = build_doctor_report(run_dir)["to_review"]
+    items = [i for i in build_doctor_report(run_dir)["to_review"] if i["rule"] == "housing_1"]
 
     # TX-000074 and TX-000079 fall on or before reviewed_until, TX-000088 is overridden.
     assert [item["transaction_id"] for item in items] == ["TX-000009"]
@@ -256,7 +256,7 @@ def test_overlapping_input_files_are_reported(tmp_path):
     shutil.copy(run_dir / "input" / "export.202504.csv", run_dir / "input" / "export.202504-copy.csv")
 
     assert build_doctor_report(run_dir)["input_findings"]["overlapping_files"] == [
-        {"files": ["export.202504-copy.csv", "export.202504.csv"], "transactions": 16},
+        {"files": ["export.202504-copy.csv", "export.202504.csv"], "transactions": 17},
     ]
 
 
@@ -319,7 +319,11 @@ def test_example_budget_has_one_unproduced_entry_and_one_income_question(tmp_pat
         "scope": "Freizeit / Sport",
         "suggestion": None,
     }]
-    assert findings["income_above_plan"] == [{"month": "2025-03", "planned": 4200.0, "actual": 5700.0}]
+    # March has the separate bonus, April the bonus paid with the salary plus a side income.
+    assert findings["income_above_plan"] == [
+        {"month": "2025-03", "planned": 4408.33, "actual": 5700.0},
+        {"month": "2025-04", "planned": 4408.33, "actual": 9400.0},
+    ]
 
 
 def test_category_only_an_override_produces_counts_as_produced(tmp_path):
@@ -349,27 +353,39 @@ def test_unknown_reserve_and_whole_category_are_reported(tmp_path):
 
 def test_income_within_the_margin_is_not_questioned(tmp_path):
     run_dir = _copy_example(tmp_path)
-    _edit_budget(run_dir, lambda b: b["income"].update(amount=5000))
+    _edit_budget(run_dir, lambda b: b["income"]["Einkommen / Lohn"].update(amount=8000))
 
     assert build_doctor_report(run_dir)["budget_findings"]["income_above_plan"] == []
 
 
 
-def test_income_by_source_is_checked_against_the_rules_and_summed_for_the_plan(tmp_path):
+def test_income_sources_are_checked_against_the_rules(tmp_path):
     run_dir = _copy_example(tmp_path)
-    _edit_budget(run_dir, lambda b: b.update(income={
-        "Einkommen / Lohn": {"amount": 4000, "period": "monthly"},
-        "Einkommen / Bonus": {"amount": 1500, "period": "yearly"},
-        "Einkommen / Familienzulage": {"amount": 200, "period": "monthly"},
-    }))
 
-    findings = build_doctor_report(run_dir)["budget_findings"]
+    def edit(budget):
+        budget["income"]["Einkommen / Bonsu"] = budget["income"].pop("Einkommen / Bonus")
+    _edit_budget(run_dir, edit)
 
-    # No rule produces Bonus or Familienzulage in the example; Lohn exists.
-    assert [(i["section"], i["name"]) for i in findings["unproduced_entries"] if i["section"] == "income"] == [
-        ("income", "Einkommen / Bonus"), ("income", "Einkommen / Familienzulage"),
+    items = [i for i in build_doctor_report(run_dir)["budget_findings"]["unproduced_entries"] if i["section"] == "income"]
+    assert items == [{
+        "section": "income",
+        "name": "Einkommen / Bonsu",
+        "scope": "Einkommen / Bonsu",
+        "suggestion": "Einkommen / Bonus",
+    }]
+
+
+def test_example_salary_paydays_are_reviewed_or_overridden(tmp_path):
+    """January and March are confirmed by reviewed_until, February and April by an override."""
+    run_dir = _copy_example(tmp_path)
+    assert build_doctor_report(run_dir)["to_review"] == []
+
+    _edit_rules(run_dir, lambda rules, _: rules["income_1"].pop("reviewed_until"))
+    items = build_doctor_report(run_dir)["to_review"]
+
+    assert [(i["transaction_id"], i["remainder"]["amount"]) for i in items] == [
+        ("TX-000070", 0.0), ("TX-000073", 96.9),
     ]
-    assert findings["income_above_plan"] == [{"month": "2025-03", "planned": 4325.0, "actual": 5700.0}]
 
 
 def test_dataset_without_budget_has_no_budget_findings(tmp_path):

@@ -585,10 +585,18 @@
     {
       "key": "income_1",
       "name": "Lohn: Alpenwerk",
+      "_note": "Lohn und Familienzulage sind fix, der Rest sind Spesen (meist Zugbillette). Der separat ausbezahlte Bonus hat eine eigene Regel (income_2).",
+      "review": "Rest nur Zugspesen? Andere Spesen oder einen Bonus per Override aufteilen.",
+      "reviewed_until": "2025-03-31",
       "transaction_category": "Income",
       "category": "Einkommen",
       "subcategory": "Lohn",
       "priority": 5,
+      "split": [
+        { "amount": 200.00, "transaction_category": "Income", "category": "Einkommen", "subcategory": "Familienzulage" },
+        { "amount": 4000.00, "transaction_category": "Income", "category": "Einkommen", "subcategory": "Lohn" },
+        { "transaction_category": "Refund", "category": "Mobilität", "subcategory": "Öffentlicher Verkehr", "_note": "Spesen" }
+      ],
       "scope": {
         "transaction_type": "Credit",
         "transaction_type_detail": null,
@@ -603,6 +611,36 @@
           "locations": [],
           "include_keywords": [
             "SALAER"
+          ],
+          "exclude_keywords": [
+            "BONUS"
+          ]
+        }
+      }
+    },
+    {
+      "key": "income_2",
+      "name": "Bonus: Alpenwerk",
+      "_note": "Bonus als eigene Buchung. income_1 schliesst BONUS aus, sonst würde der Lohnsplit ihn gewinnen und einen negativen Rest bilden.",
+      "transaction_category": "Income",
+      "category": "Einkommen",
+      "subcategory": "Bonus",
+      "priority": 5,
+      "scope": {
+        "transaction_type": "Credit",
+        "transaction_type_detail": null,
+        "services": [
+          "Credit"
+        ],
+        "providers": [],
+        "notification_filters": {
+          "merchants": [
+            "ALPENWERK"
+          ],
+          "locations": [],
+          "include_keywords": [
+            "SALAER",
+            "BONUS"
           ],
           "exclude_keywords": []
         }
@@ -892,7 +930,7 @@
       "name": "Beispiel: Gegenpartei Einkommen",
       "transaction_category": "Income",
       "category": "Einkommen",
-      "subcategory": "Lohn",
+      "subcategory": "Nebenerwerb",
       "priority": 5,
       "scope": {
         "transaction_type": "Credit",

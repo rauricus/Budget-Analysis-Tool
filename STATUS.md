@@ -18,7 +18,7 @@ What the tool does today and where its known limits are. Next steps: [ROADMAP.md
 | Tests | 20 modules, independent of `data/reference` and private data |
 
 Rule sets: 70 baseline rules in `data/reference`, split by topic into `rules.json` and
-`rules.<topic>.json` files; 39 in `data/example`, in a single `rules.json`.
+`rules.<topic>.json` files; 40 in `data/example`, in a single `rules.json`.
 
 ## Known gaps
 
