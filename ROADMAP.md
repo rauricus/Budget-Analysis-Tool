@@ -36,37 +36,26 @@ each time.
 This replaces a budget line per payee or per rule: several rules can share a tag, and a tag
 survives a rule being split or renamed.
 
-### 2. Income by source, and offsets
-
-Income is a single figure today, so a bonus and reimbursed expenses look alike.
-
-- `income` may be split by subcategory (`Lohn`, `Bonus`, `Familienzulage`), each with its own
-  amount and period.
-- **Offset by a matching inflow** — expenses reimbursed by an employer or someone else, or
-  paid from a pot funded elsewhere — must leave the budget on both sides, or the same money
-  counts twice. Where a rule can recognize the inflow, the refund mirrors the expense
-  category (as today). Where it cannot, the transaction is marked (see item 3).
-
 ## Later
 
-### 3. Mark special spending
+### 2. Mark special spending
 
-Two kinds of spending need a marking per transaction when no rule can tell them apart:
-
-- **One-off individually, recurring as a class** (furniture, appliances): not a target but a
-  provision — a monthly rate into a pot, sized from history. Tags (item 1) cover the cases a
-  rule can recognize; the marking covers the rest.
-- **Offset by a matching inflow** that no rule can pair (item 2).
+Spending that is **one-off individually but recurring as a class** (furniture, appliances)
+needs a marking per transaction when no rule can tell it apart: not a target but a
+provision — a monthly rate into a pot, sized from history. Tags (item 1) cover the cases a
+rule can recognize; the marking covers the rest. (Spending offset by a matching inflow, such
+as reimbursed expenses, is handled by a rule split with a review question and an override
+where the default does not fit.)
 
 The marking lives in its own `{TX-id: {...}}` file next to `transaction_overrides.json`,
 using the same ID-remap helper.
 
-### 4. Due dates for reserves
+### 3. Due dates for reserves
 
 A tax bill due in a given month should not read as an overdrawn pot until the year catches
 up. A reserve may name its due months; the pot is compared against what is due by then.
 
-### 5. Budget proposal
+### 4. Budget proposal
 
 `propose_budget.py <run_dir>` writes a draft `budget.json` from the categorized history, for
 manual review, never applied automatically:
@@ -75,30 +64,30 @@ manual review, never applied automatically:
 - categories present in only a few months proposed as `yearly`;
 - fixed costs detected from recurring standing orders and direct debits;
 - groups carried over from the current budget;
-- marked one-off and offset spending (item 3) left out of the derivation;
+- marked one-off spending (item 2) left out of the derivation;
 - more than one year of history, by reading several year datasets.
 
-### 6. Trips from a trip file
+### 5. Trips from a trip file
 
 A trip needs two to four rules today (country marker, prepayment window, places), and cash
 withdrawn during the trip still lands in finance. A `trips.json` with name, period and
 country generates those rules and assigns cash withdrawals within the period to the trip.
 
-### 7. Monthly routine
+### 6. Monthly routine
 
 - The budgeting workflow documented in `README.md`: import, categorize, doctor, report,
   review.
 - Optional skill `/monthly-budget-review` running those steps and summarizing the variances
-  per group; once item 9 exists, it ends with the review report and its analysis.
+  per group; once item 8 exists, it ends with the review report and its analysis.
 - Budget targets revisited at a fixed cadence (quarterly, say) rather than edited ad hoc.
 
-### 8. Budget in the Excel report
+### 7. Budget in the Excel report
 
 A sheet "Budget vs. Actual" with the same figures as `budget_report.py`, including groups
 and the consumption figure. Computed in Python and written as values, like the other sheets.
 Lower priority as long as the console report covers the monthly review.
 
-### 9. Review report with an AI analysis
+### 8. Review report with an AI analysis
 
 A budget review happens offline and on paper: a plan for next year checked against this
 year and the last, with the doctor's findings and a list of decisions to make. Today that
@@ -128,6 +117,14 @@ offline; the skill runs in the agent session.
 
 The report without the analysis is the MVP; the skill follows once the `report.json`
 format has settled.
+
+### 9. Override only the remainder of a rule split
+
+An override `split` replaces a rule's whole split, so a payday that departs from the
+default repeats the wage and the Familienzulage. If that proves annoying, an override field
+`split_remainder` on the transaction's own ID splits only the rule's remainder part and
+takes the fixed parts from the rule. Addressing the part by its suffixed ID (`TX-….3`) is
+the weaker alternative: the suffix is a position that shifts when the rule's parts change.
 
 ## Out of scope
 

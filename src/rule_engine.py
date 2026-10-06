@@ -102,7 +102,8 @@ def apply_rule_splits(
 
     *winners* maps a transaction ID to the rule that won it. A transaction whose override
     sets categories, `split` or `hidden` is left alone: the override is the decision. An
-    override with only `_note` or `_row` does not stop the split.
+    override with only `_note` or `_row` does not stop the split. A remainder of zero drops
+    the remainder part, so a month without a variable share does not abort the run.
     """
     result: list[Transaction] = []
     for txn in transactions:
@@ -113,6 +114,7 @@ def apply_rule_splits(
             continue
         result.extend(split_transaction(
             txn, rule.split, rule.source, rule.category or None, rule.subcategory or None,
+            drop_empty_remainder=True,
         ))
     return result
 

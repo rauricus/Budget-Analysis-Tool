@@ -52,6 +52,8 @@ GROUP_LABELS = {
 # A budget key is a category, or 'Category / Subcategory' for a subcategory
 # line. Spaces around the slash keep names like 'Bücher/Filme/Musik' intact.
 SUBCATEGORY_SEPARATOR = " / "
+# Source key of an income given as one entry: it covers every income row.
+ALL_INCOME = ""
 
 
 @dataclass
@@ -109,6 +111,19 @@ class ReserveLine:
 
 
 @dataclass
+class IncomeLine:
+    """One source of income, compared for a single month and cumulated. A
+    source without a plan (*planned* False) has an actual but no target."""
+
+    source: str
+    target: float
+    actual: float
+    ytd_target: float
+    ytd_actual: float
+    planned: bool = True
+
+
+@dataclass
 class Availability:
     """Planned income, what the reserves and budget lines take from it, and
     what is left. Only computed when the budget declares an income."""
@@ -121,6 +136,7 @@ class Availability:
     ytd_reserved: float
     budgeted: float
     ytd_budgeted: float
+    sources: list = field(default_factory=list)  # IncomeLine, only for an income by source
 
     @property
     def free(self) -> float:
@@ -222,7 +238,8 @@ def load_budget(budget_path) -> dict:
     """Load and validate a budget.json.
 
     The document has up to three sections, each optional:
-    - 'income': one entry with the planned income.
+    - 'income': one entry with the planned income, or source -> entry, a
+      source keyed like a budget line ('Einkommen / Lohn').
     - 'reserves': name -> entry with 'category' and optional 'subcategory';
       the money is set aside first, and matching transactions draw on it.
     - 'budget': category -> entry, distributing what is left.
@@ -248,19 +265,25 @@ def load_budget(budget_path) -> dict:
 
     income = raw.get("income")
     if income is not None:
-        _validate_entry(income, "'income'", ALLOWED_INCOME_FIELDS, path)
+        if not isinstance(income, dict):
+            raise ValueError(
+                f"'income' must be an object, got {type(income).__name__}: {path}"
+            )
+        if _is_single_income(income):
+            _validate_entry(income, "'income'", ALLOWED_INCOME_FIELDS, path)
+        else:
+            for key, entry in income.items():
+                _validate_entry(
+                    entry, f"income source '{key}'", ALLOWED_INCOME_FIELDS, path
+                )
+                _validate_key(key, "Income source", path)
 
     budget = _validate_section(raw, "budget", path)
     for key, entry in budget.items():
         _validate_entry(
             entry, f"budget entry for '{key}'", ALLOWED_BUDGET_FIELDS, path
         )
-        category, subcategory = split_budget_key(key)
-        if not category or subcategory == "":
-            raise ValueError(
-                f"Budget key '{key}' in {path} must be 'Category' or "
-                f"'Category{SUBCATEGORY_SEPARATOR}Subcategory'."
-            )
+        _validate_key(key, "Budget key", path)
     budgeted_categories = {split_budget_key(key)[0] for key in budget}
 
     reserves = _validate_section(raw, "reserves", path)
@@ -305,6 +328,40 @@ def load_budget(budget_path) -> dict:
             )
 
     return {"income": income, "reserves": reserves, "budget": budget}
+
+
+def _validate_key(key: str, label: str, path: Path) -> None:
+    category, subcategory = split_budget_key(key)
+    if not category or subcategory == "":
+        raise ValueError(
+            f"{label} '{key}' in {path} must be 'Category' or "
+            f"'Category{SUBCATEGORY_SEPARATOR}Subcategory'."
+        )
+
+
+def _is_single_income(income: dict) -> bool:
+    """One entry rather than a map of sources: its values are not all objects."""
+    return not income or not all(isinstance(v, dict) for v in income.values())
+
+
+def income_sources(income: Optional[dict]) -> dict:
+    """The planned income as source key -> entry.
+
+    An income given as one entry becomes a single source under ALL_INCOME,
+    which covers every income row; no breakdown is shown for it.
+    """
+    if income is None:
+        return {}
+    if _is_single_income(income):
+        return {ALL_INCOME: income}
+    return income
+
+
+def planned_income(income: Optional[dict]) -> Optional[float]:
+    """The monthly target of all income sources together, or None without income."""
+    if income is None:
+        return None
+    return sum(monthly_target(entry) for entry in income_sources(income).values())
 
 
 def split_budget_key(key: str) -> tuple:
@@ -418,6 +475,32 @@ def _income_actual(df: pd.DataFrame) -> float:
     return round(rows["Credit in CHF"].sum() - rows["Debit in CHF"].sum(), 2)
 
 
+def _income_by_source(df: pd.DataFrame, sources: dict) -> dict:
+    """Credits minus debits over the income rows, per source key.
+
+    Rows are keyed like budget lines: a subcategory source takes its rows out
+    of a category source. A row no source covers keeps its own category or
+    'Category / Subcategory' key, so it shows up as income without a plan.
+    """
+    if df.empty or "Transaction Category" not in df.columns:
+        return {}
+    tc = df["Transaction Category"].fillna("").astype(str).str.lower()
+    rows = df[tc == "income"].copy()
+    if rows.empty:
+        return {}
+    keys = assign_budget_keys(rows, sources)
+    subcategory = rows["Subcategory"].fillna("").astype(str) if "Subcategory" in rows.columns else ""
+    specific = rows["Category"].fillna("").astype(str) + SUBCATEGORY_SEPARATOR + subcategory
+    # An unplanned row is named as precisely as the data allows.
+    keys = keys.where(keys.isin(list(sources)) | (subcategory == ""), specific)
+    rows["Income Key"] = keys
+    # Adding 0.0 turns a negated zero into a plain one, which prints without a sign.
+    return {
+        key: -amount + 0.0
+        for key, amount in net_by_category(rows, by="Income Key").items()
+    }
+
+
 def _rows_for_months(df: pd.DataFrame, months: Sequence[str]) -> pd.DataFrame:
     return df[df["Date"].dt.strftime("%Y-%m").isin(list(months))]
 
@@ -496,7 +579,7 @@ def compare_budget_to_actuals(
 
     availability = None
     if income is not None:
-        income_target = monthly_target(income)
+        income_target = planned_income(income)
         reserved = sum(line.target for line in reserve_lines)
         budgeted = sum(line.target for line in lines)
         availability = Availability(
@@ -508,6 +591,9 @@ def compare_budget_to_actuals(
             ytd_reserved=reserved * n_months,
             budgeted=budgeted,
             ytd_budgeted=budgeted * n_months,
+            sources=_income_lines(
+                income_sources(income), month_rows, cumulated_rows, n_months
+            ),
         )
 
     # Cumulated, so that a category which only occurred in an earlier month
@@ -530,6 +616,36 @@ def compare_budget_to_actuals(
         availability=availability,
         groups=group_totals(lines, reserve_lines, unbudgeted),
     )
+
+
+def _income_lines(sources: dict, month_rows, cumulated_rows, n_months: int) -> list:
+    """One line per planned source, then one per income key without a plan.
+    Empty for an income given as one entry, which has nothing to break down."""
+    if ALL_INCOME in sources:
+        return []
+    actuals = _income_by_source(month_rows, sources)
+    ytd_actuals = _income_by_source(cumulated_rows, sources)
+    lines = []
+    for key in sorted(sources):
+        target = monthly_target(sources[key])
+        lines.append(IncomeLine(
+            source=key,
+            target=target,
+            actual=actuals.get(key, 0.0),
+            ytd_target=target * n_months,
+            ytd_actual=ytd_actuals.get(key, 0.0),
+        ))
+    # Cumulated, like the unbudgeted categories, so an earlier month stays visible.
+    for key in sorted(k for k in ytd_actuals if k not in sources):
+        lines.append(IncomeLine(
+            source=key,
+            target=0.0,
+            actual=actuals.get(key, 0.0),
+            ytd_target=0.0,
+            ytd_actual=ytd_actuals[key],
+            planned=False,
+        ))
+    return lines
 
 
 def group_totals(lines: list, reserves: list, unbudgeted: list) -> list:
@@ -663,6 +779,20 @@ def _format_groups(comparison: BudgetComparison) -> list:
     return out
 
 
+def _format_income_sources(sources: list) -> list:
+    out = ["", f"{'Einkommen':<28}{'Soll':>12}{'Ist':>12}{'Kum. Soll':>14}{'Kum. Ist':>12}",
+           "-" * 78]
+    for line in sources:
+        label = line.source if line.planned else f"{line.source} *"
+        out.append(
+            f"{label:<28}{_fmt(line.target):>12}{_fmt(line.actual):>12}"
+            f"{_fmt(line.ytd_target):>14}{_fmt(line.ytd_actual):>12}"
+        )
+    if not all(line.planned for line in sources):
+        out.append("* ohne Einkommensplan")
+    return out
+
+
 def format_report(comparison: BudgetComparison, source_label: str) -> str:
     """Render the comparison as a plain-text table."""
     out = []
@@ -682,6 +812,9 @@ def format_report(comparison: BudgetComparison, source_label: str) -> str:
             ("= Nicht verplant", a.unplanned, a.ytd_unplanned),
         ):
             out.append(f"{label:<20}{_fmt(value):>12}{_fmt(ytd_value):>14}")
+
+    if a is not None and a.sources:
+        out.extend(_format_income_sources(a.sources))
 
     if comparison.groups:
         out.extend(_format_groups(comparison))

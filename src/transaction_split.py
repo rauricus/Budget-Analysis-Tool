@@ -6,7 +6,8 @@ transaction_overrides.json and by the `split` field on rules.
 A split turns TX-000042 into TX-000042.1, TX-000042.2, ... in list order. Exactly one part
 omits `amount` and receives the remainder. A negative amount puts its part on the other side
 of the transaction: a collective refund that also nets out a charge becomes a credit part and
-a debit part.
+a debit part. A rule split may leave a remainder of zero, which drops that part: a salary
+split into fixed parts and a variable rest has no rest in a month without expenses.
 """
 
 from dataclasses import replace
@@ -69,6 +70,7 @@ def split_transaction(
     source: str,
     default_category: Optional[str] = None,
     default_subcategory: Optional[str] = None,
+    drop_empty_remainder: bool = False,
 ) -> list[Transaction]:
     """Return one copy of *txn* per part, each carrying its share of the amount.
 
@@ -79,12 +81,17 @@ def split_transaction(
     Parts inherit the transaction's transaction category unless they set their own. A part
     without `category` takes *default_category* and *default_subcategory*. *source* names
     where the split is defined, for the error when the amounts leave no remainder.
+
+    With *drop_empty_remainder*, a remainder of zero drops its part instead of raising. The
+    other parts keep their positional suffixes, so their IDs do not depend on the remainder.
+    Rule splits use this; an override split without remainder stays an error, since it is
+    written for one transaction and then simply wrong.
     """
     is_credit = txn.transaction_type == "Credit"
     total = txn.credit if is_credit else txn.debit
     given = sum(part["amount"] for part in parts if "amount" in part)
     remainder = round(total - given, 2)
-    if remainder == 0:
+    if remainder == 0 and not drop_empty_remainder:
         raise ValueError(
             f"Split amounts for '{txn.transaction_id}' add up to {given:.2f}, which leaves "
             f"no remainder of the transaction total {total:.2f} ({source})."
@@ -92,6 +99,8 @@ def split_transaction(
 
     result: list[Transaction] = []
     for idx, part in enumerate(parts, start=1):
+        if "amount" not in part and remainder == 0:
+            continue
         amount = round(part["amount"], 2) if "amount" in part else remainder
         # A negative part lands on the side opposite to the transaction's own direction.
         on_credit_side = is_credit == (amount > 0)

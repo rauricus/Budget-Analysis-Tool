@@ -207,7 +207,10 @@ These are the things a change must not quietly break.
   the registry must use the part before the dot, as the `matching_rules_map` rebuild in
   `categorize_transactions.py` does. Rule splits run after the overrides (`apply_rule_splits`
   in `src/rule_engine.py`), and an override that sets categories, `split` or `hidden` stops
-  them; both share `src/transaction_split.py`.
+  them; both share `src/transaction_split.py`. A rule split drops a remainder of zero (a
+  salary without expenses that month); an override split without remainder is an error.
+  Part suffixes are positions in the split list, so a dropped remainder leaves the others
+  unchanged.
 - **Argument parsing is inconsistent.** `categorize_transactions.py` and
   `analyze_by_category.py` parse `sys.argv` by hand; adding a flag there means editing the
   hand-rolled block *and* both usage strings. The other tools use `argparse`.

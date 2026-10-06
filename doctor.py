@@ -24,9 +24,11 @@ from typing import Optional
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 from budget_report import (
+    ALL_INCOME,
     SUBCATEGORY_SEPARATOR,
+    income_sources,
     load_budget,
-    monthly_target,
+    planned_income,
     resolve_budget_path,
     split_budget_key,
 )
@@ -76,13 +78,36 @@ def _review_items(transactions, matching_map, overrides) -> list[dict]:
             continue
         if winner.reviewed_until and txn.date.date() <= winner.reviewed_until:
             continue
-        items.append({
+        item = {
             **_transaction_item(txn),
             "rule": winner.declared_key,
             "question": winner.review,
             "note": winner.note,
-        })
+        }
+        if winner.split:
+            item["remainder"] = _split_remainder(txn, winner)
+        items.append(item)
     return items
+
+
+def _split_remainder(txn: Transaction, rule: Rule) -> dict:
+    """What the rule's split leaves for its remainder part, and where that part goes.
+
+    For a split into fixed parts and a variable rest, the rest is what a review checks.
+    """
+    total = txn.credit if txn.transaction_type == "Credit" else txn.debit
+    given = sum(part["amount"] for part in rule.split if "amount" in part)
+    part = next(part for part in rule.split if "amount" not in part)
+    if "category" in part:
+        category, subcategory = part["category"], part.get("subcategory") or ""
+    else:
+        category, subcategory = rule.category, rule.subcategory
+    return {
+        "amount": round(total - given, 2),
+        "transaction_category": part.get("transaction_category", rule.transaction_category),
+        "category": category or "",
+        "subcategory": subcategory or "",
+    }
 
 
 def _outcome(rule: Rule) -> tuple:
@@ -339,6 +364,11 @@ def _budget_findings(budget: dict, rules: list[Rule], final: list[Transaction], 
         ("reserves", name, entry["category"], entry.get("subcategory"))
         for name, entry in budget["reserves"].items()
     ]
+    entries += [
+        ("income", key, *split_budget_key(key))
+        for key in income_sources(budget["income"])
+        if key != ALL_INCOME
+    ]
     unproduced = []
     for section, name, category, subcategory in entries:
         exists = category in categories if subcategory is None else (category, subcategory) in produced
@@ -354,9 +384,8 @@ def _budget_findings(budget: dict, rules: list[Rule], final: list[Transaction], 
         })
 
     income_above_plan = []
-    income = budget["income"]
-    if income is not None:
-        planned = monthly_target(income)
+    planned = planned_income(budget["income"])
+    if planned is not None:
         actual: Counter = Counter()
         for txn in final:
             if (txn.auto_transaction_category or "").lower() == "income" and txn.date:
@@ -438,6 +467,21 @@ def _format_transaction(item: dict) -> str:
     return f"{item['transaction_id']}  {item['date']}  {item['amount']:>10.2f}  {item['text'][:90]}"
 
 
+def _format_review_item(item: dict) -> list:
+    lines = [f"  {_format_transaction(item)}"]
+    remainder = item.get("remainder")
+    if remainder:
+        target = " / ".join(
+            value for value in (remainder["transaction_category"], remainder["category"], remainder["subcategory"])
+            if value
+        )
+        if remainder["amount"] == 0:
+            lines.append("      remainder 0.00, no part (the fixed parts cover the total)")
+        else:
+            lines.append(f"      remainder {remainder['amount']:.2f} -> {target}")
+    return lines
+
+
 def _render_text_report(report: dict) -> str:
     lines = [
         f"Doctor: {report['run_dir']}",
@@ -502,7 +546,7 @@ def _render_text_report(report: dict) -> str:
             f"  ? {g['items'][0]['question']}",
         ]
         + ([f"  note: {g['items'][0]['note']}"] if g["items"][0]["note"] else [])
-        + [f"  {_format_transaction(i)}" for i in g["items"]],
+        + [line for i in g["items"] for line in _format_review_item(i)],
         count=len(report["to_review"]),
     )
     section("Uncategorized", report["uncategorized"], lambda i: [_format_transaction(i)])

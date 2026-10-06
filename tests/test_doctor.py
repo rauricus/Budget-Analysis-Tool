@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from categorize_transactions import main as run_pipeline
-from doctor import build_doctor_report, count_findings, main
+from doctor import _render_text_report, build_doctor_report, count_findings, main
 
 
 def _copy_example(tmp_path) -> Path:
@@ -83,6 +83,56 @@ def test_review_without_reviewed_until_lists_every_win(tmp_path):
         "TX-000009", "TX-000074", "TX-000079", "TX-000088",
     ]
 
+
+
+def test_review_of_a_split_rule_shows_the_remainder(tmp_path):
+    """For fixed parts plus a variable rest, the rest is what the review checks."""
+    run_dir = _copy_example(tmp_path)
+
+    def edit(rules, _):
+        rules["housing_1"]["review"] = "Rest nur Nebenkosten?"
+        rules["housing_1"]["split"] = [
+            {"amount": 1500.00, "subcategory": "Miete", "category": "Wohnen"},
+            {"transaction_category": "Refund", "category": "Wohnen", "subcategory": "Nebenkosten"},
+        ]
+    _edit_rules(run_dir, edit)
+
+    report = build_doctor_report(run_dir)
+    remainders = {item["transaction_id"]: item["remainder"] for item in report["to_review"]}
+
+    assert remainders["TX-000009"] == {
+        "amount": 274.00, "transaction_category": "Refund", "category": "Wohnen", "subcategory": "Nebenkosten",
+    }
+    assert "remainder 274.00 -> Refund / Wohnen / Nebenkosten" in _render_text_report(report)
+
+
+def test_review_of_a_split_rule_with_an_inheriting_remainder(tmp_path):
+    run_dir = _copy_example(tmp_path)
+
+    def edit(rules, _):
+        rules["housing_1"]["review"] = "Rest nur Miete?"
+        rules["housing_1"]["split"] = [{"amount": 1700.00, "category": "Wohnen"}, {}]
+    _edit_rules(run_dir, edit)
+
+    item = build_doctor_report(run_dir)["to_review"][0]
+
+    assert item["remainder"] == {
+        "amount": 74.00, "transaction_category": "Expense", "category": "Wohnen", "subcategory": "Miete und Hypothek",
+    }
+
+
+def test_review_of_a_split_rule_without_remainder_says_so(tmp_path):
+    run_dir = _copy_example(tmp_path)
+
+    def edit(rules, _):
+        rules["housing_1"]["review"] = "Nur Miete?"
+        rules["housing_1"]["split"] = [{"amount": 1774.00, "category": "Wohnen"}, {}]
+    _edit_rules(run_dir, edit)
+
+    report = build_doctor_report(run_dir)
+
+    assert report["to_review"][0]["remainder"]["amount"] == 0
+    assert "remainder 0.00, no part" in _render_text_report(report)
 
 def test_rule_findings(tmp_path):
     run_dir = _copy_example(tmp_path)
@@ -304,11 +354,22 @@ def test_income_within_the_margin_is_not_questioned(tmp_path):
     assert build_doctor_report(run_dir)["budget_findings"]["income_above_plan"] == []
 
 
-def test_budget_without_income_is_not_checked_for_income(tmp_path):
-    run_dir = _copy_example(tmp_path)
-    _edit_budget(run_dir, lambda b: b.pop("income"))
 
-    assert build_doctor_report(run_dir)["budget_findings"]["income_above_plan"] == []
+def test_income_by_source_is_checked_against_the_rules_and_summed_for_the_plan(tmp_path):
+    run_dir = _copy_example(tmp_path)
+    _edit_budget(run_dir, lambda b: b.update(income={
+        "Einkommen / Lohn": {"amount": 4000, "period": "monthly"},
+        "Einkommen / Bonus": {"amount": 1500, "period": "yearly"},
+        "Einkommen / Familienzulage": {"amount": 200, "period": "monthly"},
+    }))
+
+    findings = build_doctor_report(run_dir)["budget_findings"]
+
+    # No rule produces Bonus or Familienzulage in the example; Lohn exists.
+    assert [(i["section"], i["name"]) for i in findings["unproduced_entries"] if i["section"] == "income"] == [
+        ("income", "Einkommen / Bonus"), ("income", "Einkommen / Familienzulage"),
+    ]
+    assert findings["income_above_plan"] == [{"month": "2025-03", "planned": 4325.0, "actual": 5700.0}]
 
 
 def test_dataset_without_budget_has_no_budget_findings(tmp_path):

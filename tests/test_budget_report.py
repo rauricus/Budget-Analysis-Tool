@@ -16,10 +16,12 @@ from budget_report import (
     compare_budget_to_actuals,
     consumption,
     format_report,
+    income_sources,
     load_budget,
     main,
     monthly_target,
     net_by_category,
+    planned_income,
     savings,
     spending_rows,
 )
@@ -723,6 +725,93 @@ class TestGroups:
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
+
+SALARY_SOURCES = {
+    "Einkommen / Lohn": {"amount": 6000.0, "period": "monthly"},
+    "Einkommen / Familienzulage": {"amount": 200.0, "period": "monthly"},
+    "Einkommen / Bonus": {"amount": 6000.0, "period": "yearly", "_note": "Einmal im Jahr"},
+}
+
+
+class TestIncomeBySource:
+    def test_loads_sources_keyed_like_budget_lines(self, tmp_path):
+        f = tmp_path / "budget.json"
+        _write(f, {"income": SALARY_SOURCES})
+        budget = load_budget(f)
+        assert income_sources(budget["income"]) == SALARY_SOURCES
+        assert planned_income(budget["income"]) == 6700.0
+
+    def test_single_entry_is_one_source_covering_all_income(self):
+        income = {"amount": 4200.0, "period": "monthly"}
+        assert income_sources(income) == {"": income}
+        assert planned_income(income) == 4200.0
+        assert planned_income(None) is None
+
+    @pytest.mark.parametrize("income, message", [
+        ({"Einkommen / Lohn": {"amount": 1, "period": "weekly"}}, "Invalid 'period'"),
+        ({"Einkommen / Lohn": {"amount": 1, "period": "monthly", "group": "fixed"}}, "Unknown field"),
+        ({"Einkommen / ": {"amount": 1, "period": "monthly"}}, "Income source"),
+        ({}, "'amount'"),
+        (["Lohn"], "must be an object"),
+    ])
+    def test_sources_are_validated_like_entries(self, tmp_path, income, message):
+        f = tmp_path / "budget.json"
+        _write(f, {"income": income})
+        with pytest.raises(ValueError, match=message):
+            load_budget(f)
+
+    def test_actuals_per_source_and_income_without_a_plan(self):
+        df = _rows(
+            ("2025-01", "Income", "Einkommen", 0.0, 6000.0, "Lohn"),
+            ("2025-01", "Income", "Einkommen", 0.0, 200.0, "Familienzulage"),
+            ("2025-02", "Income", "Einkommen", 0.0, 6000.0, "Lohn"),
+            ("2025-02", "Income", "Einkommen", 0.0, 200.0, "Familienzulage"),
+            ("2025-02", "Income", "Einkommen", 0.0, 300.0, "Nebenerwerb"),
+            ("2025-02", "Refund", "Mobilität", 0.0, 86.40),
+        )
+        a = compare_budget_to_actuals(df, _budget(income=SALARY_SOURCES), MONTHS, "2025-02").availability
+
+        lines = {line.source: line for line in a.sources}
+        assert [line.source for line in a.sources] == [
+            "Einkommen / Bonus", "Einkommen / Familienzulage", "Einkommen / Lohn",
+            "Einkommen / Nebenerwerb",
+        ]
+        assert (lines["Einkommen / Lohn"].actual, lines["Einkommen / Lohn"].ytd_actual) == (6000.0, 12000.0)
+        assert lines["Einkommen / Bonus"].target == 500.0
+        assert lines["Einkommen / Bonus"].ytd_actual == 0.0
+        assert not lines["Einkommen / Nebenerwerb"].planned
+        assert lines["Einkommen / Nebenerwerb"].ytd_actual == 300.0
+        # The refund is not income; the total covers every income row.
+        assert a.income_target == 6700.0
+        assert a.income_actual == 6500.0
+
+    def test_category_source_covers_its_subcategories(self):
+        df = _rows(("2025-01", "Income", "Einkommen", 0.0, 6000.0, "Lohn"))
+        income = {"Einkommen": {"amount": 6000.0, "period": "monthly"}}
+        a = compare_budget_to_actuals(df, _budget(income=income), MONTHS, "2025-01").availability
+        assert [(line.source, line.actual, line.planned) for line in a.sources] == [
+            ("Einkommen", 6000.0, True),
+        ]
+
+    def test_single_entry_shows_no_breakdown(self):
+        df = _rows(("2025-01", "Income", "Einkommen", 0.0, 4200.0, "Lohn"))
+        income = {"amount": 4200.0, "period": "monthly"}
+        comparison = compare_budget_to_actuals(df, _budget(income=income), MONTHS, "2025-01")
+        assert comparison.availability.sources == []
+        assert "Einkommen / Lohn" not in format_report(comparison, "budget.json")
+
+    def test_report_lists_sources_and_marks_unplanned_income(self):
+        df = _rows(
+            ("2025-01", "Income", "Einkommen", 0.0, 6000.0, "Lohn"),
+            ("2025-01", "Income", "Einkommen", 0.0, 300.0, "Nebenerwerb"),
+        )
+        comparison = compare_budget_to_actuals(df, _budget(income=SALARY_SOURCES), MONTHS, "2025-01")
+        out = format_report(comparison, "budget.json")
+        assert "Einkommen / Lohn" in out
+        assert "Einkommen / Nebenerwerb *" in out
+        assert "* ohne Einkommensplan" in out
+        assert next(l for l in out.splitlines() if l.startswith("Einkommen Soll")).split()[2] == "6'700.00"
+
 
 class TestCli:
     def test_runs_on_the_example_dataset(self, capsys):

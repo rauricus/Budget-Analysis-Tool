@@ -23,7 +23,7 @@ Project documentation:
 - Rule notes and review questions, and a read-only `doctor.py` listing what in a dataset needs attention
 - Structured CSV export with parsed service fields
 - Excel report across all categorized months, with every transaction and the top payees
-- Budget vs. actual per category or subcategory, with reserves set aside from planned income
+- Budget vs. actual per category or subcategory, with reserves set aside from planned income, planned per source if needed
 
 ### CSV locale support (current)
 
@@ -152,7 +152,9 @@ The doctor categorizes the dataset in memory and reports:
   read these files, not the rules: rerun the pipeline before them.
 - **To review:** transactions won by a rule with a `review` question (see
   [Notes and review questions](#notes-and-review-questions)), dated after its
-  `reviewed_until` and without an override. Grouped by rule, with question and note.
+  `reviewed_until` and without an override. Grouped by rule, with question and note. For a
+  rule with a `split`, each item also shows what is left for the remainder part and where it
+  goes: with fixed parts and a variable rest, the rest is what the review checks.
 - **Uncategorized:** every transaction left without a category after overrides.
 - **Rules** of the dataset itself (base rules are left out, a baseline naturally has rules a
   dataset never uses): rules that never match, with a hint when they belong to another
@@ -524,8 +526,12 @@ fixed shares, such as one premium for two insured persons:
 - The split never affects matching. It runs after the overrides: a transaction whose override
   sets `transaction_category`, `category`, `subcategory`, `split` or `hidden` is not split by
   the rule; an override with only `_note` or `_row` does not stop it.
-- Pair it with `amounts` and a validity window: the parts are fixed amounts, and a transaction
-  smaller than their sum aborts the run.
+- Pair it with `amounts` or a validity window: the parts are fixed amounts. A transaction
+  equal to their sum leaves no remainder, and the remainder part is dropped (unlike in an
+  override, where that is an error); one smaller than their sum turns the remainder into a
+  part on the other side.
+- With a `review` question, the remainder becomes a default that is confirmed per
+  transaction; see [Salary with reimbursed expenses](#salary-with-reimbursed-expenses).
 
 ### Notes and review questions
 
@@ -656,7 +662,11 @@ each optional:
 ```
 
 - **`income`** is the planned income the rest is measured against. Without it the report
-  skips the availability block.
+  skips the availability block. It is one entry, or a map of sources keyed like budget lines
+  (`"Einkommen / Lohn"`, `"Einkommen / Bonus"`), each with its own `amount` and `period`. The
+  sources add up to the planned income; the report then lists each source with its actual,
+  plus any income no source covers. A subcategory source takes its rows out of a category
+  source, as with budget lines.
 - **`reserves`** set money aside for known costs before anything else is distributed —
   health insurance premiums and deductible, projected taxes, pension contributions. Keys
   are free names; `category` is required and `subcategory` optional. Each reserve is a
@@ -722,6 +732,58 @@ category stays at zero in the reserves table. `doctor.py` reports such entries e
 Budget files follow the same privacy rule as the rest of a dataset: `data/example/budget.json`
 holds fictitious amounts for documentation and tests, real target values belong in
 `data/private/`.
+
+### Salary with reimbursed expenses
+
+An employer often pays one amount that bundles the wage, the Familienzulage, reimbursed
+expenses and, once a year, a bonus. The bank sees only the sum; the breakdown is on the
+payslip. The expense side stays as it is — a monthly train invoice that mixes private and
+business rides remains one booking in `Mobilität`. Only the payment is taken apart:
+
+```json
+{
+  "key": "salary_employer",
+  "transaction_category": "Income",
+  "category": "Einkommen",
+  "subcategory": "Lohn",
+  "valid_from": "2026-01-01",
+  "split": [
+    { "amount": 200.00, "transaction_category": "Income", "category": "Einkommen", "subcategory": "Familienzulage" },
+    { "amount": 4000.00, "transaction_category": "Income", "category": "Einkommen", "subcategory": "Lohn" },
+    { "transaction_category": "Refund", "category": "Mobilität", "_note": "Expenses, mostly train tickets" }
+  ],
+  "review": "Rest only train expenses? Split a bonus or other expenses by override.",
+  "reviewed_until": "2026-08-31",
+  ...
+}
+```
+
+The fixed parts are split off, and the rest goes by default to the category most expenses
+belong to, as a `Refund`, so that it nets against the expenses there. A wage change is a new
+rule with a new validity window. `budget.json` plans the income per source (`Lohn`,
+`Familienzulage`, a yearly `Bonus`); reimbursed expenses are not income and need no plan.
+
+The doctor lists every payday under "To review" with the remainder. Four cases:
+
+- **No expenses:** the fixed parts cover the payment, the remainder part is dropped. Move
+  `reviewed_until` forward.
+- **Expenses of the default category only:** the rest lands as a refund in that category.
+  Move `reviewed_until` forward.
+- **Expenses of several categories** (train and a hotel): write an override with a `split`
+  for that transaction — the fixed parts, an amount per other category, and the default
+  category as remainder. Or accept the default roughly: the totals stay right, only the
+  distribution between the two categories is off.
+- **Bonus:** the same override, with the bonus as an `Income` part in `Einkommen` /
+  `Bonus`. A bonus paid as a booking of its own needs a rule of its own, and the salary rule
+  an `exclude_keywords` entry against it: otherwise the salary rule wins it, the fixed parts
+  exceed the amount, and the remainder turns into a negative part.
+
+An override `split` replaces the rule's whole split, fixed parts included. It is a record of
+that payslip, so it keeps its amounts when the rule changes later. Moving `reviewed_until`
+past a bonus month without an override books the bonus as a refund, unnoticed by the
+income-above-plan check because it is no longer income; the remainder shown in the review
+is the safeguard. Expenses reimbursed a quarter later make the category swing month by
+month; the cumulated columns are the ones to read.
 
 ## Export format
 

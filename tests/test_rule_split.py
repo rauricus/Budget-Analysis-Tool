@@ -130,9 +130,25 @@ def test_negative_remainder_becomes_a_part_on_the_other_side():
     assert round(sum(p.amount for p in parts), 2) == 120.00
 
 
-def test_amounts_without_remainder_abort():
-    with pytest.raises(ValueError, match="no remainder"):
-        apply_rule_splits([_premium(debit=169.20)], {"TX-000001": _rule()})
+def test_remainder_of_zero_drops_its_part():
+    """A salary without expenses that month: only the fixed parts remain, IDs unchanged."""
+    rule = _rule([
+        {"amount": 169.20, "category": "Leben", "subcategory": "Familie"},
+        {"amount": 600.00, "category": "Leben", "subcategory": "Krankenkasse"},
+        {"transaction_category": "Refund", "category": "Mobilität"},
+    ])
+
+    parts = apply_rule_splits([_premium(debit=769.20)], {"TX-000001": rule})
+
+    assert [(p.transaction_id, p.debit, p.auto_subcategory) for p in parts] == [
+        ("TX-000001.1", 169.20, "Familie"),
+        ("TX-000001.2", 600.00, "Krankenkasse"),
+    ]
+
+
+def test_remainder_of_zero_keeps_a_single_fixed_part():
+    parts = apply_rule_splits([_premium(debit=169.20)], {"TX-000001": _rule()})
+    assert [(p.transaction_id, p.debit) for p in parts] == [("TX-000001.1", 169.20)]
 
 
 def _exported(run_dir: Path) -> dict:
