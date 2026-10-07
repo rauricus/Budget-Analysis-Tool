@@ -18,7 +18,15 @@ Nothing scheduled; the first item under Next is the one to pick up.
 
 ## Next
 
-### 1. Tags on rules
+### 1. Monthly routine
+
+- The budgeting workflow documented in `README.md`: import, categorize, doctor, report,
+  review.
+- Optional skill `/monthly-budget-review` running those steps and summarizing the variances
+  per group; once item 8 exists, it ends with the review report and its analysis.
+- Budget targets revisited at a fixed cadence (quarterly, say) rather than edited ad hoc.
+
+### 2. Tags on rules
 
 Discretionary spending often cuts across the category tree: digital subscriptions sit next to
 the phone bill in one subcategory, devices sit in household goods, a subscription exists in
@@ -38,7 +46,7 @@ survives a rule being split or renamed.
 
 ## Later
 
-### 2. Mark special spending
+### 3. Mark special spending
 
 Spending that is **one-off individually but recurring as a class** (furniture, appliances)
 needs a marking per transaction when no rule can tell it apart: not a target but a
@@ -50,12 +58,43 @@ where the default does not fit.)
 The marking lives in its own `{TX-id: {...}}` file next to `transaction_overrides.json`,
 using the same ID-remap helper.
 
-### 3. Due dates for reserves
+### 4. Due dates for reserves
 
 A tax bill due in a given month should not read as an overdrawn pot until the year catches
 up. A reserve may name its due months; the pot is compared against what is due by then.
 
-### 4. Budget proposal
+### 5. Trips from a trip file
+
+A trip needs two to four rules today (country marker, prepayment window, places), and cash
+withdrawn during the trip still lands in finance. A `trips.json` with name, period and
+country generates those rules and assigns cash withdrawals within the period to the trip.
+
+See also the "declarative year planning" ideas below.
+
+### 6. Override only the remainder of a rule split
+
+An override `split` replaces a rule's whole split, so a payday that departs from the
+default repeats the wage and the Familienzulage. If that proves annoying, an override field
+`split_remainder` on the transaction's own ID splits only the rule's remainder part and
+takes the fixed parts from the rule. Addressing the part by its suffixed ID (`TX-….3`) is
+the weaker alternative: the suffix is a position that shifts when the rule's parts change.
+
+## Maybe
+
+These are earlier ideas. I tend to get away from them because I believe that a set of powerful,
+maybe more technical tools together with AI evalution and consulting skills, which maybe also
+generate a report, are more powerful for BAT.
+
+### 1. Budget in the Excel report
+
+A sheet "Budget vs. Actual" with the same figures as `budget_report.py`, including groups
+and the consumption figure. Computed in Python and written as values, like the other sheets.
+Lower priority as long as the console report covers the monthly review.
+
+Maybe. I tend to get away from Excel, though, again, trending towards powerful tools combined
+with AI generated reports or consulting.
+
+### 2. Budget proposal
 
 `propose_budget.py <run_dir>` writes a draft `budget.json` from the categorized history, for
 manual review, never applied automatically:
@@ -67,27 +106,9 @@ manual review, never applied automatically:
 - marked one-off spending (item 2) left out of the derivation;
 - more than one year of history, by reading several year datasets.
 
-### 5. Trips from a trip file
+## Future Ideas
 
-A trip needs two to four rules today (country marker, prepayment window, places), and cash
-withdrawn during the trip still lands in finance. A `trips.json` with name, period and
-country generates those rules and assigns cash withdrawals within the period to the trip.
-
-### 6. Monthly routine
-
-- The budgeting workflow documented in `README.md`: import, categorize, doctor, report,
-  review.
-- Optional skill `/monthly-budget-review` running those steps and summarizing the variances
-  per group; once item 8 exists, it ends with the review report and its analysis.
-- Budget targets revisited at a fixed cadence (quarterly, say) rather than edited ad hoc.
-
-### 7. Budget in the Excel report
-
-A sheet "Budget vs. Actual" with the same figures as `budget_report.py`, including groups
-and the consumption figure. Computed in Python and written as values, like the other sheets.
-Lower priority as long as the console report covers the monthly review.
-
-### 8. Review report with an AI analysis
+### A. Review report with an AI analysis
 
 A budget review happens offline and on paper: a plan for next year checked against this
 year and the last, with the doctor's findings and a list of decisions to make. Today that
@@ -118,24 +139,14 @@ offline; the skill runs in the agent session.
 The report without the analysis is the MVP; the skill follows once the `report.json`
 format has settled.
 
-### 9. Override only the remainder of a rule split
-
-An override `split` replaces a rule's whole split, so a payday that departs from the
-default repeats the wage and the Familienzulage. If that proves annoying, an override field
-`split_remainder` on the transaction's own ID splits only the rule's remainder part and
-takes the fixed parts from the rule. Addressing the part by its suffixed ID (`TX-….3`) is
-the weaker alternative: the suffix is a position that shifts when the rule's parts change.
-
-## Zukünftige Entwicklungen
-
-### 10. Declarative year planning and generated rules/budget
+### B. Declarative year planning and generated rules/budget
 
 A yearly plan can be modeled in a declarative source directory, separate from the generated
 `rules.json` and `budget.json` the tools actually execute. A dataset may hold a
-`.sources/` folder with JSON files such as `income.json`, `reserves.json`, `trips.json`,
-`subscriptions.json` and `budget_adjustments.json`. These files describe the year-specific
-changes in a more readable form: salary, bonus, insurance premiums, trip periods, recurring
-subscription rules and budget adjustments.
+`.sources/` folder with text or JSON files such as `income.json`, `reserves.json`, 
+`trips.json`, `subscriptions.json` and `budget_adjustments.json`. These files describe 
+the year-specific changes in a more readable form: salary, bonus, insurance premiums, trip 
+periods, recurring subscription rules and budget adjustments.
 
 A helper script such as `generate_year.py <run_dir>` reads those sources and writes or updates
 `rules.json` and `budget.json` for that year. The workflow stays iterative and reviewable:
