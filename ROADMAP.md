@@ -126,6 +126,31 @@ default repeats the wage and the Familienzulage. If that proves annoying, an ove
 takes the fixed parts from the rule. Addressing the part by its suffixed ID (`TX-….3`) is
 the weaker alternative: the suffix is a position that shifts when the rule's parts change.
 
+## Zukünftige Entwicklungen
+
+### 10. Declarative year planning and generated rules/budget
+
+A yearly plan can be modeled in a declarative source directory, separate from the generated
+`rules.json` and `budget.json` the tools actually execute. A dataset may hold a
+`.sources/` folder with JSON files such as `income.json`, `reserves.json`, `trips.json`,
+`subscriptions.json` and `budget_adjustments.json`. These files describe the year-specific
+changes in a more readable form: salary, bonus, insurance premiums, trip periods, recurring
+subscription rules and budget adjustments.
+
+A helper script such as `generate_year.py <run_dir>` reads those sources and writes or updates
+`rules.json` and `budget.json` for that year. The workflow stays iterative and reviewable:
+
+- edit or copy the declaration files for the new year;
+- generate or refresh the rules and budget from them;
+- validate the result with `doctor.py` against the real transactions;
+- adjust the declarative source or the generated rules where the doctor points to a problem;
+- regenerate and validate again until the findings are resolved.
+
+This keeps the generated files as the technical artifact the engine consumes while the source
+files remain the human-readable planning layer. Manual edits in the generated files can still
+be preserved or merged intentionally, and the doctor validates the result before it becomes a
+finalized yearly setup.
+
 ## Out of scope
 
 - More than one account per dataset.
